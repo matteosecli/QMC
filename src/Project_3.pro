@@ -6,13 +6,17 @@ CONFIG -= qt
 SOURCES += main.cpp \
     lib.cpp \
     System.cpp \
-    Potential.cpp
+    Potential.cpp \
+    BasisFunctions.cpp \
+    AlphaHarmonicOscillator.cpp
 
 HEADERS += \
     lib.h \
     System.h \
     Potential.h \
-    Structs.h
+    Structs.h \
+    BasisFunctions.h \
+    AlphaHarmonicOscillator.h
 
 OTHER_FILES += \
     lib.o \

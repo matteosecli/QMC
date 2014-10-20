@@ -33,6 +33,7 @@
 #include "Potential.h"
 #include "System.h"
 #include "Structs.h"
+#include "AlphaHarmonicOscillator.h"
 #include <time.h>
 
 using namespace  std;
@@ -53,13 +54,13 @@ ofstream ofile;
 void initialise(GeneralParams&, VMCparams&) ;
 
 // The Mc sampling for the variational Monte Carlo
-void  mc_sampling(GeneralParams& , VMCparams&, vec&, vec&, System&);
+void  mc_sampling(GeneralParams& , VariationalParams&, VMCparams&, vec&, vec&, System&, Orbitals*);
 
 // The variational wave function
-double  wave_function(mat&, double, GeneralParams&);
+double  wave_function(mat&, VariationalParams&, GeneralParams&, Orbitals*);
 
 // The local energy
-double  local_energy(mat&, double, double, GeneralParams&, System&);
+double  local_energy(mat&, double, GeneralParams&, VariationalParams&, System&, Orbitals*);
 
 // prints to screen the results of the calculations
 void  output(VMCparams&, vec&, vec&);
@@ -107,8 +108,11 @@ int main(int argc, char* argv[])
      *      MySystem->add_potential(new Harmonic_osc(gP))
      */
 
+    // Build the orbitals
+    Orbitals* MyWaveFunction = new AlphaHarmonicOscillator(gP, vP);
+
     //  Do the mc sampling
-    mc_sampling(gP, vmcParams, cumulative_e, cumulative_e2, MySystem);
+    mc_sampling(gP, vP, vmcParams, cumulative_e, cumulative_e2, MySystem, MyWaveFunction);
 
     // Print out results
     output(vmcParams, cumulative_e, cumulative_e2);
@@ -125,15 +129,13 @@ int main(int argc, char* argv[])
 
 
 // Monte Carlo sampling with the Metropolis algorithm
-void mc_sampling(GeneralParams& gP,VMCparams& vmcParams,
-                 vec& cumulative_e, vec& cumulative_e2, System& InputSystem)
+void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
+                 vec& cumulative_e, vec& cumulative_e2, System& InputSystem, Orbitals *wF)
 {
     int cycles, variate, accept, i, j;
-    long idum;
+    long idum = -1;
     double wfnew, wfold, alpha, energy, energy2, delta_e;
     mat r_old, r_new;
-    alpha = 0.5*gP.nuclear_charge;
-    idum=-1;
 
     // allocate matrices which contain the position of the particles
     r_old = zeros<mat>(gP.number_particles, gP.dimension);
@@ -143,7 +145,7 @@ void mc_sampling(GeneralParams& gP,VMCparams& vmcParams,
     for (variate=1; variate <= vmcParams.max_variations; variate++){
 
         // initialisations of variational parameters and energies
-        alpha += 0.01;
+        vP.alpha += 0.01;
         energy = energy2 = 0; accept =0; delta_e=0;
 
         //  initial trial position, note calling with alpha
@@ -153,7 +155,7 @@ void mc_sampling(GeneralParams& gP,VMCparams& vmcParams,
                 r_old(i,j) = vmcParams.step_length*(ran1(&idum)-0.5);
             }
         }
-        wfold = wave_function(r_old, alpha, gP);
+        wfold = wave_function(r_old, vP, gP, wF);
 
         // loop over monte carlo cycles
 //        #pragma omp parallel for reduction(+: accept, energy, energy2) private(wfold, wfnew, delta_e) //schedule(dynamic,2)
@@ -165,7 +167,7 @@ void mc_sampling(GeneralParams& gP,VMCparams& vmcParams,
                     r_new(i,j) = r_old(i,j)+vmcParams.step_length*(ran1(&idum)-0.5);
                 }
             }
-            wfnew = wave_function(r_new, alpha, gP);
+            wfnew = wave_function(r_new, vP, gP, wF);
 
             // Metropolis test
             if(ran1(&idum) <= wfnew*wfnew/wfold/wfold ) {
@@ -180,14 +182,14 @@ void mc_sampling(GeneralParams& gP,VMCparams& vmcParams,
 
             // compute local energy
             if ( cycles > vmcParams.thermalization ) {
-                delta_e = local_energy(r_old, alpha, wfold, gP, InputSystem);
+                delta_e = local_energy(r_old, wfold, gP, vP, InputSystem, wF);
                 // update energies
                 energy += delta_e;
                 energy2 += pow(delta_e,2);
             }
         }   // end of loop over MC trials
 
-        cout << "variational parameter= " << alpha
+        cout << "variational parameter= " << vP.alpha
         << " accepted steps= " << accept << endl;
 
         // update the energy average and its squared
@@ -201,27 +203,44 @@ void mc_sampling(GeneralParams& gP,VMCparams& vmcParams,
 
 
 // Function to compute the squared wave function, simplest form
-double  wave_function(mat& r, double alpha, GeneralParams & gP)
+double  wave_function(mat& r, VariationalParams & vP, GeneralParams & gP, Orbitals *wF)
 {
-  int i, j;
-  double wf, argument, r_single_particle;
+//    int i, j;
+//    double wf, argument, r_single_particle;
+//
+//    argument = wf = 0;
+//    for (i = 0; i < gP.number_particles; i++) {
+//        r_single_particle = 0;
+//        for (j = 0; j < gP.dimension; j++) {
+//            r_single_particle  += pow(r(i,j),2);
+//        }
+//        argument += r_single_particle/2.0;
+//    }
+//    wf = exp(-argument*vP.alpha) ;
+//    return wf;
 
-  argument = wf = 0;
-//#pragma omp parallel for private(j) shared(r,argument) reduction(+:r_single_particle) firstprivate(dimension)
-//  #pragma omp parallel for firstprivate(j,dimension) lastprivate(i,number_particles) reduction(+: r_single_particle, argument) //schedule(dynamic,2)
-  for (i = 0; i < gP.number_particles; i++) {
-    r_single_particle = 0;
-    for (j = 0; j < gP.dimension; j++) {
-      r_single_particle  += pow(r(i,j),2);
-    }
-    argument += r_single_particle/2.0;
-  }
-  wf = exp(-argument*alpha) ;
-  return wf;
+    // Update the pointers
+    wF->set_parameter(vP.alpha, 0);
+
+    /* Calculate the exponential factor for particle 1
+     * and the SLD term for each wavefunction
+     */
+    wF->set_qnum_indie_terms(r, 0);
+    double phi_0_r0 = wF->phi(r, 0, 0);
+
+    /* Calculate the exponential factor for particle 2
+     * and the SLD term for each wavefunction
+     */
+    wF->set_qnum_indie_terms(r, 1);
+    double phi_0_r1 = wF->phi(r, 1, 0);
+
+    // Return the actual spatial wavefunction
+    double wavefunction = phi_0_r0 * phi_0_r1;
+    return wavefunction;
 }
 
 // Function to calculate the local energy with num derivative
-double  local_energy(mat& r, double alpha, double wfold, GeneralParams & gP, System & InputSystem)
+double  local_energy(mat& r, double wfold, GeneralParams & gP, VariationalParams & vP, System & InputSystem, Orbitals *wF)
 {
   int i, j , k;
   double e_local, wfminus, wfplus, e_kinetic, e_potential, r_12,
@@ -239,8 +258,8 @@ double  local_energy(mat& r, double alpha, double wfold, GeneralParams & gP, Sys
     for (j = 0; j < gP.dimension; j++) {
       r_plus(i,j) = r(i,j)+h;
       r_minus(i,j) = r(i,j)-h;
-      wfminus = wave_function(r_minus, alpha, gP);
-      wfplus  = wave_function(r_plus, alpha, gP);
+      wfminus = wave_function(r_minus, vP, gP, wF);
+      wfplus  = wave_function(r_plus, vP, gP, wF);
       e_kinetic -= (wfminus+wfplus-2*wfold);
       r_plus(i,j) = r(i,j);
       r_minus(i,j) = r(i,j);
