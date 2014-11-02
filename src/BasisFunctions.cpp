@@ -60,7 +60,7 @@ double HarmonicOscillator_4::eval(const mat& r, int i) {    // H_1,1
     H = x*y;
     return H*(*exp_factor);
 }
-double HarmonicOscillator_5::eval(const mat& r, int i) {    // H2,0
+double HarmonicOscillator_5::eval(const mat& r, int i) {    // H_2,0
     x = r(i, 0);
     x2 = x*x;
     //(2*k^2*x^2 - 1)*exp(-k^2*r^2/2)

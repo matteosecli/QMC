@@ -22,6 +22,7 @@ using namespace QMC2;
 Orbitals::Orbitals(int n_p, int dim) {
     this->n_p = n_p;
     this->n2 = ceil(n_p / 2.0);
+    this->n_half = n_p/2;
     this->dim = dim;
 
     max_implemented = 6; //for 12 particles
@@ -38,6 +39,30 @@ double Orbitals::phi(const mat& r, int particle, int q_num) {
     return basis_functions[q_num]->eval(r, particle);
 }
 
+double Orbitals::SlaterD(mat& r) {
+    mat D_up(n_half,n_half), D_down(n_half,n_half);
+
+    for (int i = 0; i < n_half; i++) {
+        this->set_qnum_indie_terms(r, i);
+        for (int j = 0; j < n_half; j++) {
+            D_up(i,j) = this->phi(r, i, j);
+        }
+    }
+
+    for (int i = 0; i < n_half; i++) {
+        this->set_qnum_indie_terms(r, i+n_half);
+        for (int j = 0; j < n_half; j++) {
+            D_down(i,j) = this->phi(r, i+n_half, j);
+        }
+    }
+
+    double slater = det(D_up)*det(D_down);
+
+    D_up.reset();
+    D_down.reset();
+
+    return slater;
+}
 
 AlphaHarmonicOscillator::AlphaHarmonicOscillator(GeneralParams & gP, VariationalParams & vP)
 : Orbitals(gP.number_particles, gP.dimension) {

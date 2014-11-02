@@ -17,6 +17,7 @@ namespace QMC2
         protected:
             int n_p;
             int n2;
+            int n_half;
             int dim;
 
             int nCap; //!< The highest number of states accessible
@@ -97,6 +98,8 @@ namespace QMC2
             std::string getName() const {
                 return name;
             }
+
+            virtual double SlaterD(mat& r);
 
     };
 

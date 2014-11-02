@@ -34,6 +34,7 @@
 #include "System.h"
 #include "Structs.h"
 #include "AlphaHarmonicOscillator.h"
+#include "Jastrow.h"
 #include <time.h>
 
 using namespace  std;
@@ -54,16 +55,16 @@ ofstream ofile;
 void initialise(GeneralParams&, VMCparams&) ;
 
 // The Mc sampling for the variational Monte Carlo
-void  mc_sampling(GeneralParams& , VariationalParams&, VMCparams&, vec&, vec&, System&, Orbitals*);
+void  mc_sampling(GeneralParams& , VariationalParams&, VMCparams&, mat &, mat &, System&, Orbitals*, Jastrow*);
 
 // The variational wave function
-double  wave_function(mat&, VariationalParams&, GeneralParams&, Orbitals*);
+double  wave_function(mat&, VariationalParams&, GeneralParams&, Orbitals*, Jastrow*);
 
 // The local energy
-double  local_energy(mat&, double, GeneralParams&, VariationalParams&, System&, Orbitals*);
+double  local_energy(mat&, double, GeneralParams&, VariationalParams&, System&, Orbitals*, Jastrow*);
 
 // prints to screen the results of the calculations
-void  output(VMCparams&, vec&, vec&);
+void  output(VMCparams&, mat &, mat &, bool&);
 
 
 /*--- Begin of main program ---*/
@@ -74,7 +75,7 @@ int main(int argc, char* argv[])
 
     // Initialize variables
     char *outfilename;
-    vec cumulative_e, cumulative_e2;
+    mat cumulative_e, cumulative_e2;
 
     // Read in output file, abort if there are too few command-line arguments
     if( argc <= 1 ){
@@ -93,10 +94,10 @@ int main(int argc, char* argv[])
 
     // Read in data and filling structs
     initialise(gP, vmcParams);
-    vP.alpha = 0.5;
-    vP.beta = 0;
-    cumulative_e = zeros<vec>(vmcParams.max_variations+1);
-    cumulative_e2 = zeros<vec>(vmcParams.max_variations+1);
+    vP.alpha = 0.91;
+    vP.beta = 0.32;
+    cumulative_e = zeros<mat>(vmcParams.max_variations+1,vmcParams.max_variations+1);
+    cumulative_e2 = zeros<mat>(vmcParams.max_variations+1,vmcParams.max_variations+1);
 
     // Build the required system
     System MySystem;
@@ -111,11 +112,16 @@ int main(int argc, char* argv[])
     // Build the orbitals
     Orbitals* MyWaveFunction = new AlphaHarmonicOscillator(gP, vP);
 
+    // Set up the Jastrow factor
+    Jastrow* MyJastrowFactor = new Pade_Jastrow(gP,vP);
+//    Jastrow* MyJastrowFactor = new No_Jastrow();
+
     //  Do the mc sampling
-    mc_sampling(gP, vP, vmcParams, cumulative_e, cumulative_e2, MySystem, MyWaveFunction);
+    mc_sampling(gP, vP, vmcParams, cumulative_e, cumulative_e2, MySystem, MyWaveFunction, MyJastrowFactor);
 
     // Print out results
-    output(vmcParams, cumulative_e, cumulative_e2);
+    bool jF_active = MyJastrowFactor->active;
+    output(vmcParams, cumulative_e, cumulative_e2, jF_active);
     cumulative_e.reset();
     cumulative_e2.reset();
     ofile.close();  // close output file
@@ -130,72 +136,92 @@ int main(int argc, char* argv[])
 
 // Monte Carlo sampling with the Metropolis algorithm
 void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
-                 vec& cumulative_e, vec& cumulative_e2, System& InputSystem, Orbitals *wF)
+                 mat& cumulative_e, mat& cumulative_e2, System& InputSystem, Orbitals* wF, Jastrow* jF)
 {
-    int cycles, variate, accept, i, j;
+    int cycles, variate_alpha, variate_beta, accept, i, j;
     long idum = -1;
-    double wfnew, wfold, alpha, energy, energy2, delta_e;
+    double wfnew, wfold, alpha, alpha_old, energy, energy2, delta_e;
     mat r_old, r_new;
+
+    alpha_old = vP.alpha;
 
     // allocate matrices which contain the position of the particles
     r_old = zeros<mat>(gP.number_particles, gP.dimension);
     r_new = zeros<mat>(gP.number_particles, gP.dimension);
 
     // loop over variational parameters
-    for (variate=1; variate <= vmcParams.max_variations; variate++){
+    for (variate_beta = 1; variate_beta <= vmcParams.max_variations; variate_beta++){
+        for (variate_alpha = 1; variate_alpha <= vmcParams.max_variations; variate_alpha++){
 
-        // initialisations of variational parameters and energies
-        vP.alpha += 0.01;
-        energy = energy2 = 0; accept =0; delta_e=0;
+            // initialisations of energies
+            energy = energy2 = 0; accept =0; delta_e=0;
 
-        //  initial trial position, note calling with alpha
-        //  and in three dimensions
-        for (i = 0; i < gP.number_particles; i++) {
-            for ( j=0; j < gP.dimension; j++) {
-                r_old(i,j) = vmcParams.step_length*(ran1(&idum)-0.5);
-            }
-        }
-        wfold = wave_function(r_old, vP, gP, wF);
-
-        // loop over monte carlo cycles
-//        #pragma omp parallel for reduction(+: accept, energy, energy2) private(wfold, wfnew, delta_e) //schedule(dynamic,2)
-        for (cycles = 1; cycles <= vmcParams.number_cycles+vmcParams.thermalization; cycles++){
-
-            // new position
+            //  initial trial position, note calling with alpha
+            //  and in three dimensions
             for (i = 0; i < gP.number_particles; i++) {
                 for ( j=0; j < gP.dimension; j++) {
-                    r_new(i,j) = r_old(i,j)+vmcParams.step_length*(ran1(&idum)-0.5);
+                    r_old(i,j) = vmcParams.step_length*(ran1(&idum)-0.5);
                 }
             }
-            wfnew = wave_function(r_new, vP, gP, wF);
 
-            // Metropolis test
-            if(ran1(&idum) <= wfnew*wfnew/wfold/wfold ) {
+            wfold = wave_function(r_old, vP, gP, wF, jF);
+
+            // loop over monte carlo cycles
+    //        #pragma omp parallel for reduction(+: accept, energy, energy2) private(wfold, wfnew, delta_e) //schedule(dynamic,2)
+            for (cycles = 1; cycles <= vmcParams.number_cycles+vmcParams.thermalization; cycles++){
+
+                // new position
                 for (i = 0; i < gP.number_particles; i++) {
                     for ( j=0; j < gP.dimension; j++) {
-                        r_old(i,j)=r_new(i,j);
+                        r_new(i,j) = r_old(i,j)+vmcParams.step_length*(ran1(&idum)-0.5);
                     }
                 }
-                wfold = wfnew;
-                accept = accept+1;
-            }
+                wfnew = wave_function(r_new, vP, gP, wF, jF);
 
-            // compute local energy
-            if ( cycles > vmcParams.thermalization ) {
-                delta_e = local_energy(r_old, wfold, gP, vP, InputSystem, wF);
-                // update energies
-                energy += delta_e;
-                energy2 += pow(delta_e,2);
-            }
-        }   // end of loop over MC trials
+                // Metropolis test
+                if(ran1(&idum) <= wfnew*wfnew/wfold/wfold ) {
+                    for (i = 0; i < gP.number_particles; i++) {
+                        for ( j=0; j < gP.dimension; j++) {
+                            r_old(i,j)=r_new(i,j);
+                        }
+                    }
+                    wfold = wfnew;
+                    accept = accept+1;
+                }
 
-        cout << "variational parameter= " << vP.alpha
-        << " accepted steps= " << accept << endl;
+                // compute local energy
+                if ( cycles > vmcParams.thermalization ) {
+                    delta_e = local_energy(r_old, wfold, gP, vP, InputSystem, wF, jF);
+                    // update energies
+                    energy += delta_e;
+                    energy2 += pow(delta_e,2);
+                }
+            }   // end of loop over MC trials
 
-        // update the energy average and its squared
-        cumulative_e[variate] = energy/vmcParams.number_cycles;
-        cumulative_e2[variate] = energy2/vmcParams.number_cycles;
-    }    // end of loop over variational  steps
+            cout << "alpha = " << vP.alpha << "\t"
+                 << "beta = " << vP.beta << "\t"
+                 << " accepted steps = " << accept << endl;
+
+            // update the energy average and its squared
+            cumulative_e(variate_beta, variate_alpha) = energy/vmcParams.number_cycles;
+            cumulative_e2(variate_beta, variate_alpha) = energy2/vmcParams.number_cycles;
+
+            // update alpha
+            vP.alpha += 0.01;
+
+        }    // end of loop over variational steps alpha
+
+        // Reset alpha
+        vP.alpha = alpha_old;
+
+        // Update beta if Jastrow is active
+        if (jF->active) {
+            vP.beta += 0.01;
+        } else {
+            break;
+        }
+
+    } // end of loop over variational steps beta
 
     r_old.reset(); // free memory
     r_new.reset(); // free memory
@@ -203,44 +229,21 @@ void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
 
 
 // Function to compute the squared wave function, simplest form
-double  wave_function(mat& r, VariationalParams & vP, GeneralParams & gP, Orbitals *wF)
+double  wave_function(mat& r, VariationalParams & vP, GeneralParams & gP, Orbitals *wF, Jastrow *jF)
 {
-//    int i, j;
-//    double wf, argument, r_single_particle;
-//
-//    argument = wf = 0;
-//    for (i = 0; i < gP.number_particles; i++) {
-//        r_single_particle = 0;
-//        for (j = 0; j < gP.dimension; j++) {
-//            r_single_particle  += pow(r(i,j),2);
-//        }
-//        argument += r_single_particle/2.0;
-//    }
-//    wf = exp(-argument*vP.alpha) ;
-//    return wf;
 
     // Update the pointers
     wF->set_parameter(vP.alpha, 0);
+    jF->set_parameter(vP.beta, 0);
 
-    /* Calculate the exponential factor for particle 1
-     * and the SLD term for each wavefunction
-     */
-    wF->set_qnum_indie_terms(r, 0);
-    double phi_0_r0 = wF->phi(r, 0, 0);
+    // Just call the Slater Determinant and the Jastow Factor calculators
+    double wavefunction = wF->SlaterD(r) * jF->get_val(r);
 
-    /* Calculate the exponential factor for particle 2
-     * and the SLD term for each wavefunction
-     */
-    wF->set_qnum_indie_terms(r, 1);
-    double phi_0_r1 = wF->phi(r, 1, 0);
-
-    // Return the actual spatial wavefunction
-    double wavefunction = phi_0_r0 * phi_0_r1;
     return wavefunction;
 }
 
 // Function to calculate the local energy with num derivative
-double  local_energy(mat& r, double wfold, GeneralParams & gP, VariationalParams & vP, System & InputSystem, Orbitals *wF)
+double  local_energy(mat& r, double wfold, GeneralParams & gP, VariationalParams & vP, System & InputSystem, Orbitals *wF, Jastrow *jF)
 {
   int i, j , k;
   double e_local, wfminus, wfplus, e_kinetic, e_potential, r_12,
@@ -258,8 +261,8 @@ double  local_energy(mat& r, double wfold, GeneralParams & gP, VariationalParams
     for (j = 0; j < gP.dimension; j++) {
       r_plus(i,j) = r(i,j)+h;
       r_minus(i,j) = r(i,j)-h;
-      wfminus = wave_function(r_minus, vP, gP, wF);
-      wfplus  = wave_function(r_plus, vP, gP, wF);
+      wfminus = wave_function(r_minus, vP, gP, wF, jF);
+      wfplus  = wave_function(r_plus, vP, gP, wF, jF);
       e_kinetic -= (wfminus+wfplus-2*wfold);
       r_plus(i,j) = r(i,j);
       r_minus(i,j) = r(i,j);
@@ -296,23 +299,31 @@ void initialise(GeneralParams & gP, VMCparams & vmcParams)
 }  // end of function initialise
 
 
-
-void output(VMCparams & vmcParams, vec & cumulative_e, vec & cumulative_e2)
+// UPDATE OUTPUT FUNCTION! (RESET VAR PARAMS, THEN CALL THE FUNCTION)
+void output(VMCparams & vmcParams, mat& cumulative_e, mat& cumulative_e2, bool& jF_active)
 {
-  int i;
-  double alpha, variance, error;
+
+  int i, j;
+  double alpha, alpha_old, beta, variance, error;
   //alpha = 0.5*charge;
-  alpha = 0.5;
+  alpha = 0.91;
+  alpha_old = alpha;
+  beta = 0.32;
   for( i=1; i <= vmcParams.max_variations; i++){
-    alpha += 0.01;
-    variance = cumulative_e2(i)-pow(cumulative_e(i),2);
-    error=sqrt(variance/vmcParams.number_cycles);
-    ofile << setiosflags(ios::showpoint | ios::uppercase);
-    ofile << setw(15) << setprecision(8) << alpha;
-    ofile << setw(15) << setprecision(8) << cumulative_e(i);
-    ofile << setw(15) << setprecision(8) << variance;
-    ofile << setw(15) << setprecision(8) << error << endl;
-//    fprintf(output_file, "%12.5E %12.5E %12.5E %12.5E \n", alpha,cumulative_e[i],variance, error );
+      for( j=1; j <= vmcParams.max_variations; j++){
+        variance = cumulative_e2(i,j)-pow(cumulative_e(i,j),2);
+        error=sqrt(variance/vmcParams.number_cycles);
+        ofile << setiosflags(ios::showpoint | ios::uppercase);
+        ofile << setw(15) << setprecision(8) << alpha;
+        ofile << setw(15) << setprecision(8) << beta;
+        ofile << setw(15) << setprecision(8) << cumulative_e(i,j);
+        ofile << setw(15) << setprecision(8) << variance;
+        ofile << setw(15) << setprecision(8) << error << endl;
+        alpha += 0.01;
+      }
+      alpha = alpha_old;
+      if (!jF_active) break;
+      beta += 0.01;
   }
 //  fclose (output_file);
 }  // end of function output

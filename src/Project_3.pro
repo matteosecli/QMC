@@ -3,12 +3,15 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
+LIBS += -larmadillo -llapack -lblas
+
 SOURCES += main.cpp \
     lib.cpp \
     System.cpp \
     Potential.cpp \
     BasisFunctions.cpp \
-    AlphaHarmonicOscillator.cpp
+    AlphaHarmonicOscillator.cpp \
+    Jastrow.cpp
 
 HEADERS += \
     lib.h \
@@ -16,7 +19,8 @@ HEADERS += \
     Potential.h \
     Structs.h \
     BasisFunctions.h \
-    AlphaHarmonicOscillator.h
+    AlphaHarmonicOscillator.h \
+    Jastrow.h
 
 OTHER_FILES += \
     lib.o \
