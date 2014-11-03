@@ -13,12 +13,17 @@ namespace QMC2
         int number_cycles = 1000000; //!< The number of Monte Carlo cycles.
         int thermalization = 100; //!< The number of thermalization steps (so obscure!).
         double step_length = 2; //!< The step length used in Monte Carlo walker.
+        bool jF_active = false; //!< Disable Jastrow by default.
     };
 
     //! Struct used to initialize the varational parameters.
     struct VariationalParams {
         double alpha = 0.987; //!< The spatial variational parameter.
         double beta = 0.398; //!< The Jastrow variational parameter.
+        double alpha_step = 0.001;
+        double beta_step = 0.001;
+        double alpha_old;
+        double beta_old;
     };
 
     //! Struct used to initialize general parameters.
@@ -29,6 +34,7 @@ namespace QMC2
         int nuclear_charge = 1;
         seed_type random_seed = -time(NULL); //!< The random number generator's seed.
         double systemConstant = 1;
+        int num_threads = 1; //!< The maximum number of threads
     };
 }
 

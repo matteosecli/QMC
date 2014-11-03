@@ -3,7 +3,7 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
-LIBS += -larmadillo -llapack -lblas
+LIBS += -fopenmp -larmadillo -llapack -lblas
 
 SOURCES += main.cpp \
     lib.cpp \

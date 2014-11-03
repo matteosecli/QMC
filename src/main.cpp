@@ -36,6 +36,7 @@
 #include "AlphaHarmonicOscillator.h"
 #include "Jastrow.h"
 #include <time.h>
+#include <omp.h>
 
 using namespace  std;
 using namespace arma;
@@ -52,7 +53,7 @@ ofstream ofile;
 /*--- Declaraton of functions ---*/
 
 // Function to read in data from screen, note call by reference
-void initialise(GeneralParams&, VMCparams&) ;
+void initialise(GeneralParams&, VariationalParams&, VMCparams&) ;
 
 // The Mc sampling for the variational Monte Carlo
 void  mc_sampling(GeneralParams& , VariationalParams&, VMCparams&, mat &, mat &, System&, Orbitals*, Jastrow*);
@@ -64,7 +65,7 @@ double  wave_function(mat&, VariationalParams&, GeneralParams&, Orbitals*, Jastr
 double  local_energy(mat&, double, GeneralParams&, VariationalParams&, System&, Orbitals*, Jastrow*);
 
 // prints to screen the results of the calculations
-void  output(VMCparams&, mat &, mat &, bool&);
+void  output(GeneralParams&, VariationalParams&, VMCparams&, mat &, mat &, bool&);
 
 
 /*--- Begin of main program ---*/
@@ -93,9 +94,9 @@ int main(int argc, char* argv[])
     struct VMCparams vmcParams;
 
     // Read in data and filling structs
-    initialise(gP, vmcParams);
-    vP.alpha = 0.91;
-    vP.beta = 0.32;
+    vP.beta = 0;    // Default value for No-Jastrow, can be overridden
+    vP.beta_old = vP.beta;
+    initialise(gP, vP, vmcParams);
     cumulative_e = zeros<mat>(vmcParams.max_variations+1,vmcParams.max_variations+1);
     cumulative_e2 = zeros<mat>(vmcParams.max_variations+1,vmcParams.max_variations+1);
 
@@ -109,19 +110,51 @@ int main(int argc, char* argv[])
      *      MySystem->add_potential(new Harmonic_osc(gP))
      */
 
-    // Build the orbitals
-    Orbitals* MyWaveFunction = new AlphaHarmonicOscillator(gP, vP);
+    // Begin parallelization
+    omp_set_num_threads(gP.num_threads);
+    #pragma omp parallel shared(cumulative_e, cumulative_e2)
+    {
+        // Make a private copy of all the stuff
+        mat cumulative_e_local = zeros<mat>(vmcParams.max_variations+1,vmcParams.max_variations+1);
+        mat cumulative_e2_local = zeros<mat>(vmcParams.max_variations+1,vmcParams.max_variations+1);
+        struct GeneralParams gP_local = gP;
+        struct VariationalParams vP_local = vP;
+        struct VMCparams vmcParams_local = vmcParams;
 
-    // Set up the Jastrow factor
-    Jastrow* MyJastrowFactor = new Pade_Jastrow(gP,vP);
-//    Jastrow* MyJastrowFactor = new No_Jastrow();
+        // Build the orbitals
+        Orbitals* MyWaveFunction_local = new AlphaHarmonicOscillator(gP_local, vP_local);
 
-    //  Do the mc sampling
-    mc_sampling(gP, vP, vmcParams, cumulative_e, cumulative_e2, MySystem, MyWaveFunction, MyJastrowFactor);
+        // Set up the Jastrow factor
+        Jastrow* MyJastrowFactor_local;
+        if (vmcParams_local.jF_active) MyJastrowFactor_local = new Pade_Jastrow(gP,vP);
+        else MyJastrowFactor_local = new No_Jastrow();
+
+        // Make a local copy of the system for convenience
+        System MySystem_local = MySystem;
+
+        // Do the mc sampling
+        mc_sampling(gP_local, vP_local, vmcParams_local,
+                    cumulative_e_local, cumulative_e2_local,
+                    MySystem_local, MyWaveFunction_local, MyJastrowFactor_local);
+
+        // Be sure to have all the contributions
+        #pragma omp barrier
+        #pragma omp critical
+        {
+            // Add the contributions
+            cumulative_e += cumulative_e_local;
+            cumulative_e2 += cumulative_e2_local;
+        }
+    }
+
+    // Normalize to the number of threads
+    cumulative_e = cumulative_e/((double) gP.num_threads);
+    cumulative_e2 = cumulative_e2/((double) gP.num_threads);
 
     // Print out results
-    bool jF_active = MyJastrowFactor->active;
-    output(vmcParams, cumulative_e, cumulative_e2, jF_active);
+    output(gP, vP, vmcParams, cumulative_e, cumulative_e2, vmcParams.jF_active);
+
+    // Do some cleaning
     cumulative_e.reset();
     cumulative_e2.reset();
     ofile.close();  // close output file
@@ -140,10 +173,11 @@ void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
 {
     int cycles, variate_alpha, variate_beta, accept, i, j;
     long idum = -1;
-    double wfnew, wfold, alpha, alpha_old, energy, energy2, delta_e;
+    double wfnew, wfold, energy, energy2, delta_e;
     mat r_old, r_new;
 
-    alpha_old = vP.alpha;
+    vP.alpha_old = vP.alpha;
+    vP.beta_old = vP.beta;
 
     // allocate matrices which contain the position of the particles
     r_old = zeros<mat>(gP.number_particles, gP.dimension);
@@ -151,6 +185,7 @@ void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
 
     // loop over variational parameters
     for (variate_beta = 1; variate_beta <= vmcParams.max_variations; variate_beta++){
+//        #pragma omp parallel for
         for (variate_alpha = 1; variate_alpha <= vmcParams.max_variations; variate_alpha++){
 
             // initialisations of energies
@@ -167,12 +202,11 @@ void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
             wfold = wave_function(r_old, vP, gP, wF, jF);
 
             // loop over monte carlo cycles
-    //        #pragma omp parallel for reduction(+: accept, energy, energy2) private(wfold, wfnew, delta_e) //schedule(dynamic,2)
-            for (cycles = 1; cycles <= vmcParams.number_cycles+vmcParams.thermalization; cycles++){
+            for (int cycles = 1; cycles <= vmcParams.number_cycles+vmcParams.thermalization; cycles++){
 
                 // new position
-                for (i = 0; i < gP.number_particles; i++) {
-                    for ( j=0; j < gP.dimension; j++) {
+                for (int i = 0; i < gP.number_particles; i++) {
+                    for ( int j=0; j < gP.dimension; j++) {
                         r_new(i,j) = r_old(i,j)+vmcParams.step_length*(ran1(&idum)-0.5);
                     }
                 }
@@ -180,8 +214,8 @@ void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
 
                 // Metropolis test
                 if(ran1(&idum) <= wfnew*wfnew/wfold/wfold ) {
-                    for (i = 0; i < gP.number_particles; i++) {
-                        for ( j=0; j < gP.dimension; j++) {
+                    for (int i = 0; i < gP.number_particles; i++) {
+                        for (int  j=0; j < gP.dimension; j++) {
                             r_old(i,j)=r_new(i,j);
                         }
                     }
@@ -196,6 +230,7 @@ void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
                     energy += delta_e;
                     energy2 += pow(delta_e,2);
                 }
+
             }   // end of loop over MC trials
 
             cout << "alpha = " << vP.alpha << "\t"
@@ -207,21 +242,24 @@ void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
             cumulative_e2(variate_beta, variate_alpha) = energy2/vmcParams.number_cycles;
 
             // update alpha
-            vP.alpha += 0.01;
+            vP.alpha += vP.alpha_step;
 
         }    // end of loop over variational steps alpha
 
         // Reset alpha
-        vP.alpha = alpha_old;
+        vP.alpha = vP.alpha_old;
 
         // Update beta if Jastrow is active
         if (jF->active) {
-            vP.beta += 0.01;
+            vP.beta += vP.beta_step;
         } else {
             break;
         }
 
     } // end of loop over variational steps beta
+
+    // Reset beta
+    vP.beta = vP.beta_old;
 
     r_old.reset(); // free memory
     r_new.reset(); // free memory
@@ -280,50 +318,72 @@ double  local_energy(mat& r, double wfold, GeneralParams & gP, VariationalParams
   return e_local;
 }
 
-void initialise(GeneralParams & gP, VMCparams & vmcParams)
+void initialise(GeneralParams & gP, VariationalParams & vP, VMCparams & vmcParams)
 {
-    cout << "number of particles = ";
+    int jF_active_resp;
+
+    cout << "Number of particles = ";
     cin >> gP.number_particles;
-//    cout << "charge of nucleus = ";
-//    cin >> gP.nuclear_charge;     // Default: 1
-    cout << "dimensionality = ";
+
+    cout << "Dimensionality = ";
     cin >> gP.dimension;
-    cout << "maximum variational parameters = ";
+    gP.dimension = 2;   // Override user dimensionality, waiting for 3D implementation
+
+    cout << "Number of threads (max " << omp_get_max_threads() << ") = ";
+    cin >> gP.num_threads;
+
+    cout << "Do you want to use a Jastrow factor? (1-y / 0-n) = ";
+    cin >> jF_active_resp;
+    if (jF_active_resp != 0) vmcParams.jF_active = true;
+
+    cout << "Spatial variational parameter start point = ";
+    cin >> vP.alpha;    //0.91;
+    vP.alpha_old = vP.alpha;
+
+    cout << "Spatial variational parameter step length = ";
+    cin >> vP.alpha_step;
+
+    if (jF_active_resp != 0) {
+
+        cout << "Jastrow variational parameter start point = ";
+        cin >> vP.beta;     //0.32;
+        vP.beta_old = vP.beta;
+
+        cout << "Jastrow variational parameter step length = ";
+        cin >> vP.beta_step;
+    }
+
+    cout << "Maximum variations per parameter = ";
     cin >> vmcParams.max_variations;
-//    cout << "# Thermalization  steps= ";
-//    cin >> vmcParams.thermalization;     // Default: 100
-    cout << "# MC steps= ";
+
+    cout << "# Monte Carlo steps = ";
     cin >> vmcParams.number_cycles;
-    cout << "# step length= ";
+
+    cout << "# Step length = ";
     cin >> vmcParams.step_length;
 }  // end of function initialise
 
 
 // UPDATE OUTPUT FUNCTION! (RESET VAR PARAMS, THEN CALL THE FUNCTION)
-void output(VMCparams & vmcParams, mat& cumulative_e, mat& cumulative_e2, bool& jF_active)
+void output(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams, mat& cumulative_e, mat& cumulative_e2, bool& jF_active)
 {
-
   int i, j;
-  double alpha, alpha_old, beta, variance, error;
-  //alpha = 0.5*charge;
-  alpha = 0.91;
-  alpha_old = alpha;
-  beta = 0.32;
+  double variance, error;
   for( i=1; i <= vmcParams.max_variations; i++){
       for( j=1; j <= vmcParams.max_variations; j++){
-        variance = cumulative_e2(i,j)-pow(cumulative_e(i,j),2);
+        variance = (cumulative_e2(i,j)-pow(cumulative_e(i,j),2))/gP.num_threads;
         error=sqrt(variance/vmcParams.number_cycles);
         ofile << setiosflags(ios::showpoint | ios::uppercase);
-        ofile << setw(15) << setprecision(8) << alpha;
-        ofile << setw(15) << setprecision(8) << beta;
+        ofile << setw(15) << setprecision(8) << vP.alpha;
+        ofile << setw(15) << setprecision(8) << vP.beta;
         ofile << setw(15) << setprecision(8) << cumulative_e(i,j);
         ofile << setw(15) << setprecision(8) << variance;
         ofile << setw(15) << setprecision(8) << error << endl;
-        alpha += 0.01;
+        vP.alpha += vP.alpha_step;
       }
-      alpha = alpha_old;
+      vP.alpha = vP.alpha_old;
       if (!jF_active) break;
-      beta += 0.01;
+      vP.beta += vP.beta_step;
   }
 //  fclose (output_file);
 }  // end of function output
