@@ -59,7 +59,7 @@ void initialise(GeneralParams&, VariationalParams&, VMCparams&) ;
 void  mc_sampling(GeneralParams& , VariationalParams&, VMCparams&, mat &, mat &, System&, Orbitals*, Jastrow*);
 
 // The variational wave function
-double  wave_function(mat&, VariationalParams&, GeneralParams&, Orbitals*, Jastrow*);
+double  wave_function(mat&, VariationalParams&, Orbitals*, Jastrow*);
 
 // The local energy
 double  local_energy(mat&, double, GeneralParams&, VariationalParams&, System&, Orbitals*, Jastrow*);
@@ -171,7 +171,7 @@ int main(int argc, char* argv[])
 void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
                  mat& cumulative_e, mat& cumulative_e2, System& InputSystem, Orbitals* wF, Jastrow* jF)
 {
-    int cycles, variate_alpha, variate_beta, accept, i, j;
+    int variate_alpha, variate_beta, accept, i, j;
     long idum = -1;
     double wfnew, wfold, energy, energy2, delta_e;
     mat r_old, r_new;
@@ -199,7 +199,7 @@ void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
                 }
             }
 
-            wfold = wave_function(r_old, vP, gP, wF, jF);
+            wfold = wave_function(r_old, vP, wF, jF);
 
             // loop over monte carlo cycles
             for (int cycles = 1; cycles <= vmcParams.number_cycles+vmcParams.thermalization; cycles++){
@@ -210,7 +210,7 @@ void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
                         r_new(i,j) = r_old(i,j)+vmcParams.step_length*(ran1(&idum)-0.5);
                     }
                 }
-                wfnew = wave_function(r_new, vP, gP, wF, jF);
+                wfnew = wave_function(r_new, vP, wF, jF);
 
                 // Metropolis test
                 if(ran1(&idum) <= wfnew*wfnew/wfold/wfold ) {
@@ -267,7 +267,7 @@ void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
 
 
 // Function to compute the squared wave function, simplest form
-double  wave_function(mat& r, VariationalParams & vP, GeneralParams & gP, Orbitals *wF, Jastrow *jF)
+double  wave_function(mat& r, VariationalParams & vP, Orbitals *wF, Jastrow *jF)
 {
 
     // Update the pointers
@@ -283,9 +283,8 @@ double  wave_function(mat& r, VariationalParams & vP, GeneralParams & gP, Orbita
 // Function to calculate the local energy with num derivative
 double  local_energy(mat& r, double wfold, GeneralParams & gP, VariationalParams & vP, System & InputSystem, Orbitals *wF, Jastrow *jF)
 {
-  int i, j , k;
-  double e_local, wfminus, wfplus, e_kinetic, e_potential, r_12,
-    r_single_particle;
+  int i, j;
+  double e_local, wfminus, wfplus, e_kinetic, e_potential;
   mat r_plus, r_minus;
 
   // allocate matrices which contain the position of the particles
@@ -299,8 +298,8 @@ double  local_energy(mat& r, double wfold, GeneralParams & gP, VariationalParams
     for (j = 0; j < gP.dimension; j++) {
       r_plus(i,j) = r(i,j)+h;
       r_minus(i,j) = r(i,j)-h;
-      wfminus = wave_function(r_minus, vP, gP, wF, jF);
-      wfplus  = wave_function(r_plus, vP, gP, wF, jF);
+      wfminus = wave_function(r_minus, vP, wF, jF);
+      wfplus  = wave_function(r_plus, vP, wF, jF);
       e_kinetic -= (wfminus+wfplus-2*wfold);
       r_plus(i,j) = r(i,j);
       r_minus(i,j) = r(i,j);

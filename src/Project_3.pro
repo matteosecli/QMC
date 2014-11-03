@@ -27,4 +27,4 @@ OTHER_FILES += \
     _lib.so \
     lib.i
 
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++11 -fopenmp
