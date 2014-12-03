@@ -5,13 +5,16 @@ CONFIG -= qt
 
 LIBS += -fopenmp -larmadillo -llapack -lblas
 
+QMAKE_CXXFLAGS_RELEASE += -DARMA_NO_DEBUG
+
 SOURCES += main.cpp \
     lib.cpp \
     System.cpp \
     Potential.cpp \
     BasisFunctions.cpp \
     AlphaHarmonicOscillator.cpp \
-    Jastrow.cpp
+    Jastrow.cpp \
+    GaussianDeviate.cpp
 
 HEADERS += \
     lib.h \
@@ -20,7 +23,8 @@ HEADERS += \
     Structs.h \
     BasisFunctions.h \
     AlphaHarmonicOscillator.h \
-    Jastrow.h
+    Jastrow.h \
+    GaussianDeviate.h
 
 OTHER_FILES += \
     lib.o \

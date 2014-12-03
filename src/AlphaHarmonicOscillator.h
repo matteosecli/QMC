@@ -27,6 +27,8 @@ namespace QMC2
             arma::imat qnums; //!< Quantum number matrix needed by Hartree-Fock and the variational derivatives.
 
             BasisFunctions** basis_functions; //!< A vector maping a quantum number index to a single particle wave function.
+            BasisFunctions*** dell_basis_functions; //!< A maxtrix maping a quantum number- and dimension index to a single particle wave function derivative.
+            BasisFunctions** lapl_basis_functions; //!< A vector maping a quantum number index to a single particle wave function Laplacian.
 
             std::string name;
 
@@ -95,11 +97,27 @@ namespace QMC2
              */
             virtual double phi(const mat& r, int particle, int q_num);
 
+            //! Calculates the single particle wave function derivative for a given walker's particle and dimension.
+            /*!
+              * @param q_num The quantum number index.
+              * @param d The dimension for which the derivative should be calculated (x,y,z).
+              */
+             virtual double del_phi(const mat& r, int particle, int q_num, int d);
+
+             //! Calculates the single particle wave function for a given walker's particle.
+             /*!
+              * @param q_num The quantum number index.
+              */
+             virtual double lapl_phi(const mat& r, int particle, int q_num);
+
+
             std::string getName() const {
                 return name;
             }
 
             virtual double SlaterD(mat& r);
+            virtual double SlaterD_grad(mat r, int particle, int dimension);
+            virtual double SlaterD_lapl(mat r, int particle);
 
     };
 
@@ -172,7 +190,7 @@ namespace QMC2
                 *alpha = parameter;
                 *k2 = parameter*w;
                 *k = sqrt(*k2);
-        }
+            }
 
     };
 

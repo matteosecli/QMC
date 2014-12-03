@@ -27,6 +27,11 @@ Orbitals::Orbitals(int n_p, int dim) {
 
     max_implemented = 6; //for 12 particles
     basis_functions = new BasisFunctions*[max_implemented];
+    dell_basis_functions = new BasisFunctions**[dim];
+    for (int i = 0; i < dim; i++) {
+        dell_basis_functions[i] = new BasisFunctions*[max_implemented];
+    }
+    lapl_basis_functions = new BasisFunctions*[max_implemented];
 
     nCap = n_p;
 }
@@ -37,6 +42,14 @@ Orbitals::Orbitals() {}
 
 double Orbitals::phi(const mat& r, int particle, int q_num) {
     return basis_functions[q_num]->eval(r, particle);
+}
+
+double Orbitals::del_phi(const mat& r, int particle, int q_num, int d) {
+    return dell_basis_functions[d][q_num]->eval(r, particle);
+}
+
+double Orbitals::lapl_phi(const mat& r, int particle, int q_num) {
+    return lapl_basis_functions[q_num]->eval(r, particle);
 }
 
 double Orbitals::SlaterD(mat& r) {
@@ -63,6 +76,71 @@ double Orbitals::SlaterD(mat& r) {
 
     return slater;
 }
+
+double Orbitals::SlaterD_grad(mat r, int particle, int dimension){
+    int offset;
+    double grad = 0;
+    mat S(n_half,n_half);
+    mat S_inv(n_half,n_half);
+
+    if ( particle < n_half ) {
+        offset = 0;
+    } else {
+        offset = n_half;
+    }
+
+    for (int k = 0; k < n_half; k++) {
+        this->set_qnum_indie_terms(r, k+offset);
+        for (int j = 0; j < n_half; j++) {
+            S(k,j) = this->phi(r, k+offset, j);
+        }
+    }
+
+    S_inv = inv(S);
+
+    this->set_qnum_indie_terms(r, particle);
+    for (int k = 0; k < n_half; k++) {
+        grad += this->del_phi(r, particle, k, dimension)*S_inv(k,particle);
+    }
+
+    S.reset();
+    S_inv.reset();
+
+    return grad;
+}
+
+double Orbitals::SlaterD_lapl(mat r, int particle) {
+    int offset;
+    mat S(n_half,n_half);
+    mat S_inv(n_half,n_half);
+    double lapl = 0;
+
+    if ( particle < n_half ) {
+        offset = 0;
+    } else {
+        offset = n_half;
+    }
+
+    for (int k = 0; k < n_half; k++) {
+        this->set_qnum_indie_terms(r, k+offset);
+        for (int j = 0; j < n_half; j++) {
+            S(k,j) = this->phi(r, k+offset, j);
+        }
+    }
+
+    S_inv = inv(S);
+
+    this->set_qnum_indie_terms(r, particle);
+    for (int k = 0; k < n_half; k++) {
+        lapl += this->lapl_phi(r, particle, k)*S_inv(k,particle);
+    }
+
+    S.reset();
+    S_inv.reset();
+
+    return lapl;
+}
+
 
 AlphaHarmonicOscillator::AlphaHarmonicOscillator(GeneralParams & gP, VariationalParams & vP)
 : Orbitals(gP.number_particles, gP.dimension) {
@@ -92,6 +170,26 @@ void AlphaHarmonicOscillator::setup_basis() {
     basis_functions[3] = new HarmonicOscillator_3(k, k2, exp_factor);
     basis_functions[4] = new HarmonicOscillator_4(k, k2, exp_factor);
     basis_functions[5] = new HarmonicOscillator_5(k, k2, exp_factor);
+
+    dell_basis_functions[0][0] = new dell_HarmonicOscillator_0_x(k, k2, exp_factor);
+    dell_basis_functions[1][0] = new dell_HarmonicOscillator_0_y(k, k2, exp_factor);
+    dell_basis_functions[0][1] = new dell_HarmonicOscillator_1_x(k, k2, exp_factor);
+    dell_basis_functions[1][1] = new dell_HarmonicOscillator_1_y(k, k2, exp_factor);
+    dell_basis_functions[0][2] = new dell_HarmonicOscillator_2_x(k, k2, exp_factor);
+    dell_basis_functions[1][2] = new dell_HarmonicOscillator_2_y(k, k2, exp_factor);
+    dell_basis_functions[0][3] = new dell_HarmonicOscillator_3_x(k, k2, exp_factor);
+    dell_basis_functions[1][3] = new dell_HarmonicOscillator_3_y(k, k2, exp_factor);
+    dell_basis_functions[0][4] = new dell_HarmonicOscillator_4_x(k, k2, exp_factor);
+    dell_basis_functions[1][4] = new dell_HarmonicOscillator_4_y(k, k2, exp_factor);
+    dell_basis_functions[0][5] = new dell_HarmonicOscillator_5_x(k, k2, exp_factor);
+    dell_basis_functions[1][5] = new dell_HarmonicOscillator_5_y(k, k2, exp_factor);
+
+    lapl_basis_functions[0] = new lapl_HarmonicOscillator_0(k, k2, exp_factor);
+    lapl_basis_functions[1] = new lapl_HarmonicOscillator_1(k, k2, exp_factor);
+    lapl_basis_functions[2] = new lapl_HarmonicOscillator_2(k, k2, exp_factor);
+    lapl_basis_functions[3] = new lapl_HarmonicOscillator_3(k, k2, exp_factor);
+    lapl_basis_functions[4] = new lapl_HarmonicOscillator_4(k, k2, exp_factor);
+    lapl_basis_functions[5] = new lapl_HarmonicOscillator_5(k, k2, exp_factor);
 
 }
 

@@ -42,39 +42,220 @@ namespace QMC2
      */
     class HarmonicOscillator_0 : public HarmonicOscillator {
     public:
+
         HarmonicOscillator_0(double* k, double* k2, double* exp_factor);
-        virtual double eval(const mat &r, int i);
+        virtual double eval(const mat& r, int i);
+
     };
+
+    class dell_HarmonicOscillator_0_x : public HarmonicOscillator {
+    public:
+
+        dell_HarmonicOscillator_0_x(double* k, double* k2, double* exp_factor);
+        virtual double eval(const mat& r, int i);
+
+    };
+
+    class dell_HarmonicOscillator_0_y : public HarmonicOscillator {
+    public:
+
+        dell_HarmonicOscillator_0_y(double* k, double* k2, double* exp_factor);
+        virtual double eval(const mat& r, int i);
+
+    };
+
+    class lapl_HarmonicOscillator_0 : public HarmonicOscillator {
+    public:
+
+        lapl_HarmonicOscillator_0(double* k, double* k2, double* exp_factor);
+        virtual double eval(const mat& r, int i);
+
+    };
+
+    /*
+        -------------------------  END 0  -------------------------
+    */
 
     class HarmonicOscillator_1 : public HarmonicOscillator {
     public:
+
         HarmonicOscillator_1(double* k, double* k2, double* exp_factor);
         virtual double eval(const mat& r, int i);
+
     };
+
+    class dell_HarmonicOscillator_1_x : public HarmonicOscillator {
+    public:
+
+        dell_HarmonicOscillator_1_x(double* k, double* k2, double* exp_factor);
+        virtual double eval(const mat& r, int i);
+
+    };
+
+    class dell_HarmonicOscillator_1_y : public HarmonicOscillator {
+    public:
+
+        dell_HarmonicOscillator_1_y(double* k, double* k2, double* exp_factor);
+        virtual double eval(const mat& r, int i);
+
+    };
+
+    class lapl_HarmonicOscillator_1 : public HarmonicOscillator {
+    public:
+
+        lapl_HarmonicOscillator_1(double* k, double* k2, double* exp_factor);
+        virtual double eval(const mat& r, int i);
+
+    };
+
+    /*
+        -------------------------  END 1  -------------------------
+    */
 
     class HarmonicOscillator_2 : public HarmonicOscillator {
     public:
+
         HarmonicOscillator_2(double* k, double* k2, double* exp_factor);
         virtual double eval(const mat& r, int i);
+
     };
+
+    class dell_HarmonicOscillator_2_x : public HarmonicOscillator {
+    public:
+
+        dell_HarmonicOscillator_2_x(double* k, double* k2, double* exp_factor);
+        virtual double eval(const mat& r, int i);
+
+    };
+
+    class dell_HarmonicOscillator_2_y : public HarmonicOscillator {
+    public:
+
+        dell_HarmonicOscillator_2_y(double* k, double* k2, double* exp_factor);
+        virtual double eval(const mat& r, int i);
+
+    };
+
+    class lapl_HarmonicOscillator_2 : public HarmonicOscillator {
+    public:
+
+        lapl_HarmonicOscillator_2(double* k, double* k2, double* exp_factor);
+        virtual double eval(const mat& r, int i);
+
+    };
+
+    /*
+        -------------------------  END 2  -------------------------
+    */
 
     class HarmonicOscillator_3 : public HarmonicOscillator {
     public:
+
         HarmonicOscillator_3(double* k, double* k2, double* exp_factor);
         virtual double eval(const mat& r, int i);
+
     };
+
+    class dell_HarmonicOscillator_3_x : public HarmonicOscillator {
+    public:
+
+        dell_HarmonicOscillator_3_x(double* k, double* k2, double* exp_factor);
+        virtual double eval(const mat& r, int i);
+
+    };
+
+    class dell_HarmonicOscillator_3_y : public HarmonicOscillator {
+    public:
+
+        dell_HarmonicOscillator_3_y(double* k, double* k2, double* exp_factor);
+        virtual double eval(const mat& r, int i);
+
+    };
+
+    class lapl_HarmonicOscillator_3 : public HarmonicOscillator {
+    public:
+
+        lapl_HarmonicOscillator_3(double* k, double* k2, double* exp_factor);
+        virtual double eval(const mat& r, int i);
+
+    };
+
+    /*
+        -------------------------  END 3  -------------------------
+    */
 
     class HarmonicOscillator_4 : public HarmonicOscillator {
     public:
+
         HarmonicOscillator_4(double* k, double* k2, double* exp_factor);
         virtual double eval(const mat& r, int i);
+
     };
+
+    class dell_HarmonicOscillator_4_x : public HarmonicOscillator {
+    public:
+
+        dell_HarmonicOscillator_4_x(double* k, double* k2, double* exp_factor);
+        virtual double eval(const mat& r, int i);
+
+    };
+
+    class dell_HarmonicOscillator_4_y : public HarmonicOscillator {
+    public:
+
+        dell_HarmonicOscillator_4_y(double* k, double* k2, double* exp_factor);
+        virtual double eval(const mat& r, int i);
+
+    };
+
+    class lapl_HarmonicOscillator_4 : public HarmonicOscillator {
+    public:
+
+        lapl_HarmonicOscillator_4(double* k, double* k2, double* exp_factor);
+        virtual double eval(const mat& r, int i);
+
+    };
+
+    /*
+        -------------------------  END 4  -------------------------
+    */
 
     class HarmonicOscillator_5 : public HarmonicOscillator {
     public:
+
         HarmonicOscillator_5(double* k, double* k2, double* exp_factor);
         virtual double eval(const mat& r, int i);
+
     };
+
+    class dell_HarmonicOscillator_5_x : public HarmonicOscillator {
+    public:
+
+        dell_HarmonicOscillator_5_x(double* k, double* k2, double* exp_factor);
+        virtual double eval(const mat& r, int i);
+
+    };
+
+    class dell_HarmonicOscillator_5_y : public HarmonicOscillator {
+    public:
+
+        dell_HarmonicOscillator_5_y(double* k, double* k2, double* exp_factor);
+        virtual double eval(const mat& r, int i);
+
+    };
+
+    class lapl_HarmonicOscillator_5 : public HarmonicOscillator {
+    public:
+
+        lapl_HarmonicOscillator_5(double* k, double* k2, double* exp_factor);
+        virtual double eval(const mat& r, int i);
+
+    };
+
+    /*
+        -------------------------  END 5  -------------------------
+    */
+
 
 }
 

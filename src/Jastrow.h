@@ -1,4 +1,4 @@
-
+#include <armadillo>
 using namespace arma;
 
 namespace QMC2
@@ -47,6 +47,16 @@ namespace QMC2
          */
         virtual double get_val(const mat& r) const = 0;
 
+        /*!
+         * Calculates the (vector) gradient of the Jastrow Factor at the walker's position for the i'th particle.
+         */
+        virtual double get_grad(const mat r, int particle, int dimension) const = 0;
+
+        /*!
+         * Calculates the laplacian of the Jastrow Factor at the walker's position for the i'th particle.
+         */
+        virtual double get_lapl(const mat r, int particle) const = 0;
+
     };
 
 
@@ -80,6 +90,10 @@ namespace QMC2
 
         double get_val(const mat& r) const;
 
+        double get_grad(const mat r, int particle, int dimension) const;
+
+        double get_lapl(const mat r, int particle) const;
+
     };
 
 
@@ -110,6 +124,21 @@ namespace QMC2
             (void) r;
 
             return 1;
+        }
+
+        double get_grad(const mat r, int particle, int dimension) const {
+            (void) r;
+            (void) particle;
+            (void) dimension;
+
+            return 0;
+        }
+
+        double get_lapl(const mat r, int particle) const {
+            (void) r;
+            (void) particle;
+
+            return 0;
         }
 
     };

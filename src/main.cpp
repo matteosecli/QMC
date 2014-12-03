@@ -29,6 +29,7 @@
 #include <fstream>
 #include <iomanip>
 #include "lib.h"
+#include "GaussianDeviate.h"
 #include <armadillo>
 #include "Potential.h"
 #include "System.h"
@@ -37,6 +38,7 @@
 #include "Jastrow.h"
 #include <time.h>
 #include <omp.h>
+#include <vector>
 
 using namespace  std;
 using namespace arma;
@@ -58,11 +60,27 @@ void initialise(GeneralParams&, VariationalParams&, VMCparams&) ;
 // The Mc sampling for the variational Monte Carlo
 void  mc_sampling(GeneralParams& , VariationalParams&, VMCparams&, mat &, mat &, System&, Orbitals*, Jastrow*);
 
+// The Metropolis algo performed in a brute force way
+void metropolis_bf(GeneralParams&, VariationalParams&, VMCparams&,
+                   System&, Orbitals*, Jastrow*, mat&, mat&,
+                   double&, double&, int&, double&);
+
+// The Metropolis algo with importance sampling
+void metropolis_imp(GeneralParams&, VariationalParams&, VMCparams&,
+                   System&, Orbitals*, Jastrow*, mat&, mat&, mat&, mat&,
+                   double&, double&, int&, double&);
+
 // The variational wave function
 double  wave_function(mat&, VariationalParams&, Orbitals*, Jastrow*);
 
 // The local energy
-double  local_energy(mat&, double, GeneralParams&, VariationalParams&, System&, Orbitals*, Jastrow*);
+double local_energy(mat&, double, GeneralParams&, VariationalParams&, System&, Orbitals*, Jastrow*);
+
+// The local energy (analytical form)
+double local_energy_anal(mat, GeneralParams&, VariationalParams&, System&, Orbitals*, Jastrow*);
+
+// The quantum force
+void quantum_force(mat&, mat&, double, GeneralParams&, VariationalParams&, Orbitals*, Jastrow*);
 
 // prints to screen the results of the calculations
 void  output(GeneralParams&, VariationalParams&, VMCparams&, mat &, mat &, bool&);
@@ -171,10 +189,9 @@ int main(int argc, char* argv[])
 void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
                  mat& cumulative_e, mat& cumulative_e2, System& InputSystem, Orbitals* wF, Jastrow* jF)
 {
-    int variate_alpha, variate_beta, accept, i, j;
-    long idum = -1;
-    double wfnew, wfold, energy, energy2, delta_e;
-    mat r_old, r_new;
+    int variate_alpha, variate_beta, accept;
+    double energy, energy2, delta_e;
+    mat r_old, r_new, qforce_old, qforce_new;
 
     vP.alpha_old = vP.alpha;
     vP.beta_old = vP.beta;
@@ -182,6 +199,9 @@ void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
     // allocate matrices which contain the position of the particles
     r_old = zeros<mat>(gP.number_particles, gP.dimension);
     r_new = zeros<mat>(gP.number_particles, gP.dimension);
+    // allocate matrices which contain the quantum force (spare time and space)
+    qforce_old = zeros<mat>(gP.number_particles, gP.dimension);
+    qforce_new = zeros<mat>(gP.number_particles, gP.dimension);
 
     // loop over variational parameters
     for (variate_beta = 1; variate_beta <= vmcParams.max_variations; variate_beta++){
@@ -191,55 +211,22 @@ void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
             // initialisations of energies
             energy = energy2 = 0; accept =0; delta_e=0;
 
-            //  initial trial position, note calling with alpha
-            //  and in three dimensions
-            for (i = 0; i < gP.number_particles; i++) {
-                for ( j=0; j < gP.dimension; j++) {
-                    r_old(i,j) = vmcParams.step_length*(ran1(&idum)-0.5);
-                }
+            // Perform Metropolis sampling
+            if (vmcParams.imp_active) {
+                metropolis_imp(gP, vP, vmcParams, InputSystem, wF, jF, r_old,
+                               r_new, qforce_old, qforce_new, energy, energy2, accept, delta_e);
+            } else {
+                metropolis_bf(gP, vP, vmcParams, InputSystem, wF, jF, r_old, r_new, energy, energy2, accept, delta_e);
             }
-
-            wfold = wave_function(r_old, vP, wF, jF);
-
-            // loop over monte carlo cycles
-            for (int cycles = 1; cycles <= vmcParams.number_cycles+vmcParams.thermalization; cycles++){
-
-                // new position
-                for (int i = 0; i < gP.number_particles; i++) {
-                    for ( int j=0; j < gP.dimension; j++) {
-                        r_new(i,j) = r_old(i,j)+vmcParams.step_length*(ran1(&idum)-0.5);
-                    }
-                }
-                wfnew = wave_function(r_new, vP, wF, jF);
-
-                // Metropolis test
-                if(ran1(&idum) <= wfnew*wfnew/wfold/wfold ) {
-                    for (int i = 0; i < gP.number_particles; i++) {
-                        for (int  j=0; j < gP.dimension; j++) {
-                            r_old(i,j)=r_new(i,j);
-                        }
-                    }
-                    wfold = wfnew;
-                    accept = accept+1;
-                }
-
-                // compute local energy
-                if ( cycles > vmcParams.thermalization ) {
-                    delta_e = local_energy(r_old, wfold, gP, vP, InputSystem, wF, jF);
-                    // update energies
-                    energy += delta_e;
-                    energy2 += pow(delta_e,2);
-                }
-
-            }   // end of loop over MC trials
-
-            cout << "alpha = " << vP.alpha << "\t"
-                 << "beta = " << vP.beta << "\t"
-                 << " accepted steps = " << accept << endl;
 
             // update the energy average and its squared
             cumulative_e(variate_beta, variate_alpha) = energy/vmcParams.number_cycles;
             cumulative_e2(variate_beta, variate_alpha) = energy2/vmcParams.number_cycles;
+
+            cout << "alpha = " << vP.alpha << "\t"
+                 << "beta = " << vP.beta << "\t"
+                 << "energy = " << setprecision(8) << cumulative_e(variate_beta, variate_alpha) << "\t"
+                 << " accepted steps = " << accept << endl;
 
             // update alpha
             vP.alpha += vP.alpha_step;
@@ -265,6 +252,136 @@ void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
     r_new.reset(); // free memory
 }   // end mc_sampling function
 
+// The Metropolis brute-force algo
+void metropolis_bf(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
+                 System& InputSystem, Orbitals* wF, Jastrow* jF, mat& r_old, mat& r_new,
+                   double& energy, double& energy2, int& accept, double& delta_e)
+{
+
+    int i, j;
+    long idum = -1;
+    double wfnew, wfold;
+
+    //  initial trial position, note calling with alpha
+    //  and in three dimensions
+    for (i = 0; i < gP.number_particles; i++) {
+        for ( j=0; j < gP.dimension; j++) {
+            r_old(i,j) = vmcParams.step_length*(ran1(&idum)-0.5);
+        }
+    }
+
+    wfold = wave_function(r_old, vP, wF, jF);
+
+    // loop over monte carlo cycles
+    for (int cycles = 1; cycles <= vmcParams.number_cycles+vmcParams.thermalization; cycles++){
+
+        // new position
+        for (int i = 0; i < gP.number_particles; i++) {
+            for ( int j=0; j < gP.dimension; j++) {
+                r_new(i,j) = r_old(i,j)+vmcParams.step_length*(ran1(&idum)-0.5);
+            }
+        }
+        wfnew = wave_function(r_new, vP, wF, jF);
+
+        // Metropolis test
+        if(ran1(&idum) <= wfnew*wfnew/wfold/wfold ) {
+            for (int i = 0; i < gP.number_particles; i++) {
+                for (int  j=0; j < gP.dimension; j++) {
+                    r_old(i,j)=r_new(i,j);
+                }
+            }
+            wfold = wfnew;
+            accept = accept+1;
+        }
+
+        // compute local energy
+        if ( cycles > vmcParams.thermalization ) {
+            delta_e = local_energy(r_old, wfold, gP, vP, InputSystem, wF, jF);
+            // update energies
+            energy += delta_e;
+            energy2 += pow(delta_e,2);
+        }
+
+    }   // end of loop over MC trials
+
+}   // End of metropolis_bf function
+
+// The Metropolis algo with importance sampling
+void metropolis_imp(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
+                    System& InputSystem, Orbitals* wF, Jastrow* jF, mat& r_old, mat& r_new,
+                    mat& qforce_old, mat& qforce_new, double& energy, double& energy2, int& accept, double& delta_e)
+{
+
+    //int i, j, k;
+    long idum = -1;
+    double wfnew, wfold;
+    double D = 0.5;
+
+    // Initial trial position
+    for (int i = 0; i < gP.number_particles; i++) {
+        for (int j=0; j < gP.dimension; j++) {
+            r_old(i,j) = sqrt(vmcParams.dt)*gaussian_deviate(&idum);
+        }
+    }
+
+    wfold = wave_function(r_old, vP, wF, jF);
+    quantum_force(r_old, qforce_old, wfold, gP, vP, wF, jF);
+
+    // loop over monte carlo cycles
+    for (int cycles = 1; cycles <= vmcParams.number_cycles+vmcParams.thermalization; cycles++){
+
+        delta_e = 0;
+
+        // new position
+        for (int i = 0; i < gP.number_particles; i++) {
+            for ( int j=0; j < gP.dimension; j++) {
+                r_new(i,j) = r_old(i,j) + qforce_old(i,j)*vmcParams.dt*D
+                             + sqrt(vmcParams.dt)*gaussian_deviate(&idum);
+            }
+
+            for (int k = 0; k < gP.number_particles; k++) {
+                if ( k != i ){
+                    for (int  j = 0; j < gP.dimension; j++) {
+                        r_new(k,j)=r_old(k,j);
+                    }
+                }
+            }
+
+            wfnew = wave_function(r_new, vP, wF, jF);
+            quantum_force(r_new, qforce_new, wfnew, gP, vP, wF, jF);
+
+            double greensfunction = 0.0;
+            for( int j = 0; j < gP.dimension; j++) {
+                greensfunction += 0.5*(qforce_old(i,j) + qforce_new(i,j))*
+                (D*vmcParams.dt*0.5*(qforce_old(i,j) - qforce_new(i,j))
+                -r_new(i,j) + r_old(i,j));
+            }
+            greensfunction = exp(greensfunction);
+
+            // Metropolis test
+            if( ran2(&idum) <= greensfunction*wfnew*wfnew/wfold/wfold ) {
+                for (int  j=0; j < gP.dimension; j++) {
+                    r_old(i,j)=r_new(i,j);
+                    qforce_old(i,j) = qforce_new(i,j);
+                }
+                wfold = wfnew;
+                accept = accept+1;
+            }
+
+        }
+
+        // compute local energy
+        if ( cycles > vmcParams.thermalization ) {
+            //delta_e = local_energy(r_old, wfold, gP, vP, InputSystem, wF, jF);
+            delta_e = local_energy_anal(r_old, gP, vP, InputSystem, wF, jF);
+            // update energies
+            energy += delta_e;
+            energy2 += pow(delta_e,2);
+        }
+
+    }   // end of loop over MC trials
+
+}   // End of metropolis_imp function
 
 // Function to compute the squared wave function, simplest form
 double  wave_function(mat& r, VariationalParams & vP, Orbitals *wF, Jastrow *jF)
@@ -287,12 +404,12 @@ double  local_energy(mat& r, double wfold, GeneralParams & gP, VariationalParams
   double e_local, wfminus, wfplus, e_kinetic, e_potential;
   mat r_plus, r_minus;
 
-  // allocate matrices which contain the position of the particles
-  // the function matrix is defined in the progam library
+  // Allocate matrices which contain the position of the particles
   r_plus = mat(gP.number_particles, gP.dimension);
   r_minus = mat(gP.number_particles, gP.dimension);
   r_plus = r_minus = r;
-  // compute the kinetic energy
+
+  // Compute the kinetic energy
   e_kinetic = 0;
   for (i = 0; i < gP.number_particles; i++) {
     for (j = 0; j < gP.dimension; j++) {
@@ -317,9 +434,82 @@ double  local_energy(mat& r, double wfold, GeneralParams & gP, VariationalParams
   return e_local;
 }
 
+// Function to calculate the kinetic energy for a given particle with analytical derivative
+double local_energy_anal(mat r, GeneralParams & gP, VariationalParams & vP, System & InputSystem, Orbitals *wF, Jastrow *jF)
+{
+  double e_kinetic = 0, e_potential = 0, e_local = 0;
+  vec gradS = zeros<vec>(gP.dimension);
+  vec gradJ = zeros<vec>(gP.dimension);
+
+  // Update the pointers
+  wF->set_parameter(vP.alpha, 0);
+  jF->set_parameter(vP.beta, 0);
+
+  for ( int i = 0; i < gP.number_particles; i++ ) {
+
+      // Compute the kinetic energy for a specific particle
+      e_kinetic += wF->SlaterD_lapl(r,i);
+      e_kinetic += jF->get_lapl(r,i);
+
+      /* DO NOT USE FUCKING VECTORS!!! This son of a bitch
+       * seems to refuse to deal with vectors. DO NOT ASK ME
+       * WHY!
+       */
+      for ( int d = 0; d < gP.dimension; d++ ) {
+          e_kinetic += 2*wF->SlaterD_grad(r,i,d)*jF->get_grad(r,i,d);
+      }
+
+  }
+
+  // include electron mass
+  e_kinetic = -0.5*e_kinetic;
+
+  // Add the potential energy from the system object
+  e_potential = InputSystem.get_potential_energy(r);
+
+  e_local = e_potential+e_kinetic;
+
+  return e_local;
+}
+
+
+// Function to calculate the quantum force with num derivative
+void quantum_force(mat& r, mat& qforce, double wfold,
+                   GeneralParams & gP, VariationalParams & vP, Orbitals *wF, Jastrow *jF)
+{
+    int i, j;
+    double wfminus , wfplus;
+    mat r_plus, r_minus;
+
+    // Allocate matrices which contain the position of the particles
+    r_plus = mat(gP.number_particles, gP.dimension);
+    r_minus = mat(gP.number_particles, gP.dimension);
+    r_plus = r_minus = r;
+
+    // Compute the first derivative
+    for (i = 0; i < gP.number_particles; i++) {
+      for (j = 0; j < gP.dimension; j++) {
+//        r_plus(i,j) = r(i,j)+h;
+//        r_minus(i,j) = r(i,j)-h;
+//        wfminus = wave_function(r_minus, vP, wF, jF);
+//        wfplus  = wave_function(r_plus, vP, wF, jF);
+//        qforce(i,j) = (wfplus-wfminus)/(wfold*h);
+//        r_plus(i,j) = r(i,j);
+//        r_minus(i,j) = r(i,j);
+          // ANALYTICAL:
+          wF->set_parameter(vP.alpha, 0);
+          jF->set_parameter(vP.beta, 0);
+          qforce(i,j) = 2*( wF->SlaterD_grad(r,i,j) + jF->get_grad(r,i,j) );
+
+      }
+    }
+
+}   // End of quantum_force function
+
+
 void initialise(GeneralParams & gP, VariationalParams & vP, VMCparams & vmcParams)
 {
-    int jF_active_resp;
+    int jF_active_resp, imp_active_resp;
 
     cout << "Number of particles = ";
     cin >> gP.number_particles;
@@ -358,8 +548,19 @@ void initialise(GeneralParams & gP, VariationalParams & vP, VMCparams & vmcParam
     cout << "# Monte Carlo steps = ";
     cin >> vmcParams.number_cycles;
 
-    cout << "# Step length = ";
-    cin >> vmcParams.step_length;
+    cout << "Do you want to use importance sampling? (1-y / 0-n) = ";
+    cin >> imp_active_resp;
+    if (imp_active_resp != 0) vmcParams.imp_active = true;
+
+    if (imp_active_resp != 0) {
+        cout << "# Importance sampling time step = ";
+        cin >> vmcParams.dt;
+    } else {
+        cout << "# Step length = ";
+        cin >> vmcParams.step_length;
+    }
+
+    vmcParams.thermalization = 0;
 }  // end of function initialise
 
 

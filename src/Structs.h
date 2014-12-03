@@ -13,7 +13,9 @@ namespace QMC2
         int number_cycles = 1000000; //!< The number of Monte Carlo cycles.
         int thermalization = 100; //!< The number of thermalization steps (so obscure!).
         double step_length = 2; //!< The step length used in Monte Carlo walker.
+        double dt = 0.001; //!< Time step
         bool jF_active = false; //!< Disable Jastrow by default.
+        bool imp_active = false; //!< Disable importance sampling by default.
     };
 
     //! Struct used to initialize the varational parameters.
