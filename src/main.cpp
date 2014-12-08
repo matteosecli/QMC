@@ -63,12 +63,12 @@ void  mc_sampling(GeneralParams& , VariationalParams&, VMCparams&, mat &, mat &,
 // The Metropolis algo performed in a brute force way
 void metropolis_bf(GeneralParams&, VariationalParams&, VMCparams&,
                    System&, Orbitals*, Jastrow*, mat&, mat&,
-                   double&, double&, int&, double&);
+                   double&, double&, double&, int&, double&);
 
 // The Metropolis algo with importance sampling
 void metropolis_imp(GeneralParams&, VariationalParams&, VMCparams&,
                    System&, Orbitals*, Jastrow*, mat&, mat&, mat&, mat&,
-                   double&, double&, int&, double&);
+                   double&, double &, double&, int&, double&);
 
 // The variational wave function
 double  wave_function(mat&, VariationalParams&, Orbitals*, Jastrow*);
@@ -114,6 +114,7 @@ int main(int argc, char* argv[])
     // Read in data and filling structs
     vP.beta = 0;    // Default value for No-Jastrow, can be overridden
     vP.beta_old = vP.beta;
+    //gP.frequency = 1.00;
     initialise(gP, vP, vmcParams);
     cumulative_e = zeros<mat>(vmcParams.max_variations+1,vmcParams.max_variations+1);
     cumulative_e2 = zeros<mat>(vmcParams.max_variations+1,vmcParams.max_variations+1);
@@ -190,7 +191,7 @@ void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
                  mat& cumulative_e, mat& cumulative_e2, System& InputSystem, Orbitals* wF, Jastrow* jF)
 {
     int variate_alpha, variate_beta, accept;
-    double energy, energy2, delta_e;
+    double energy, potential, energy2, delta_e;
     mat r_old, r_new, qforce_old, qforce_new;
 
     vP.alpha_old = vP.alpha;
@@ -209,23 +210,28 @@ void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
         for (variate_alpha = 1; variate_alpha <= vmcParams.max_variations; variate_alpha++){
 
             // initialisations of energies
-            energy = energy2 = 0; accept =0; delta_e=0;
+            energy = potential = energy2 = 0; accept =0; delta_e=0;
 
             // Perform Metropolis sampling
             if (vmcParams.imp_active) {
-                metropolis_imp(gP, vP, vmcParams, InputSystem, wF, jF, r_old,
-                               r_new, qforce_old, qforce_new, energy, energy2, accept, delta_e);
+                metropolis_imp(gP, vP, vmcParams, InputSystem, wF, jF, r_old, r_new, qforce_old, qforce_new,
+                               energy, potential, energy2, accept, delta_e);
             } else {
-                metropolis_bf(gP, vP, vmcParams, InputSystem, wF, jF, r_old, r_new, energy, energy2, accept, delta_e);
+                metropolis_bf(gP, vP, vmcParams, InputSystem, wF, jF, r_old, r_new,
+                              energy, potential, energy2, accept, delta_e);
             }
 
             // update the energy average and its squared
             cumulative_e(variate_beta, variate_alpha) = energy/vmcParams.number_cycles;
             cumulative_e2(variate_beta, variate_alpha) = energy2/vmcParams.number_cycles;
 
+            potential = potential/vmcParams.number_cycles;
+
             cout << "alpha = " << vP.alpha << "\t"
                  << "beta = " << vP.beta << "\t"
                  << "energy = " << setprecision(8) << cumulative_e(variate_beta, variate_alpha) << "\t"
+//                 << "relative distance = " << setprecision(8) << mean_dist << "\t"
+                 << "V = " << setprecision(8) << potential << "\t"
                  << " accepted steps = " << accept << endl;
 
             // update alpha
@@ -255,12 +261,13 @@ void mc_sampling(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
 // The Metropolis brute-force algo
 void metropolis_bf(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
                  System& InputSystem, Orbitals* wF, Jastrow* jF, mat& r_old, mat& r_new,
-                   double& energy, double& energy2, int& accept, double& delta_e)
+                   double& energy, double& potential, double& energy2, int& accept, double& delta_e)
 {
 
     int i, j;
     long idum = -1;
     double wfnew, wfold;
+    double delta_p = 0;
 
     //  initial trial position, note calling with alpha
     //  and in three dimensions
@@ -297,7 +304,10 @@ void metropolis_bf(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParam
         // compute local energy
         if ( cycles > vmcParams.thermalization ) {
             delta_e = local_energy(r_old, wfold, gP, vP, InputSystem, wF, jF);
+            delta_p = InputSystem.get_potential_energy(r_old);
             // update energies
+            potential += delta_p;
+            energy += delta_p;
             energy += delta_e;
             energy2 += pow(delta_e,2);
         }
@@ -309,13 +319,17 @@ void metropolis_bf(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParam
 // The Metropolis algo with importance sampling
 void metropolis_imp(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcParams,
                     System& InputSystem, Orbitals* wF, Jastrow* jF, mat& r_old, mat& r_new,
-                    mat& qforce_old, mat& qforce_new, double& energy, double& energy2, int& accept, double& delta_e)
+                    mat& qforce_old, mat& qforce_new, double& energy, double& potential,
+                    double& energy2, int& accept, double& delta_e)
 {
 
     //int i, j, k;
     long idum = -1;
     double wfnew, wfold;
     double D = 0.5;
+    double delta_p = 0;
+    double mean_dist = 0;
+    double mean_dist_temp = 0;
 
     // Initial trial position
     for (int i = 0; i < gP.number_particles; i++) {
@@ -372,14 +386,31 @@ void metropolis_imp(GeneralParams& gP, VariationalParams& vP, VMCparams& vmcPara
 
         // compute local energy
         if ( cycles > vmcParams.thermalization ) {
-            //delta_e = local_energy(r_old, wfold, gP, vP, InputSystem, wF, jF);
-            delta_e = local_energy_anal(r_old, gP, vP, InputSystem, wF, jF);
+            delta_e = local_energy(r_old, wfold, gP, vP, InputSystem, wF, jF);
+            //delta_e = local_energy_anal(r_old, gP, vP, InputSystem, wF, jF);
+            delta_p = InputSystem.get_potential_energy(r_old);
             // update energies
+            potential += delta_p;
+            energy += delta_p;
             energy += delta_e;
             energy2 += pow(delta_e,2);
         }
 
+        // Calculate the mean relative distance, works for just two particles.
+        // It can be extended for more than two particles by just using a vector.
+//            for ( int k = 0; k < gP.number_particles - 1; k++ ) {
+//                for ( int i = k + 1; i < gP.number_particles; i++ ) {
+//                    mean_dist_temp = 0;
+//                    for ( int j = 0; j < gP.dimension; j++ ) {
+//                        mean_dist_temp += pow((r_new(k,j)-r_new(i,j)),2);
+//                    }
+//                    mean_dist += sqrt(mean_dist_temp);
+//                }
+//            }
+
     }   // end of loop over MC trials
+
+//    cout << "Mean distance = " << mean_dist/vmcParams.number_cycles;
 
 }   // End of metropolis_imp function
 
@@ -426,7 +457,8 @@ double  local_energy(mat& r, double wfold, GeneralParams & gP, VariationalParams
   e_kinetic = 0.5*h2*e_kinetic/wfold;
 
   // Add the potential energy from the system object
-  e_potential = InputSystem.get_potential_energy(r);
+//  e_potential = InputSystem.get_potential_energy(r);
+  e_potential = 0;      // Overrides potential energy
 
   r_plus.reset(); // free memory
   r_minus.reset();
@@ -465,7 +497,8 @@ double local_energy_anal(mat r, GeneralParams & gP, VariationalParams & vP, Syst
   e_kinetic = -0.5*e_kinetic;
 
   // Add the potential energy from the system object
-  e_potential = InputSystem.get_potential_energy(r);
+//  e_potential = InputSystem.get_potential_energy(r);
+  e_potential = 0;      // Overrides potential energy
 
   e_local = e_potential+e_kinetic;
 
@@ -489,17 +522,17 @@ void quantum_force(mat& r, mat& qforce, double wfold,
     // Compute the first derivative
     for (i = 0; i < gP.number_particles; i++) {
       for (j = 0; j < gP.dimension; j++) {
-//        r_plus(i,j) = r(i,j)+h;
-//        r_minus(i,j) = r(i,j)-h;
-//        wfminus = wave_function(r_minus, vP, wF, jF);
-//        wfplus  = wave_function(r_plus, vP, wF, jF);
-//        qforce(i,j) = (wfplus-wfminus)/(wfold*h);
-//        r_plus(i,j) = r(i,j);
-//        r_minus(i,j) = r(i,j);
-          // ANALYTICAL:
-          wF->set_parameter(vP.alpha, 0);
-          jF->set_parameter(vP.beta, 0);
-          qforce(i,j) = 2*( wF->SlaterD_grad(r,i,j) + jF->get_grad(r,i,j) );
+        r_plus(i,j) = r(i,j)+h;
+        r_minus(i,j) = r(i,j)-h;
+        wfminus = wave_function(r_minus, vP, wF, jF);
+       wfplus  = wave_function(r_plus, vP, wF, jF);
+        qforce(i,j) = (wfplus-wfminus)/(wfold*h);
+        r_plus(i,j) = r(i,j);
+        r_minus(i,j) = r(i,j);
+//          // ANALYTICAL:
+//          wF->set_parameter(vP.alpha, 0);
+//          jF->set_parameter(vP.beta, 0);
+//          qforce(i,j) = 2*( wF->SlaterD_grad(r,i,j) + jF->get_grad(r,i,j) );
 
       }
     }
@@ -517,6 +550,9 @@ void initialise(GeneralParams & gP, VariationalParams & vP, VMCparams & vmcParam
     cout << "Dimensionality = ";
     cin >> gP.dimension;
     gP.dimension = 2;   // Override user dimensionality, waiting for 3D implementation
+
+    cout << "Frequency = ";
+    cin >> gP.frequency;
 
     cout << "Number of threads (max " << omp_get_max_threads() << ") = ";
     cin >> gP.num_threads;
