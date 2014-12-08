@@ -1,0 +1,1173 @@
+\documentclass[a4paper,oneside,10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{type1cm}
+\usepackage[english]{babel}
+\usepackage[%hypertex,
+                 unicode=true,
+                 plainpages = false, 
+                 pdfpagelabels, 
+                 bookmarks=true,
+                 bookmarksnumbered=true,
+                 bookmarksopen=true,
+                 breaklinks=true,
+                 backref=false,
+                 colorlinks=true,
+                 linkcolor = blue,		% Use "blue" if you want to highlight them
+                 urlcolor  = blue,
+                 citecolor = red,
+                 anchorcolor = green,
+                 hyperindex = true,
+                 linktocpage = true,
+                 hyperfigures
+]{hyperref}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{listingsutf8}
+\usepackage{xcolor}
+\graphicspath{{figures/PNG/}{figures/PDF/}{figures/}}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{amssymb}	
+\usepackage{wrapfig}
+\usepackage{enumitem}
+\usepackage{subfigure}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{cancel}
+\usepackage{braket}
+\usepackage{siunitx}
+\DeclareSIUnit\atomicunit{a.u.}
+%\usepackage [a4paper, top=2.5cm, bottom=2cm, left=1.5cm, right=1.5cm] {geometry}
+\usepackage[margin=2cm]{geometry}
+\pagestyle{fancy}
+
+\renewenvironment{proof}{\vskip 1em \noindent\textsc{Proof:}}{\begin{flushright}$\blacksquare$\end{flushright}\vskip 1em}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows}
+\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
+\tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
+\tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, text width=3cm, draw=black, fill=orange!30]
+\tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=green!30]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+\makeatletter
+\@addtoreset{section}{part}
+\makeatother
+\rhead{\large Variational Monte Carlo methods for quantum dots}
+
+\lhead{\large FYS3150 -- Final project}
+\lfoot{Matteo Seclì -- Candidate number: 31}
+\cfoot{}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.7pt}
+\renewcommand{\footrulewidth}{0.7pt}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{dred}{rgb}{0.545,0,0}
+\definecolor{dblue}{rgb}{0,0,0.545}
+\definecolor{lgrey}{rgb}{0.9,0.9,0.9}
+\definecolor{gray}{rgb}{0.4,0.4,0.4}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
+\lstdefinelanguage{cpp}{
+      backgroundcolor=\color{lgrey},  
+      basicstyle=\footnotesize \ttfamily \color{black} \bfseries,   
+      breakatwhitespace=false,       
+      breaklines=true,               
+      captionpos=b,                   
+      commentstyle=\color{dkgreen},   
+      deletekeywords={...},          
+      escapeinside={\%*}{*)},                  
+      frame=single,                  
+      language=C++,                
+      keywordstyle=\color{purple},  
+      morekeywords={BRIEFDescriptorConfig,string,TiXmlNode,DetectorDescriptorConfigContainer,istringstream,cerr,exit}, 
+      identifierstyle=\color{black},
+      stringstyle=\color{blue},      
+      numbers=right,                 
+      numbersep=5pt,                  
+      numberstyle=\tiny\color{black}, 
+      rulecolor=\color{black},        
+      showspaces=false,               
+      showstringspaces=false,        
+      showtabs=false,                
+      stepnumber=1,                   
+      tabsize=5,                     
+      title=\lstname,                 
+    }
+
+\author{
+\normalsize Matteo Seclì \texttt{$<$\href{mailto:mattes@mail.uio.no}
+{mattes@mail.uio.no}$>$}\\
+}
+
+\title{\textbf{Variational Monte Carlo methods for quantum dots}}
+
+\begin{document}
+
+\maketitle
+
+\hrule
+%\medskip
+\begin{center}
+	\large\textbf{Abstract}
+	\medskip\\
+	\begin{minipage}[c][][c]{0.8\textwidth}
+		\small{
+			The aim of this project is to use the Variational Monte Carlo (VMC) 
+			method to evaluate the ground state energy, one-body densities, 
+			expectation values of the kinetic and potential energies and 
+			single-particle energies of quantum dots with $N = 2$ and $N = 6$ 
+			electrons, so-called \emph{closed shell systems}. We will begin with 
+			two electrons confined in a pure two-dimensional isotropic harmonic 
+			oscillator potential, with and without the repulsive interaction, developing
+			a simple trial wave-function and a basic program that runs our calculations.
+			Then we are going to improve the trial wave-function adding the so-called 
+			\emph{Jastrow factor}, and finally we are going to extend the entire class of
+			wave-functions and the program itself to a given number of electrons 
+			(obviously, for a closed-shell system). After that we are going to improve
+			our sampling, switching from a brute-force approach to the clever
+			\emph{importance sampling}. In addition, we will present a method that 
+			implements analytical derivatives for calculating both the energy and the
+			diffusive force of the importance sampling.			
+		}
+	\end{minipage}
+\end{center}
+\medskip
+\hrule
+
+\tableofcontents
+
+\newpage
+
+\section{Introduction and theoretical basis}
+
+\subsection{The Variational Principle}
+The Variational Principle is a method of general validity that can be used to gather information about a system with a Hamiltonian that we are unable to diagonalize (i.e., we can't solve the Schr\"{o}dinger equation for that system). Specifically, this principle gives us an \emph{upper bound} for the energy of the ground state, that we will call here $E_{\text{gs}}$. The formulation is astonishingly simple: if you pick \emph{any state $\Ket{\psi}$ whatsoever}, then
+\begin{equation}
+	E_{\text{gs}} \leq \frac{\Braket{\psi|\hat{H}|\psi}}{\Braket{\psi|\psi}}.
+	\label{eq:variational_equation}
+\end{equation}
+In this project we are going to use just this formula, because you see that the normalization of the state is not necessary. But if you have a normalized state, then equation (\ref{eq:variational_equation}) is further simplified in
+\begin{equation}
+	E_{\text{gs}} \leq \Braket{\psi|\hat{H}|\psi} \equiv \Braket{\hat{H}}.
+\end{equation}
+
+This equation seems a kind of magic but actually the proof of this fact is really simple, and we are going to sketch here a proof to show the power of this method (roughly, as it appears in \cite{griffithsquantum}).
+\begin{proof}
+	Since the (unknown) eigenstates $\Ket{\psi_n}$ of $\hat{H}$ form a complete set, we can expand our random state $\Ket{\psi}$ on this basis:
+	\begin{equation*}
+		\Ket{\psi} = \sum_{n} C_n\Ket{\psi_n},
+		\qquad
+		C_n \in \mathbb{C},
+	\end{equation*}
+	where the $\Ket{\psi_n}$'s are such that
+	\begin{equation*}
+		\hat{H}\Ket{\psi_n} = E_n\Ket{\psi_n}.
+	\end{equation*}
+	Then, we have
+	\begin{align*}
+		\Braket{\psi|\hat{H}|\psi}
+		&= \sum_{nm} C_m^* C_n E_n \underbrace{\Braket{\psi_m|\psi_n}}_{\delta_{mn}} \\
+		&= \sum_{n} |C_n|^2 E_n, \\
+		\Braket{\psi|\psi}
+		&= \sum_{n} |C_n|^2.
+	\end{align*}
+	Since $E_n \geq E_{\text{gs}} \; \forall n$, it follows immediately that
+	\begin{equation}
+		E_T 
+		\doteqdot \frac{\Braket{\psi|\hat{H}|\psi}}{\Braket{\psi|\psi}}
+		= \frac{\sum_{n} |C_n|^2 E_n}{\sum_{n} |C_n|^2}
+		\geq \frac{\cancel{\sum_{n} |C_n|^2} E_{\text{gs}}}{\cancel{\sum_{n} |C_n|^2}}
+		= E_{\text{gs}}.
+		\label{eq:var_princ_end_proof}
+	\end{equation}
+\end{proof}
+
+In practice, one chooses a class of states for $\Ket{\psi}$ parametrized by one or more parameters -- the so-called \emph{variational parameters}, and then calculates the quantity $E_T$ for multiple sets of values of the variational parameters $\alpha_1\ldots,\alpha_n$. The lower value of $E_T$ obtained in this way is the required upper bound. If one manages to find an even lower value for $E_T$ with a more clever wave-function, then he has found a better upper bound for the ground state energy.
+
+The only trouble with this method is that we never know for sure how close we are to the \emph{actual} ground state energy; all we get for sure is just an upper bound. However, if one manages to guess a \emph{realistic} $\Ket{\psi}$, he often gets values for the ground state energy that miraculously match the actual ones.
+
+In the following, we represent $\Ket{\psi}$ in its function-representation as
+\begin{equation*}
+	\Ket{\psi} \simeq \psi_T,
+\end{equation*}
+where ``$\simeq$'' means ``represented by'' and the subscript $T$ is just to remember that $\psi_T$ is our \emph{trial} wave-function.
+
+In our case the Hamiltonian lies in an infinite-dimension Hilbert space, so we have to replace the sums in (\ref{eq:var_princ_end_proof}) with integrals over all the space. Indicating with $d\vec{\tau}$ a space element, we can write
+\begin{equation}
+	E_T = \frac{\int d\vec{\tau} \, \psi_T^* \hat{H} \psi_T}{\int d\vec{\tau} \, |\psi_T|^2}.
+	\label{eq:var_energy_integral}
+\end{equation}
+
+Calculating $E_T$ as it appears in (\ref{eq:var_energy_integral}) is not a piece of cake. However, we can recast that equation in a simpler form if we multiply and divide by $\psi_T$ at the left of $\hat{H}$. In fact,
+\begin{align}
+	E_T 
+	&= \frac{\int d\vec{\tau} \, \psi_T^* \dfrac{\psi_T}{\psi_T} \hat{H} \psi_T}{\int d\vec{\tau} \, |\psi_T|^2} \\
+	&= \frac{\int d\vec{\tau} \, |\psi_T|^2 \dfrac{1}{\psi_T} \hat{H} \psi_T}{\int d\vec{\tau} \, |\psi_T|^2} \\
+	&= \int d\vec{\tau} \, \frac{|\psi_T|^2}{\int d\vec{\tau} \, |\psi_T|^2} \frac{1}{\psi_T} \hat{H} \psi_T \\
+	&= \int d\vec{\tau} \, \mathcal{P}(\vec{\tau}) E_L(\vec{\tau}) \\
+	&\simeq \frac{1}{n} \sum_{i = 1}^{n} E_L(\vec{\tau})
+\end{align}
+where
+\begin{equation}
+	\mathcal{P}(\vec{\tau}) = \frac{|\psi_T|^2}{\int d\vec{\tau} \, |\psi_T|^2}
+\end{equation}
+and
+\begin{equation}
+	E_L(\vec{\tau}) = \frac{1}{\psi_T} \hat{H} \psi_T.
+\end{equation}
+The dependence of $\psi_T$ on the position in space and on the variational parameters has been omitted just for better readability. The quantity $E_L$ is called the \emph{local energy}, and it's what we are going to calculate in this project. Obviously, for bigger $n$ we obtain better results.
+
+\subsection{Considerations about the physical system}
+\label{sec:considerations}
+Our system is represented by a number $N$ of electrons that have total energy
+\footnote{
+Calling the Hamiltonian the total energy is improper. Rather it should be called the \emph{generalized energy}, since in general it is \emph{not} the total energy because it also contains terms of the 1st and 0th order in the generalized velocities. However in this case the system does not contain non-conservative forces (from which the extra terms stem), so we can safely identify the Hamiltonian with the total energy.
+}
+\begin{equation}
+	\hat{H} = 
+	\sum_{i=1}^{N} \left( -\frac{1}{2}\nabla_i^2 + \frac{1}{2}\omega^2r_i^2 \right)
+	+ \sum_{i<j}\frac{1}{r_{ij}},
+	\label{eq:full_hamiltonian}
+\end{equation}
+where $r_{ij} = |\vec{r}_i - \vec{r_j}|$ and natural units $( \hbar = c = e = m_e = 1)$ are used in order to have the energy in atomic units. You see that the Hamiltonian includes a standard part (an harmonic oscillator) plus a repulsion potential, that is the one that gives troubles in analytical calculations.
+
+An important feature of our system is that it is made up of \emph{identical particles}. Let's try to exploit this feature to simplify our trial wave-function.
+
+Suppose that we have a system made up of two particles, let's call them 1 and 2. Then, the state $\Ket{\psi}$ of the system can be expressed (for example) as
+\begin{equation}
+	\Ket{\psi} = \Ket{1} \otimes \Ket{2}.
+\end{equation}
+Now we can introduce the \emph{permutation operator} $\hat{P}$, defined as
+\begin{equation}
+	\hat{P} \Ket{1} \otimes \Ket{2} \doteqdot \Ket{2} \otimes \Ket{1}.
+\end{equation}
+One immediately sees that $\hat{P} = \hat{P}^{\dagger}$ and $\hat{P}^2 = \hat{I}$ ($\hat{I}$ is the identity operator), which means that $\hat{P}$ is hermitian and unitary. These two properties allow us to say that the eigenvalues of $\hat{P}$ are $\pm 1$. In general, this operator $\hat{P}$ does not commute with $\hat{H}$; but -- and here is the trick -- it \emph{does} commute with $\hat{H}$ for a system of \emph{identical particles}. Since in that case $[\hat{H},\hat{P}] = 0$, the eigenstates of $\hat{H}$ must also be eigenstates of $\hat{P}$. Recalling that the eigenvalue of $\hat{P}$ are $\pm 1$, one can rewrite the state $\psi$ as
+\begin{equation}
+	\Ket{\psi} = \frac{1}{\sqrt{2}} \Big( \Ket{1} \otimes \Ket{2} \pm \Ket{2} \otimes \Ket{1} \Big)
+	\label{eq:identical_particles}
+\end{equation}
+to make it also eigenstate of $\hat{P}$. You see that, in this form, the state is either symmetric or antisymmetric; particles with symmetric wave-function are called \emph{bosons}, and particles with antisymmetric wave-function are called \emph{fermions}. It turns out that electrons are fermions, so we are interested only in the antisymmetric case. Rewriting the fermions wave-function in coordinate representation, we obtain:
+\begin{align}
+	\psi(\vec{r}_1,\vec{r}_2,\sigma_1,\sigma_2) 
+	&= \Big( \Bra{\vec{r}_1} \otimes \Bra{\vec{r}_2} \Big) \Ket{\psi}
+	= \frac{1}{\sqrt{2}} \Big( \Braket{\vec{r}_1|1}\Braket{\vec{r}_2|2} - \Braket{\vec{r}_1|2}\Braket{\vec{r}_2|1} \Big) \\
+	&= \frac{1}{\sqrt{2}} \Big( \phi_1(\vec{r}_1,\sigma_1)\phi_2(\vec{r}_2,\sigma_2) - \phi_2(\vec{r}_1,\sigma_2)\phi_1(\vec{r}_2,\sigma_1) \Big)
+	= \frac{1}{\sqrt{2}} \left\lvert
+	\begin{array}{cc}
+		\phi_1(\vec{r}_1,\sigma_1) & \phi_1(\vec{r}_2,\sigma_1) \\
+		\phi_2(\vec{r}_1,\sigma_2) & \phi_2(\vec{r}_2,\sigma_2)
+	\end{array}
+	\right\lvert
+	\label{eq:slater_example}
+\end{align}
+where the $\phi_i$'s are the single-particle wave-functions, the $\sigma_i$'s just indicate the explicit dependence on the spin, and the determinant in (\ref{eq:slater_example}) is called the \emph{Slater determinant}. For $N$ particles the determinant has exactly the same shape (is just a $N \times N$ matrix) and the factor $\frac{1}{\sqrt{2}}$ is replaced with $\frac{1}{\sqrt{N!}}$. However, we don't care about the normalization factor because it's not required to apply the variational principle.
+
+We can recast this equation in a simpler form. In fact, it's possible to rewrite $\Ket{\phi}$ as
+\begin{equation}
+	\Ket{\phi} = \Ket{\eta} \otimes \Ket{\chi},
+\end{equation}
+where $\Ket{\eta}$ is the \emph{spatial part} and $\Ket{\chi}$ is the \emph{spin part}. Note that -- since the Hamiltonian is spin-independent -- the spin part just takes into account the spin configuration of the system, and it has nothing to do with the positions of the particles themselves! In other words, while the spatial part depends on the positions of the particles, the spin part does not at all and we can ``forget'' about it if we are smart. 
+
+In fact, the best way to minimize the energy is to put the two electrons in the same orbital. This means that the spatial part is \emph{symmetric} under the interchange of two particles; but we have also said that this wave-function has to be antisymmetric. So, the spin part has to be \emph{antisymmetric}. If you look at the Clebsch-Gordan table for combining two spin-1/2 (Figure \ref{fig:CGt}), you see that the only antisymmetric combination is the total spin state $\Ket{0,0}$, that can be written as
+\begin{equation}
+	\Ket{0,0} 
+	= \frac{1}{\sqrt{2}}
+	 \left( \Ket{\uparrow} \otimes \Ket{\downarrow} 
+	- \Ket{\downarrow} \otimes \Ket{\uparrow} \right)
+	\label{eq:total_spin}
+\end{equation}
+
+This fact permits a simplification of the Slater determinant; in fact, if we suppose -- for example --  that particle $1$ has spin-up and particle $2$ has spin-down, we can write
+\begin{equation}
+	\Psi_T(\vec{r}_1,\vec{r}_2,\sigma_1,\sigma_2) 
+	=\left\lvert
+	\begin{array}{cc}
+		\phi_1(\vec{r}_1,\sigma_1) & \phi_1(\vec{r}_2,\sigma_1) \\
+		\phi_2(\vec{r}_1,\sigma_2) & \phi_2(\vec{r}_2,\sigma_2)
+	\end{array}
+	\right\lvert
+	= \phi_1(\vec{r}_1)\phi_2(\vec{r}_2).
+\end{equation}
+where the $\phi_i$'s are now independent on the spin. In other words, they are just the spatial parts $\eta_i$'s of the single-particle wave-functions. You also see that, since now the single-particle wave-functions are independent on the spin, the are \emph{exactly} the same function because they occupy the same energy level!
+
+The generalization to $N$ particles is straightforward, and will be given later.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.28\textwidth]{CGt}
+	\caption{The Clebsch-Gordan table for combining two spin-1/2. Source: \url{http://pdg.lbl.gov/2002/clebrpp.pdf}.}
+	\label{fig:CGt}
+\end{figure}
+
+\subsection{The Metropolis algorithm}
+
+Let's first briefly introduce what a \emph{Markov chain} is. We call a Markov chain a stochastic process where the transition probability that characterizes the transition between states only depends on the previous step and not from the path to get to such step. We can then write (see \cite{morten})
+\begin{equation}
+	w_i(t+\delta t)=\sum_i W(j \rightarrow i) w_j (t),
+	\label{eq:markov_definition}
+\end{equation}
+where $w_i(t+\delta t)$ is our PDF -- in our case $|\psi_T(R)|^2$ and $W(j \rightarrow i)$ is the probability of jumping from $j$ to $i$, also called the \emph{transition probability}. We also have
+\begin{equation}
+	\sum_{i}w_i(t) = 1.
+\end{equation}
+due to the normalization condition. We can see from equation (\ref{eq:markov_definition}) the probability density function at $t+\delta t$ only depends on its previous state $t$. 
+
+In the case of infinite dimensionality, representing $W$ as a matrix, we have
+\begin{equation}
+	\hat{w}(t+\delta t) = \hat{W}\hat{w}(t).
+\end{equation}
+from which
+\begin{equation}
+	\hat{w}(\infty)= \hat{W} \hat{w}(\infty).
+\end{equation}
+Then, the problem is just an eigenvalue problem with eigenvalue $1$.
+
+Now, let's consider an \emph{ergodic} system, where the average over time of a process is the same as the ensemble average. Or in other words, as one increases the steps, there exists a positive probability measurement at step $n$ that is independent on the probability distribution at the initial step $0$. It holds
+\begin{equation}
+	W(i \rightarrow j) w_i= W(j \rightarrow i) w_j,
+\end{equation}
+from which
+\begin{equation}
+	R \doteqdot \frac{W(i \rightarrow j)}{W(j \rightarrow i)}=\frac{w_j}{w_i}=\frac{|\psi_T (r^{\text{new}})|}{|\psi_T (r^{\text{old}})|}.
+\end{equation}
+
+Since $W(i \rightarrow j)$ is unknown, we model it as the product of two probabilities:
+\begin{equation}
+	W(i \rightarrow j)=A(i \rightarrow j) \, T(i \rightarrow j),
+\end{equation}
+where $A(i \rightarrow j)$ is the probability of accepting the move and $T(i \rightarrow j)$ is the probability to transition from the state $i$ to the state $j$. In a similar way we can write:
+\begin{equation}
+	W(j \rightarrow i)=A(j \rightarrow i) \, T(j \rightarrow i).
+\end{equation}
+
+\subsubsection{Brute force sampling}
+The \emph{brute force} Metropolis algorithm simply consists in the assumption that the transition probability is symmetric, that is
+\begin{equation}
+	T(i \rightarrow j)= T (j \rightarrow i),
+\end{equation}
+which leads to
+\begin{equation}
+	\frac{W(i \rightarrow j )}{W(j \rightarrow i)}=\frac{A(i \rightarrow j )}{A(j \rightarrow i)}.
+\end{equation}
+Then, we can distinguish between two cases.
+\begin{itemize}
+	\item If $\dfrac{w_j}{w_i}\geq 1$, then
+	\begin{equation}
+		A(i \rightarrow j ) \geq A(j \rightarrow i).
+	\end{equation}
+	So, if we manage to move to such a state, we accept this move because we are moving to a higher probability region.
+	\item If $\dfrac{w_j}{w_i} < 1$, then
+	\begin{equation}
+		A(j \rightarrow i ) > A(i \rightarrow j).
+	\end{equation}
+	We can't blindly reject this move just because we are moving to a lower probability region, but we can't also accept all of this kind of moves. So, what one does is to compute a random number $r \in (0,1)$ and to accept the move if $r \leq w_j/w_i$.
+\end{itemize}
+To summarize, one sets
+\begin{equation}
+	A(i\rightarrow j) 
+	= \text{min} \left(1, \frac{w_j}{w_i} \right)
+	= \text{min} \left(1, \frac{|\psi_T(r^{\text{new}})|^2}{|\psi_T(r^{\text{old}})|^2} \right)
+\end{equation}
+and then compares with a random number $r \in (0,1)$. If $A(i\rightarrow j) \geq r$ the step is accepted, otherwise it's rejected.
+
+\subsubsection{Importance sampling and Schödinger equation as a diffusion problem}
+\label{sec:importance}
+
+\emph{Importance sampling} consists in doing more clever assumptions on the shape of $T(i \rightarrow j)$. The discussion is the same as the brute force case, but this time we have to set
+\begin{equation}
+	A(i\rightarrow j) 
+	= \text{min} \left(1, \frac{w_jT(j \rightarrow i)}{w_iT(i \rightarrow j)} \right)
+	= \text{min} \left(1, \frac{|\psi_T(r^{\text{new}})|^2T(j \rightarrow i)}{|\psi_T(r^{\text{old}})|^2T(i \rightarrow j)} \right).
+	\label{eq:acceptance_imp}
+\end{equation}
+If we recast the Schr\"{o}dinger equation as a diffusion problem, $T(i \rightarrow j)$ is going to be a Gaussian distribution (or a modified Gaussian); let's do that.
+
+The main idea is to model $T(i \rightarrow j)$ in order to reflect the shape of the trial wave-function itself and have in this way a more ``intelligent'' walk, that wastes less points. The walk is generated using the Fokker-Planck and the Langevin equations; the former -- for a one-dimension diffusion problem -- is
+\begin{equation}
+	\frac{\partial P}{\partial t} = D \dfrac{\partial}{\partial x} \left( \dfrac{\partial}{\partial x} - F \right)P(x,t),
+\end{equation}
+where
+$P(x,t)$ is the time-dependent probability density, $D$ is the \emph{diffusion coefficient} (it's $0.5$ for the Schr\"{o}dinger equation, see \cite{jorgen}) and $F$ is the \emph{drift term}.
+
+The Langevin equation, on the other hand, reads as
+\begin{equation}
+	\frac{\partial x(t)}{\partial t} = DF(x(t)) + \eta,
+	\label{eq:langevin}
+\end{equation}
+being $\eta$ a \emph{random variable}. By solving equation (\ref{eq:langevin}) with Euler's method, it follows that the new position is given by
+\begin{equation}
+	y = x + DF(x)\Delta t + \xi,
+\end{equation}
+being $\xi$ a \emph{Gaussian} random variable and $\Delta t$ a chosen time step.
+
+For two or more dimensions, the Fokker-Planck equation is just
+\begin{equation}
+	\frac{\partial P}{\partial t} = \sum_i D \dfrac{\partial}{\partial \vec{x}_i} \left( \frac{\partial}{\partial \vec{x}_i} - \vec{F}_i \right)P(\vec{x}_i,t)
+\end{equation}
+We can obtain a convergence to a stationary probability density setting the left hand side to zero, that means all the terms of the sum must be equal to zero. Expanding the product, we obtain
+\begin{equation}
+	\frac{\partial^2 P}{\partial \vec{x}_i^2} = P \frac{\partial}{\partial \vec{x}_i}\vec{F}_i + \vec{F}_i \frac{\partial}{\partial \vec{x}_i}P.
+\end{equation}
+Since the drift vector has the form $\vec{F} = g(\vec{x}) \dfrac{\partial P}{\partial \vec{x}}$, we get
+\begin{equation}
+	\frac{\partial ^2 P}{\partial \vec{x}_i^2 } = P \frac{\partial g}{\partial P} \left( \frac{\partial P}{\partial \vec{x}_i} \right)^2 + Pg \frac{\partial ^2 P}{\partial \vec{x}_i^2} + g \left( \frac{\partial P}{\partial \vec{x}_i} \right)^2.
+	\label{eq:intermediate_imp}
+\end{equation}
+
+If we want a stationary density the left hand side of equation (\ref{eq:intermediate_imp}) must be zero, and this is possible only if $g = \dfrac{1}{P}$. With this substitution, the drift vector reads as
+\begin{equation}
+	\vec{F} = \frac{1}{P} \nabla P.
+	\label{eq:drift_vector}
+\end{equation}
+Since -- as we said many times before --  our probability density is the modulus squared of the trial wave-function, that is
+\begin{equation}
+	P = |\psi_T|^2,
+\end{equation}
+the drift vector in equation (\ref{eq:drift_vector}) finally reads as
+\begin{equation}
+	\vec{F} = 2 \frac{1}{\Psi_T} \nabla \Psi_T.
+\end{equation}
+Written in this way, $\vec{F}$ is also called the \emph{quantum force}. This force pushes the walker in those regions where the trial wave function is larger, increasing the efficiency of the simulation.
+
+Solving the Fokker-Plank equation finally gives an expression for the transition probability $T(x \rightarrow y)$, that turns out can be expressed as the Green function
+\begin{equation}
+G(y,x, \Delta t) = \dfrac{1}{(4 \pi D \Delta t)^{3N/2}} \exp(-(y - x - D \Delta t F(x))^2 / 4 D \Delta t).
+\end{equation}
+
+With this expression, the acceptance ratio in equation (\ref{eq:acceptance_imp}) becomes
+\begin{equation}
+	R 
+	= \frac{|\psi_T(y)|^2T(y \rightarrow x)}{|\psi_T(x)|^2T(x \rightarrow y)}
+	= \frac{|\psi_T(y)|^2G(x,y,\Delta t)}{|\psi_T(x)|^2G(y,x,\Delta t)}.
+\end{equation}
+
+
+\subsubsection{Implementation}
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[node distance=2cm]
+	
+		% Draw the nodes
+		\node (start) [startstop, align=center] {Initialize:\\ Set $\vec{r}^{\text{old}}$, $\alpha$\\ and $\psi_{T-\alpha}(\vec{r}^{\text{old}})$};
+		%\node (in1) [io, below of=start] {Input};
+		\node (pro1) [process, below of=start] {Suggest a move};
+		\node (pro2) [process, below of=pro1] {Compute\\ acceptance\\ ratio $R$};
+		\node (dec1) [decision, below of=pro2, yshift=-0.5cm, align=center] {Is\\$R \geq r$?};
+		\node (pro3a) [process, below of=dec1, yshift=-0.5cm, align=center] {Accept move:\\ $\vec{r}^{\text{old}} = \vec{r}^{\text{new}}$};
+		\node (pro3b) [process, right of=dec1, xshift=2cm] {Reject move:\\ $\vec{r}^{\text{new}} = \vec{r}^{\text{old}}$};
+		\node (dec2) [decision, below of=pro3a, yshift=-0.5cm, align=center] {Last\\ move?};
+		\node (dec2left) [left of=dec2, xshift=-1cm] {};
+		\node (pro5) [process, below of=dec2, yshift=-0.5cm] {Get local\\ energy $E_L$};
+		\node (dec3) [decision, below of=pro5, yshift=-0.5cm, align=center] {Last\\ MC step?};
+		\node (dec3left) [left of=dec3, xshift=-2cm] {};
+		\node (pro6) [process, below of=dec3, yshift=-0.5cm, align=center] {Collect\\ samples};
+%		\node (out1) [io, below of=pro2a] {Output};
+		\node (stop) [startstop, below of=pro6] {End};
+		
+		%Draw the arrows
+		\draw [arrow] (start) -- (pro1);
+		\draw [arrow] (pro1) -- (pro2);
+		\draw [arrow] (pro2) -- (dec1);
+		\draw [arrow] (dec1) -- node[anchor=west] {yes} (pro3a);
+		\draw [arrow] (dec1) -- node[anchor=south] {no} (pro3b);
+		\draw [arrow] (pro3b) |- (dec2);
+		\draw [arrow] (pro3a) -- (dec2);
+		\draw [arrow] (dec2) -- node[anchor=west] {yes} (pro5);
+		\draw [arrow] (dec2) -- node[anchor=south] {no} (dec2left.center) |- (pro1);
+		\draw [arrow] (pro5) -- (dec3);
+		\draw [arrow] (dec3) -- node[anchor=west] {yes} (pro6);
+		\draw [arrow] (dec3) -- node[anchor=south] {no} (dec3left.center) |- (pro1);
+		\draw [arrow] (pro6) -- (stop);
+	
+	\end{tikzpicture}
+	\caption{Chart flow for the Quantum Variational Monte Carlo algorithm.}
+	\label{fig:chart_flow}
+\end{figure}
+
+We can sum up the algorithm as follows. Given a random number generator that returns aleatory values in the interval $(0, 1)$ with a uniform (or Gaussian for the importance sampling) distribution, then the Metropolis algorithm consists in these steps.
+\begin{itemize}
+	\item Chosen a starting point $x_0$ and a step length $l$ (or a time-step $\Delta t$ for the importance sampling), a random number $\varepsilon$ is generated in the interval $(0, 1)$.
+	\item The proposed step is $x^{\text{new}}=x^{\text{old}} + l\varepsilon$ (or $x^{\text{new}} = x^{\text{old}} + D\vec{F}(x^{\text{old}})\Delta t + \varepsilon$ for the importance sampling).
+	\item The probability ratio $R = \frac{|\psi_T(r^{\text{new}})|^2T(j \rightarrow i)}{|\psi_T(r^{\text{old}})|^2T(i \rightarrow j)}$ is computed.
+	\item A new random number $r$ is generated in the interval $(0, 1)$.
+	\item If $R \geq r$, the step is accepted and the new position is stored by letting $x^{\text{old}}=x^{\text{new}}$.
+	\item If $R < r$, the step is rejected and the new position is discarded by letting $x^{\text{new}}=x^{\text{old}}$.
+\end{itemize}
+A flow chart of this process is sketched in Figure \ref{fig:chart_flow}.
+
+
+
+\section{The 2-electrons system}
+
+\subsection{The unperturbed system}
+\label{sec:2e_unp}
+
+\begin{figure}[H]
+	\centering
+	\definecolor{myblue}{rgb}{0,0.447,0.741}	
+	\begin{tikzpicture}
+		\tikzset{>=latex}
+		\draw [ultra thick] (-1,0) -- (1,0) node[midway,below,align=center] {\scriptsize $n_x=0$ \\ \scriptsize $n_y=0$};
+		\draw [very thick, myblue, ->] (-0.5,-0.5) -- (-0.5,0.5);
+		\draw [very thick, myblue, ->] (0.5,0.5) -- (0.5,-0.5);
+	\end{tikzpicture}
+	\caption{The 2-electrons system configuration.}
+	\label{eq:sketch_2e}
+\end{figure}
+
+We will first consider the unperturbed system (without the electron-electron repulsion) with $\omega = 1$, that has Hamiltonian
+\begin{equation}
+	\hat{H}_0 = 
+	\sum_{i=1}^{N} \left( -\frac{1}{2}\nabla_i^2 + \frac{1}{2}\omega^2r_i^2 \right),
+\end{equation}
+with $N=2$ and in two dimensions. For a single electron in a two-dimensional (isotropic) harmonic oscillator, the energy is $E_s = \hbar\omega(n_x + n_y + 1)$, where $n_x$ and $n_y$ are the quantum numbers for the $x$ and $y$ dimensions. The ground state (See Figure \ref{eq:sketch_2e}) is obtained for $(n_x,n_y) = (0,0)$ which gives $E_s = \SI{1}{\atomicunit}$. Since we have two particles, the ground state energy of our system is in total
+\begin{equation*}
+	E_{\text{gs}} = \SI{2}{\atomicunit}.
+\end{equation*}
+In general, for $\omega \neq 1$, the energy will just be $E_{\text{gs}} = 2\omega$.
+
+Now, we have to choose a trial wave-function. For a single electron, the exact wave-function of the ground state is
+\begin{equation}
+	\phi_{n_x,n_y}(x, y) = A H_{n_x}(\sqrt{\omega}x)H_{n_y}(\sqrt{\omega}y)\exp\left(-\omega\left(x^2 + y^2\right)/2\right),
+	\label{eq:phi_qnums}
+\end{equation}
+being $A$ a normalization constant and $H_n$ is the (physical) Hermite polynomial of order $n$. Since the 0-th order Hermite polynomials are just $1$ and the two-particles wave-function can be seen as a product of the single-particle wave-functions, our total wave-function will just be
+\begin{equation}
+	\phi(\vec{r}_1,\vec{r}_2) = C \exp\left(-\omega\left(r_1^2 + r_2^2\right)/2\right).
+	\label{eq:two_part_noint_solution}
+\end{equation}
+Adding a variational parameter $\alpha$ and forgetting about the normalization constant $C$, we obtain our trial wave-function for this case:
+\begin{equation}
+	\psi_T(\vec{r}_1,\vec{r}_2) = \exp\left(-\alpha\omega\left(r_1^2 + r_2^2\right)/2\right).
+\end{equation}
+Note that, since the correct solution of this problem is equation (\ref{eq:two_part_noint_solution}), we expect to obtain a variational energy \emph{exactly} equal to 2 for $\alpha = 1$.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.45\textwidth]{two-part-non-int}
+	\caption{The program running for a two-electron system without repulsion.}
+	\label{fig:run_window_2e_no_rep}
+\end{figure}
+
+The electron-electron repulsion can be simply turned off by commenting out the line
+\begin{lstlisting}[language=cpp]
+	MySystem.add_potential(new eRepulsion(gP));
+\end{lstlisting}
+in the code. Running the program in Qt Creator shows the window in Figure \ref{fig:run_window_2e_no_rep}, where some parameters can be specified before the actual calculation begins.
+
+Just using a finer step for $\alpha$, we obtain the energy graph shown in Figure \ref{fig:2e_no_rep}.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{2e-norep}
+	\caption{The variational energy versus the variational parameter $\alpha$. The settings used are: brute force sampling with step length 2, no Jastrow factor, no parallelization, $1000$ variations of $\alpha$ around $1$ with step $0.001$, $\SI{1e7}{}$ Monte Carlo steps. Acceptance ratio varies from $40$ to $\SI{60}{\percent}$.}
+	\label{fig:2e_no_rep}
+\end{figure}
+
+As you can see in Figure \ref{fig:2e_no_rep}, we get $E_{\text{gs}} = 2$ with a high degree of precision for $\alpha=1$\footnote{actually the minimum is for $\alpha=1.002$, but in this case we are not using so many steps to trust the third decimal digit. The smaller $\alpha$-step was just used to have a nicer plot.}.
+
+We can also state that the total spin (better: its $z$-component) of the system is 0, as shown in equation (\ref{eq:total_spin}). If you want a more ``physical'' reason than just reading off a table of coefficients, this is a direct consequence of the shape of the wave-function for a fermionic system, as shown in equation (\ref{eq:slater_example}). In fact, in our case the spatial part of the two single-particle wave-functions is equal (they occupy the same energy level), yielding to
+\begin{equation}
+	\Ket{1} = \Ket{\phi}\otimes\Ket{\chi_1},
+	\qquad
+	\Ket{2} = \Ket{\phi}\otimes\Ket{\chi_2}.
+\end{equation}
+Comparing with equation (\ref{eq:identical_particles}) one sees that $\Ket{\psi} = 0$ unless $\Ket{1} \neq \Ket{2}$, and since the spatial parts are equal one has to conclude that $\Ket{\chi_1} \neq \Ket{\chi_2}$\footnote{We don't want $\Ket{\psi} = 0$ because it's not a physical state and it is not normalizable.}. Now, 
+\begin{equation}
+	\Ket{\chi_1} = \Ket{s,m_s}
+\end{equation}
+with $s=1/2$, so we have to say that -- for example -- particle 1 has spin-up ($m_s=1/2$) and particle 2 has spin-down ($m_s=-1/2$). This fact is also known as the \emph{Pauli exclusion principle}, and applies for a generic system of fermions.
+
+\subsection{The complete system}
+We want now to analyse the system with the full Hamiltonian, namely the Hamiltonian in equation (\ref{eq:full_hamiltonian}):
+\begin{equation}
+	\hat{H}=-\frac{1}{2} \nabla^2_1 - \frac{1}{2} \nabla^2_2+\frac{1}{2}\omega r_1^2+\frac{1}{2}\omega r_2^2+ \frac{1}{|\vec{r_1}-\vec{r_2}|},
+\end{equation}
+where $\vec{r_1}$ and $\vec{r_2}$ are the position operators of the two particles.
+
+You see that this time we have a problem when two particles are very near to each other, since the term
+\begin{equation*}
+	\sum_{i<j}\frac{1}{|\vec{r_1}-\vec{r_2}|}
+\end{equation*}
+tends to be a division by zero. Introducing the substitution
+\begin{equation}
+\begin{cases}
+\vec{r}=\vec{r_1}-\vec{r_2} \\ 
+\vec{R}=\frac{1}{2}(\vec{r_1}+\vec{r_2}) 
+\end{cases}
+\end{equation}
+the Hamiltonian can be rewritten in a decoupled way as\footnote{See \cite{taut}.}
+\begin{equation}
+    \hat{H} = -\nabla_{\vec{r}}^2 - \frac{1}{4}\nabla_{\vec{R}}^2 - \frac{1}{4}\omega^2\vec{r}^2 + \omega^2\vec{R}^2 + \frac{1}{r}.
+\end{equation}
+Since the Hamiltonian is independent on spin, we can factorize the wave-function as
+\begin{equation}
+    \psi(\vec{r},\vec{R},m_{s_1},m_{s_2}) = \varphi(\vec{r})\xi(\vec{R})\chi(m_{s_1},m_{s_2})
+\end{equation}
+which separates the Schr\"{o}dinger equation into
+\begin{equation}
+    \left( -\frac{1}{2}\nabla_{\vec{r}}^2 + \frac{1}{2}\omega_r^2\vec{r}^2 + \frac{1}{2}\frac{1}{r} \right)\varphi(\vec{r}) = E_r\varphi(\vec{r})
+    \label{eq:Seq_relative_distance}
+\end{equation}
+and
+\begin{equation}
+    \left( -\frac{1}{2}\nabla_{\vec{R}}^2 + \frac{1}{2}\omega_R^2\vec{R}^2 \right)\xi(\vec{R}) = E_R\xi(\vec{R}),
+\end{equation}
+where $\omega_r = \frac{1}{2}\omega$ and $\omega_R = 2\omega$.
+
+We are not interested in the $R$-part of the solution, since it gives no troubles; we are more interested in equation (\ref{eq:Seq_relative_distance}), because we can cancel the divergence for $r \to 0$ working on the solution. We can also discard about the oscillator potential because it gives no divergence. Since we are interested only in the radial part of the solution, the relevant contributions from the laplacian in spherical coordinates are
+\begin{equation}
+    \nabla^2_r = \frac{d^2}{dr^2} + \frac{1}{r}\frac{d}{dr}.
+\end{equation}
+We also notice that $\frac{d^2}{dr^2}$ gives a finite contribution (is just the momentum part) and so does $\frac{d}{dr}$. The only piece that is not finite is the $\frac{1}{r}$ in front of $\frac{d}{dr}$, that we can use to cancel the divergence in the interaction potential. Using these facts, equation (\ref{eq:Seq_relative_distance}) can be rewritten in a way that is called the \emph{cusp condition} for this system, namely
+\begin{equation}
+    \lim_{r \to 0} \frac{1}{\varphi(r)}\left( -\cancel{\frac{1}{2}\frac{1}{r}}\frac{d}{dr} + \cancel{\frac{1}{2}\frac{1}{r}} \right)\varphi(r) = 0.
+\end{equation}
+Solving for $\varphi$ by partial integration gives
+\begin{equation}
+    \varphi(r) = \exp(Cr),
+    \qquad\qquad
+    r \to 0
+    \label{eq:cusp_solution}
+\end{equation}
+where $C$ is a constant. For these types of Monte Carlo calculations, a so-called \emph{Padé-Jastrow} factor that has the property (\ref{eq:cusp_solution}) is often used. This factor has the form (for two electrons)
+\begin{equation}
+    \exp\left( \frac{ar}{(1+\beta r)} \right),
+\end{equation}
+where (in 2 dimensions)
+\begin{equation}
+    \beta = 
+    \begin{cases}
+    1 & \text{anti-parallel spin} \\
+    1/3 & \text{parallel spin}
+    \end{cases}
+\end{equation}
+and $\beta$ is a variational parameter. With this factor, our trial wave-function reads as
+\begin{equation}
+    \psi_T(\vec{r_1},\vec{r_2}) = \exp\left(-\alpha\omega\left(r_1^2 + r_2^2\right)/2\right)\exp\left( \frac{ar}{(1+\beta r)} \right).
+    \label{eq:wf_2e}
+\end{equation}
+
+Using the ansatz in equation (\ref{eq:wf_2e}) in our program, we obtain a preliminary result shown in Figure \ref{fig:2e_rep}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{2e-rep}
+	\caption{The variational energy versus the variational parameters $\alpha$ and $\beta$. The settings used are: brute force sampling with step length 2, Jastrow factor, no parallelization, $200$ variations of $\alpha$ and $\beta$ with step $0.01$, $\SI{1e5}{}$ Monte Carlo steps. Acceptance ratio varies from $45$ to $\SI{55}{\percent}$.}
+	\label{fig:2e_rep}
+\end{figure}
+
+Refining around the minimum value to have better results, we finally obtain the plot in Figure \ref{fig:2e_rep_fine}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{2e-rep_fine}
+	\caption{The variational energy versus the variational parameters $\alpha$ and $\beta$. The settings used are: brute force sampling with step length 2, Jastrow factor, no parallelization, $20$ variations of $\alpha$ and $\beta$ with step $0.01$, $\SI{1e6}{}$ Monte Carlo steps. Acceptance ratio varies from $45$ to $\SI{55}{\percent}$. The relative distance is about $\SI{1.64}{}$ in natural units.}
+	\label{fig:2e_rep_fine}
+\end{figure}
+
+You see that we are very near to the exact result $E_{\text{gs}} = \SI{3}{\atomicunit}$ calculated from \cite{taut} and reported in \cite{pede}. However, the energy error is still quite big; a way to improve the precision of our program is to \emph{parallelize} it.
+
+\subsubsection{Parallelization}
+
+In this project, parallelization is done by using OpenMP\footnote{\url{http://openmp.org/}.}. The main idea is to run multiple computations of $E_T$ for the same pair of variational parameters $(\alpha,\beta)$ and then take the mean. Since the ``measurements'' of $E_T$ are not correlated, the error on its mean value falls like $1/\sqrt{n}$, where $n$ is the number of measurements. To be sure that the measurements are not correlated we have to make \emph{private} local copies of the variables used in the computation, one for each thread used. Then, we have to sync al the threads to be sure that all the measurements are complete, and finally we can take the mean. An example of how this is implemented in our program is given below:
+
+\begin{lstlisting}[language=cpp]
+    // Begin parallelization
+    omp_set_num_threads(gP.num_threads);
+    #pragma omp parallel shared(cumulative_e, cumulative_e2)
+    {
+        // Make a private copy of all the stuff
+        mat cumulative_e_local = zeros<mat>(vmcParams.max_variations+1,vmcParams.max_variations+1);
+        mat cumulative_e2_local = zeros<mat>(vmcParams.max_variations+1,vmcParams.max_variations+1);
+        struct GeneralParams gP_local = gP;
+        struct VariationalParams vP_local = vP;
+        struct VMCparams vmcParams_local = vmcParams;
+
+        // Build the orbitals
+        Orbitals* MyWaveFunction_local = new AlphaHarmonicOscillator(gP_local, vP_local);
+
+        // Set up the Jastrow factor
+        Jastrow* MyJastrowFactor_local;
+        if (vmcParams_local.jF_active) MyJastrowFactor_local = new Pade_Jastrow(gP,vP);
+        else MyJastrowFactor_local = new No_Jastrow();
+
+        // Make a local copy of the system for convenience
+        System MySystem_local = MySystem;
+
+        // Do the mc sampling
+        mc_sampling(gP_local, vP_local, vmcParams_local,
+                    cumulative_e_local, cumulative_e2_local,
+                    MySystem_local, MyWaveFunction_local, MyJastrowFactor_local);
+
+        // Be sure to have all the contributions
+        #pragma omp barrier
+        #pragma omp critical
+        {
+            // Add the contributions
+            cumulative_e += cumulative_e_local;
+            cumulative_e2 += cumulative_e2_local;
+        }
+    }
+
+    // Normalize to the number of threads
+    cumulative_e = cumulative_e/((double) gP.num_threads);
+    cumulative_e2 = cumulative_e2/((double) gP.num_threads);
+\end{lstlisting}
+
+Re-doing the calculations using parallelization gives the result in Figure \ref{fig:2e_rep_parallel}.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{2e-rep_parallel}
+	\caption{The variational energy versus the variational parameters $\alpha$ and $\beta$. The settings used are: brute force sampling with step length 2, Jastrow factor, parallelization (8 threads), $20$ variations of $\alpha$ and $\beta$ with step $0.01$, $\SI{2e5}{}$ Monte Carlo steps. Acceptance ratio varies from $45$ to $\SI{55}{\percent}$.}
+	\label{fig:2e_rep_parallel}
+\end{figure}
+Note that this time, even using a lower number of Monte Carlo steps, we have an amazingly precise estimate for our energy, comparable with the one obtained in \cite{pede} using Diffusion Monte Carlo.
+
+\subsubsection{Importance sampling}
+Let's now try to implement importance sampling, as explained in Section \ref{sec:importance}. In order to show the differences with the brute force algorithm, we will repeat the calculations with exactly the same settings used in Figure \ref{fig:2e_rep_parallel}, this time with importance sampling active. We will also try to do the calculations for different time-steps $\Delta t = 0.001,\,0.01,\,0.1$.
+
+The results are shown in Figures \ref{fig:2e-rep_imp_small}, \ref{fig:2e-rep_imp_med} and \ref{fig:2e-rep_imp_high}.
+
+\begin{figure}%[H]
+	\centering
+	\includegraphics[width=\textwidth]{2e-rep_imp_small}
+	\caption{The variational energy versus the variational parameters $\alpha$ and $\beta$. The settings used are: importance sampling with $\Delta t = 0.001$, Jastrow factor, parallelization (8 threads), $20$ variations of $\alpha$ and $\beta$ with step $0.01$, $\SI{2e5}{}$ Monte Carlo steps. Acceptance ratio is about $\SI{99.999}{\percent}$.}
+	\label{fig:2e-rep_imp_small}
+\end{figure}
+\begin{figure}%[H]
+	\centering
+	\includegraphics[width=\textwidth]{2e-rep_imp_med}
+	\caption{The variational energy versus the variational parameters $\alpha$ and $\beta$. The settings used are: importance sampling with $\Delta t = 0.01$, Jastrow factor, parallelization (8 threads), $20$ variations of $\alpha$ and $\beta$ with step $0.01$, $\SI{2e5}{}$ Monte Carlo steps. Acceptance ratio is about $\SI{99.999}{\percent}$.}
+	\label{fig:2e-rep_imp_med}
+\end{figure}
+\begin{figure}%[H]
+	\centering
+	\includegraphics[width=\textwidth]{2e-rep_imp_high}
+	\caption{The variational energy versus the variational parameters $\alpha$ and $\beta$. The settings used are: importance sampling with $\Delta t = 0.1$, Jastrow factor, parallelization (8 threads), $20$ variations of $\alpha$ and $\beta$ with step $0.01$, $\SI{2e5}{}$ Monte Carlo steps. Acceptance ratio is about $\SI{99.793}{\percent}$.}
+	\label{fig:2e-rep_imp_high}
+\end{figure}
+
+As you see, there is a huge difference between the result obtained with $\Delta t = 0.001$ and the one obtained with $\Delta t = 0.1$. This is because, if the time step is too small and we don't have enough Monte Carlo steps, our walker cannot span completely the integration space. It will remain near its starting point and all the points reached will be inside the integration space, close to each other. In fact, the acceptance ratio for the case $\Delta t = 0.001$ and $\Delta t = 0.01$ is \emph{practically} $\SI{100}{\percent}$. The third case, for $\Delta t = 0.1$, has a little lower acceptance ratio, that is about $\SI{99.79}{\percent}$. This fact guarantees that our walker is reaching all the borders of our integration space, and in fact it also reaches some points outside it. In other words, for the given number of Monte Carlo iterations, we have a large enough time-step to cover all the space. If one wants to use a lower time-step to have better precision, he has to increase the number of Monte Carlo cycles; as an example, for $\Delta t = 0.001$, one has to use at least $\SI{1e9}{}$ Monte Carlo loops.
+
+
+\section{The 6-electrons system}
+
+\begin{figure}[H]
+	\centering
+	\definecolor{myblue}{rgb}{0,0.447,0.741}	
+	\begin{tikzpicture}
+		\tikzset{>=latex}
+		
+		%0,0
+		\draw [ultra thick] (-1,0) -- (1,0) node[midway,below,align=center] {\scriptsize $n_x=0$ \\ \scriptsize $n_y=0$};
+		\draw [very thick, myblue, ->] (-0.5,-0.5) -- (-0.5,0.5);
+		\draw [very thick, myblue, ->] (0.5,0.5) -- (0.5,-0.5);
+		
+		%1,0
+		\draw [ultra thick] (-2.5,2) -- (-0.5,2) node[midway,below,align=center] {\scriptsize $n_x=1$ \\ \scriptsize $n_y=0$};
+		\draw [very thick, myblue, ->] (-2,1.5) -- (-2,2.5);
+		\draw [very thick, myblue, ->] (-1,2.5) -- (-1,1.5);
+		
+		%0,1
+		\draw [ultra thick] (0.5,2) -- (2.5,2) node[midway,below,align=center] {\scriptsize $n_x=0$ \\ \scriptsize $n_y=1$};
+		\draw [very thick, myblue, ->] (1,1.5) -- (1,2.5);
+		\draw [very thick, myblue, ->] (2,2.5) -- (2,1.5);
+	\end{tikzpicture}
+	\caption{The 6-electrons system configuration.}
+	\label{eq:sketch_6e}
+\end{figure}
+
+The formulae discussed in the previous sections can be generalized for a $N$ electrons case. The trial wave function can be written as
+\begin{equation}
+	\psi_T(\vec{r}_1 \dots \vec{r}_N)= A \,  \text{Det}(S) \prod_{i<j}^N e^{\frac{r_{ij}}{1+\beta r_{ij}}},
+\end{equation}
+where $\text{Det}(S)$ is the Slater determinant
+\begin{equation}
+	\text{Det}(S)= \left|
+	\begin{matrix}
+		\phi_1(\vec{r}_1) & \phi_2(\vec{r}_1) & \dots & \phi_N(\vec{r}_1) \\
+		\phi_1(\vec{r}_2) & \phi_2(\vec{r}_2) & \dots & \phi_N(\vec{r}_1) \\
+		\vdots &  &  & \vdots \\
+		\phi_1(\vec{r}_N) & \phi_2(\vec{r}_N) & \dots & \phi_N(\vec{r}_N) \\
+	\end{matrix}
+	\right|
+\end{equation}
+
+As we did in Section \ref{sec:considerations}, this determinant can be further simplified if we label our electrons in a smart way, as shown in \cite{morten}.
+
+Let's consider a spin-independent quantum mechanical operator $\hat{O}(\vec{r}) $ acting on our trial wave function. The latter depends on $\vec{x} = (\vec{r}, \sigma) $ where $\vec{r}$ includes the space coordinates and $\sigma$ the spin coordinates.
+We have that:
+\begin{equation}
+	\Braket{\hat{O}} = \frac{\Braket{\psi_T(\vec{x})|\hat{O}(\vec{r})|\psi_T(\vec{x})}}{\Braket{\psi_T(\vec{x})|\psi_T(\vec{x})}}
+\end{equation}
+
+Now we can replace the total antisymmetric wave function with one with permuted arguments and we can arbitrarily choose that the first $N/2$ arguments are spin up and the other half are spin down. We get:
+\begin{align}
+	\psi_T(\vec{x_1},\ldots,\vec{x_N}) 
+	\longrightarrow& \, \psi_t(\vec{x_{i1}},\ldots,\vec{x_{iN}}) \\
+	=& \, \psi_T(\{\vec{r_{i1}}, \uparrow\},\ldots,\{\vec{r_{iN/2}}, \uparrow\},\{\vec{r_{i1}}, \downarrow\},\ldots,\{\vec{r_{iN/2}}, \downarrow\}) \\
+	=& \, \psi_T(\{\vec{r_{1}}, \uparrow\},\ldots,\{\vec{r_{N/2}}, \uparrow\},\{\vec{r_{N/2 +1}}, \downarrow\},\ldots,\{\vec{r_{N}}, \downarrow\})
+\end{align}
+The operator $\hat{O}$ is symmetric with the respect to the exchange of labels in a pair of particles, so:
+\begin{equation}
+	\Braket{\hat{O}} = \frac{\Braket{\psi_T(\vec{r})|\hat{O}(\vec{r})|\psi_T(\vec{r})}}{\Braket{\psi_T(\vec{r})|\psi_T(\vec{r})}}
+\end{equation}
+
+The wave function is now antisymmetric with respect to exchange of spatial coordinates of pairs of spin-up or spin-down electrons. Therefore, for spin-independent Hamiltonians, the Slater determinant can be splitted in a product of two Slater determinants, one for the single particle orbitals with spin up and the other with single particle orbitals with spin down. We have then:
+\begin{equation}
+	\psi_S = S^{\uparrow}S^{\downarrow}
+\end{equation}
+where
+\begin{equation}
+	S^{\uparrow} = \left|
+	\begin{matrix}
+		\phi_1(\vec{r}_1) & \phi_2(\vec{r}_1) & \dots & \phi_{N/2}(\vec{r}_1) \\
+		\phi_1(\vec{r}_2) & \phi_2(\vec{r}_2) & \dots & \phi_{N/2}(\vec{r}_1) \\
+		\vdots &  &  & \vdots \\
+		\phi_1(\vec{r}_{N/2}) & \phi_2(\vec{r}_{N/2}) & \dots & \phi_{N/2}(\vec{r}_{N/2}) \\
+	\end{matrix}
+	\right|
+\end{equation}
+and  $S^{\downarrow}$ is obviously defined in a similar way. The $\phi_i$'s functions are just as the one defined in equation (\ref{eq:phi_qnums}).
+
+So, our final trial wave-function is just
+\begin{equation}
+	\psi_T = |S^{\uparrow}||S^{\downarrow}|J
+\end{equation}
+being $J$ the Padé-Jastrow factor.
+
+The C++ implementation of $\psi_S$ is therefore straightforward and it is shown below.
+
+\begin{lstlisting}[language=cpp]
+	double Orbitals::SlaterD(mat& r) {
+	    mat D_up(n_half,n_half), D_down(n_half,n_half);
+	
+	    for (int i = 0; i < n_half; i++) {
+	        this->set_qnum_indie_terms(r, i);
+	        for (int j = 0; j < n_half; j++) {
+	            D_up(i,j) = this->phi(r, i, j);
+	        }
+	    }
+	
+	    for (int i = 0; i < n_half; i++) {
+	        this->set_qnum_indie_terms(r, i+n_half);
+	        for (int j = 0; j < n_half; j++) {
+	            D_down(i,j) = this->phi(r, i+n_half, j);
+	        }
+	    }
+	
+	    double slater = det(D_up)*det(D_down);
+	
+	    D_up.reset();
+	    D_down.reset();
+	
+	    return slater;
+	}
+\end{lstlisting}
+
+
+\subsection{$\omega = 0.28$}
+
+We start by studying our system for $\omega = 0.28$. A preliminary and very rough result is shown in Figure \ref{fig:6e-028-rep}.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{6e-028-rep}
+	\caption{The variational energy versus the variational parameters $\alpha$ and $\beta$. The settings used are: importance sampling with $\Delta t = 0.1$, Jastrow factor, parallelization (8 threads), $8$ variations of $\alpha$ and $\beta$ with step $0.1$, $\SI{1e5}{}$ Monte Carlo steps. $\omega=0.28$.}
+	\label{fig:6e-028-rep}
+\end{figure}
+Restricting to the significant region, we get the result in Figure \ref{fig:6e-028-rep_fine}.
+\begin{figure}%[H]
+	\centering
+	\includegraphics[width=\textwidth]{6e-028-rep_fine}
+	\caption{The variational energy versus the variational parameters $\alpha$ and $\beta$. The settings used are: importance sampling with $\Delta t = 0.1$, Jastrow factor, parallelization (8 threads), $5$ variations of $\alpha$ and $\beta$ with step $0.1$, $\SI{2e5}{}$ Monte Carlo steps. $\omega=0.28$.}
+	\label{fig:6e-028-rep_fine}
+\end{figure}
+
+You see that the plot is no more nice like the 2-electrons case, mainly because we didn't used enough Monte Carlo steps. The problem is that now the program has to calculate $3 \times 3$ determinants every time, so it's much slower than the previous case. To refine the result, we just doubled the number of Monte Carlo loops and restricted a little bit the variational parameters grid; taking a finer grid with more Monte Carlo cycles would have required ages, literally.
+
+Anyway, still with this configuration, we get a result that is really near the one calculated by DMC in \cite{pede}, that turns out to be $\SI{7.6001 \pm 0.0001}{\atomicunit}$.
+
+A nice way to test the Slater determinant code is to turn off the electron-electron repulsion. In that case, $\psi_S$ is the \emph{exact} solution (for $\alpha = 1$). We already showed in Section \ref{sec:2e_unp} that the ground-state energy for the single electron is $E_s = \hbar\omega(n_x + n_y + 1)$. Since -- in the 6 electrons case -- we have 2 electrons with $n_x + n_y = 0$ and 4 electrons with $n_x + n_y = 1$ (See Figure \ref{eq:sketch_6e}), the total energy for the ground state is
+\begin{equation}
+	E_{\text{gs}} = \hbar\omega\left[2(0+1)+4(1+1)\right] = 10\omega.
+\end{equation}
+
+Turning off the repulsion results in a minimum $E_{\text{gs}} = \SI{2.7999999999999 \pm 0.0000000000002}{\atomicunit}$ for $\alpha=1$, that confirms the prediction.
+
+\subsection{$\omega = 0.5$}
+We repeat the same calculations with $\omega=0.5$, obtaining the results in Figure \ref{fig:6e-050-rep}.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{6e-050-rep}
+	\caption{The variational energy versus the variational parameters $\alpha$ and $\beta$. The settings used are: importance sampling with $\Delta t = 0.1$, Jastrow factor, parallelization (8 threads), $10$ variations of $\alpha$ and $\beta$ with step $0.1$, $\SI{2e5}{}$ Monte Carlo steps. $\omega=0.50$.}
+	\label{fig:6e-050-rep}
+\end{figure}
+
+Again, our result is pretty consistent with the one calculated by DMC in \cite{pede}, that is $\SI{11.7888 \pm 0.0002}{\atomicunit}$.
+
+\subsection{$\omega = 1$}
+
+Just with the same parameters used in Figure \ref{fig:6e-050-rep} but changing the frequency to $\omega=1.00$, we have the results in Figure \ref{fig:6e-100-rep}.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{6e-100-rep}
+	\caption{The variational energy versus the variational parameters $\alpha$ and $\beta$. The settings used are: importance sampling with $\Delta t = 0.1$, Jastrow factor, parallelization (8 threads), $10$ variations of $\alpha$ and $\beta$ with step $0.1$, $\SI{2e5}{}$ Monte Carlo steps. $\omega=1.00$.}
+	\label{fig:6e-100-rep}
+\end{figure}
+
+Once again, our result is in very good accordance with the one calculated by DMC in \cite{pede}, that is $\SI{20.1597 \pm 0.0002}{\atomicunit}$.
+
+
+
+
+\section{The virial theorem}
+\label{sec:virial}
+
+The virial theorem states that the expectation value of the total kinetic energy $\Braket{T}$ is proportional to the expectation value of the total potential energy $\Braket{V}$. For a pure harmonic oscillator, this theorem is simply the theorem of the \emph{equipartition theorem}:
+\begin{equation}
+	\Braket{T} = \Braket{V}.
+\end{equation}
+This is quite easy to prove. Let's introduce the ladder operators
+\begin{equation}
+	\hat{a}=\frac{1}{\sqrt{2 \hbar \omega m}} \left( m \omega \hat{x}+ i \hat{p} \right)
+	\qquad \text{and} \qquad
+	\hat{a}^{\dagger}=\frac{1}{\sqrt{2 \hbar \omega m}} \left( m \omega \hat{x}- i \hat{p} \right)
+\end{equation}
+It can be shown that these operators act on the harmonic oscillator eigenstates such that
+\begin{equation}
+	\hat{a} \Ket{n} =\sqrt{n} \Ket{n-1}
+	\quad \text{and} \quad 
+	\hat{a}^{\dagger} \Ket{n} =\sqrt{n+1} \Ket{n+1},
+\end{equation}
+and we also have
+\begin{equation}
+	N\Ket{n} \doteqdot \hat{a}^{\dagger}\hat{a}\Ket{n} = n\Ket{n}.
+\end{equation}
+
+Using these properties, the calculation of the expected value of the potential energy is straightforward:
+\begin{align}
+	\Braket{n|\frac{1}{2}m\omega^2\hat{x}^2|n}
+	&= \frac{1}{2}m\omega^2\Braket{n|\hat{x}^2|n} \\
+	&= \frac{1}{2}\cancel{m}\omega^{\cancel{2}}\frac{\hbar}{2\cancel{m}\cancel{\omega}}\Braket{n|\left(\hat{a}^{\dagger}+\hat{a}\right)\left(\hat{a}+\hat{a}^{\dagger}\right)|n} \\
+	&= \frac{\hbar\omega}{4} \left(\Braket{n|\hat{a}^{\dagger}\hat{a}^{\dagger}|n}+\Braket{n|\hat{a}\hat{a}^{\dagger}|n}+\Braket{n|\hat{a}^{\dagger}\hat{a}|n}+\Braket{n|\hat{a}\hat{a}|n}\right) \\
+	&= \frac{\hbar\omega}{4} \left(\sqrt{n+2}\sqrt{n+1}\cancelto{0}{\Braket{n|n+2}}\right. \\
+	&\left.+\Braket{n|\hat{N}+1|n}+\Braket{n|\hat{N}|n}+\sqrt{n}\sqrt{n-1}\cancelto{0}{\Braket{n|n-2}}\right) \\
+	&= \frac{\hbar\omega}{4}((n+1)+n) = \frac{\hbar\omega}{4}(2n+1) \\
+	&= \frac{\hbar\omega}{2}\left(n+\frac{1}{2}\right)
+\end{align}
+If we perform the same calculation for $\Braket{n|\frac{\hat{p}^2}{2m}|n}$ (the expected value of the kinetic energy) we will obtain the result, yielding
+\begin{equation}
+	\Braket{T} = \Braket{V}
+\end{equation}
+and
+\begin{equation}
+	\Braket{T}+\Braket{V} = \hbar\omega\left(n+\frac{1}{2}\right),
+\end{equation}
+that is the total energy of the harmonic oscillator, as expected.
+
+Let's now graph the ratio $\Braket{T} / \Braket{V}$ for different values of $\omega$.
+
+\subsection{The 2-electrons system}
+
+We firstly computed $\Braket{T}$ and $\Braket{V}$ \emph{without} the electron-electron repulsion, to check our code. We chose $\omega=0.01,\,0.28,\,0.50,\,0.70,\,1.00$. The result -- completely expected -- is shown in Figure \ref{fig:virial_2e-norep}.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{virial_2e-norep}
+	\caption{The ratio $\Braket{T} / \Braket{V}$ for different values of $\omega$ and no electron-electron repulsion. The settings used are: importance sampling with $\Delta t = 0.1$, parallelization (8 threads), $\SI{1e7}{}$ Monte Carlo steps.}
+	\label{fig:virial_2e-norep}
+\end{figure}
+
+After that, we added the electron-electron repulsion and we did again the calculations for the same $\omega$ values. The result, shown in Figure \ref{fig:virial_2e-rep}, is quite different.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{virial_2e-rep}
+	\caption{The ratio $\Braket{T} / \Braket{V}$ for different values of $\omega$ with electron-electron repulsion. The settings used are: importance sampling with $\Delta t = 0.1$, Jastrow factor, parallelization (8 threads), $\SI{1e7}{}$ Monte Carlo steps. The fit is logarithmic.}
+	\label{fig:virial_2e-rep}
+\end{figure}
+
+The dashed line is a fit of the type
+\begin{equation}
+	\frac{\Braket{T}}{\Braket{V}} = b\log(c\omega),
+\end{equation}
+which gives $b = \SI{0.052 \pm 0.007}{}$ and $c = \SI{2340 \pm 2021}{}$. We can't really say if the behaviour of our data is logarithmic without a theoretical basis and with just $5$ points; the purpose of the dashed line in Figure \ref{fig:virial_2e-rep} is just to show that our data is \emph{no way} linear. This is due to the presence of the repulsive force, that can be dominant or not.
+
+In a very intuitive way, we can at least say that what we obtain is coherent with the physics of the system. For $\omega \gg 1$ the oscillator potential is dominant and the repulsion can be considered as a small perturbation, which means that we have more kinetic energy than potential energy ($T > V$). For $\omega \ll 1$, we almost have only a repulsion potential plus a small harmonic perturbation; in other words, $T < V$.
+
+If one really wants to find an analytical relation for the ratio $\Braket{T} / \Braket{V}$ of this system, he should compute the two terms separately in a way similar to the one shown in Section \ref{sec:virial} and then take the ratio of them. Note that this is not always possible, since the necessary integrals could not be solved analytically.
+
+
+\subsection{The 6-electrons system}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{virial_6e-norep}
+	\caption{The ratio $\Braket{T} / \Braket{V}$ for different values of $\omega$ and no electron-electron repulsion. The settings used are: importance sampling with $\Delta t = 0.1$, parallelization (8 threads), $\SI{1e6}{}$ Monte Carlo steps.
+	A linear fit gives a ratio of $\SI{1.02 \pm 0.02}{}$, that is still compatible with the expected value $1$.}
+	\label{fig:virial_6e-norep}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{virial_6e-rep}
+	\caption{The ratio $\Braket{T} / \Braket{V}$ for different values of $\omega$ with electron-electron repulsion. The settings used are: importance sampling with $\Delta t = 0.1$, Jastrow factor, parallelization (8 threads), $\SI{1e6}{}$ Monte Carlo steps. The fit is a square root.}
+	\label{fig:virial_6e-rep}
+\end{figure}
+
+We did again the same calculations (with the same $\omega$ values) for $6$ electrons. This time, we don't obtain a perfect $1$ ratio for the non repulsive case (Figure \ref{fig:virial_6e-norep}); a linear fit gives $\SI{1.02 \pm 0.02}{}$, which is anyway still compatible with the expected value $1$. A possible explanation for this behaviour is that we are not using enough Monte Carlo steps; they are ten times less than the previous case, when we are dealing with a number of electrons that is three times more the 2-electrons case.
+
+The discussion of what we obtain adding the electron-electron repulsion, shown in Figure \ref{fig:virial_6e-rep}, is the same as the 2-electrons case in the previous section. The fit (that \emph{is not} particularly indicative) is of the type
+\begin{equation}
+	\frac{\Braket{T}}{\Braket{V}} = b\sqrt{c\omega}+d,
+\end{equation}
+which gives $b = \SI{0.06 \pm 0.01}{}$, $c = \SI{0.416 \pm 0.001}{}$ and $d = \SI{1.00 \pm 0.01}{}$.
+
+
+\section{Analytical derivatives}
+The most time-consuming part of the Metropolis-Hastings algorithm is the computation of the acceptance ratio, the kinetic energy and the quantum force, that involve the calculation of several first and second derivatives. A way to -- possibly -- improve our program is to use analytical derivatives. Note that this is possible in very few cases -- like this one, so we will take advantage of it.
+
+Let's remember that the wave-function is
+\begin{equation}
+	\psi_{T} = |\vec{S}^{\uparrow}||\vec{S}^{\downarrow}|J,
+\end{equation}
+where $|\vec{S}^{\uparrow}|$ is the Slater determinant relative to the spin-up particles, $|\vec{S}^{\downarrow}|$ is the one relative to the spin-down particles and $J$ is the Jastrow factor.
+
+For the quantum force $\vec{F}_i$ relative to particle $i$ we have that
+\begin{align}
+	\vec{F}_{i} &= 2 \dfrac{1}{\psi_{T}} \nabla_{i} \Psi_{T} \\
+	&= 2 \dfrac{\nabla_{i}(|\vec{S}^{\uparrow}||\vec{S}^{\downarrow}|J)}{|\vec{S}^{\uparrow}||\vec{S}^{\downarrow}|J} \\
+	&= 2 \left( \dfrac{\nabla_{i}|\vec{S}^{\uparrow}|}{|\vec{S}^{\uparrow}|} + \dfrac{\nabla_{i}|\vec{S}^{\downarrow}|}{|\vec{S}^{\downarrow}|} + \dfrac{\nabla_{i}J}{J} \right).
+\end{align}
+
+Since particle $i$ has either spin up or spin down, one of the two terms with the Slater determinant will vanish, because it's not dependant on that particle. So, labelling with $\alpha$ the spin of particle $i$, we have that
+\begin{equation}
+	\vec{F}_{i} = 2 \left(\dfrac{\nabla_{i}|\vec{S}^{\alpha}|}{|\vec{S}^{\alpha}|} + \dfrac{\nabla_{i}J}{J} \right)
+\end{equation}
+Doing the same with the local energy, we end up with
+\begin{equation}
+	E_L= \frac{1}{2} \sum_i \frac{1}{\psi_T} \nabla_i^2 \psi_T + \sum_i V_i
+\end{equation}
+Then,
+\begin{equation}
+	\frac{1}{\psi_T} \nabla_i^2 \psi_T= \frac{\nabla_i^2 |\vec{S}^{\alpha}|}{|\vec{S}^{\alpha}|}+\frac{\nabla^2_i J}{J}+2 \frac{\nabla_i |\vec{S}^{\alpha}|}{|
+	\vec{S}^{\alpha}|}\frac{\nabla_i J}{J},
+	\label{eq:psi_second_derivative}
+\end{equation}
+where the components relative to the spin opposite to the one of the particle taken into account vanish for the reason explained before.
+
+According to \cite{jorgen}, the four terms that appear in (\ref{eq:psi_second_derivative}) are
+\begin{align}
+	\frac{\nabla_i J}{J} 
+	&= \sum_{k \neq i=1}^N \frac{a_{ik}}{r_{ik}} \frac{\vec{r}_i-\vec{r}_k}{(1+\beta \, r_{ik})^2} \\
+	\frac{\nabla_i^2 J}{J} 
+	&= \left|\frac{\nabla_i J}{J} \right|^2+ \sum_{k \neq i=1}^N a_{ik} \frac{(d-3)(\beta \, r_{ik}+1)+2}{r_{ik}(\beta \, r_{ik}+1)^3} \\
+	\frac{\nabla_i |\vec{S}|}{|\vec{S}|} 
+	&= \sum_k \nabla_i \phi_k (\vec{r}_i^{\text{new}})(\vec{S}_{ki}^{\text{new}})^{-1} \\
+	\frac{\nabla_i^2 |\vec{S}|}{|\vec{S}|} 
+	&= \sum_k \nabla_i^2 \phi_k (\vec{r}_i^{\text{new}})(\vec{S}_{ki}^{\text{new}})^{-1}
+\end{align}
+with $k$ that spans the Slater matrix relative to the $i$th particle. The quantities $\nabla_i \phi_k$ and $\nabla^2_i \phi_k$ are also tabulated in \cite{jorgen}. It's also possible to optimize the determinant of the inverse of the Slater matrix, but we opted here for a numerical computation of the inverse matrix using Armadillo. If one does that, it's also possible to optimize the acceptance ratio to have a even faster code.
+
+\subsection{Execution times}
+
+Let's see if we have a real gain in speed for the 2-electrons and the 6-electrons cases. Note that we have to run the program with a single thread to avoid extra waiting time on the CPU due to the line
+\begin{lstlisting}[language=cpp]
+		#pragma omp barrier
+\end{lstlisting}
+in the parallel cycles. Our benchmarks are shown in Figures \ref{fig:times_2e} and \ref{fig:times_6e}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{times_2e}
+	\caption{Execution times for 2-electrons and a single pair of variational parameters $(\alpha,\beta)$. The GNU/Linux system tool \texttt{time} was used to take the measurements.}
+	\label{fig:times_2e}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{times_6e}
+	\caption{Execution times for 6-electrons and a single pair of variational parameters $(\alpha,\beta)$. The GNU/Linux system tool \texttt{time} was used to take the measurements.}
+	\label{fig:times_6e}
+\end{figure}
+
+As you see, we don't have great improvements; on the contrary, we obtain a code that is even a little bit slower than the numerical one for the 6-electrons case! However, there are some things that have to be pointed out. First of all we decided to perform a numerical inversion of a matrix, that is really time-consuming (it's a $\mathcal{O}(n^3)$ operation). Secondly there is no optimization of the acceptance ratio, that can be further simplified -- as shown again in \cite{jorgen}. Lastly, the benefits of numerical derivatives could not appear until one reaches $12$ or even $20$ particles; this is because the computational complexity of a determinant of a matrix is $\mathcal{O}(n^3)$, that for $3 \times 3$ matrices (as the 6-electrons case) is still acceptable. The struggle in calculating big determinants all the time is more evident for higher numbers of particles; for the 12-particles case the Slater determinant is 8 times slower than the 6-particles case, while for the 20-particles case is approximately 37 times slower.
+
+Another thing that has to be noted is that -- with the analytical derivatives -- we obtain slightly lower values for the energy. Deactivating the electron-electron repulsion the discrepancy still persists, meaning that the reason of this fact has to be found in the Slater determinant derivatives implementation. A possible explanation is that we are (numerically) performing the inverse of a matrix that has very small elements, and this could cause a loss of precision.
+
+
+\section{Conclusions and perspectives}
+In this project we really showed the power of the VMC method, that even if it doesn't give automatically the ground state energy of a system can be used to approximate it -- to excess -- with a considerable degree of precision. If we have no clues about the properties of the system we can use a brute force sampling, trying to manually set a length-step that gives about $50\%$. But if we are smarter, we can use the information we have about the expected result to implement a more efficient sampling.
+
+This program has been implemented in a highly object-oriented way, following the suggestions contained in \cite{jorgen}, and can also fully handle the 12-electrons case (look at the implementation of the orbitals in the code). However, it is still \emph{extremely slow} -- practically unusable. So, I'm planning to improve this program using MPI and GPU parallelization, that would give me some extra speed.
+
+I'm also planning to extend this program to handle a custom number of variational parameters, and to improve the trial wave-function with some extra terms as suggested by professor Francesco Pederiva\footnote{University of Trento, Department of Physics.} and/or using the Hartree-Fock method. This would require to abandon the analytical derivatives route and concentrate the efforts in the algorithm improvements in terms of efficiency.
+
+Finally, for me this project has been a springboard into the quantum computational physics world; I enjoyed so much in doing this simulation that I've decided to goo deeper into this subject and start to explore of its full potential in advanced courses at UiO and NMBU.
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+
+\begin{thebibliography}{9}
+\addcontentsline{toc}{section}{References}
+
+\bibitem[Hjorth-Jensen]{morten}
+  Hjorth-Jensen, Morten.
+  (2014, Aug).
+  \emph{Computational Physics - Lecture Notes Fall 2014}.
+  Oslo: University of Oslo.
+  Retrieved from: \texttt{\url{http://www.uio.no/studier/emner/matnat/fys/FYS3150/h14/undervisningsmateriale/Lecture\%20Notes/lecture2014.pdf}}
+%  \texttt{ISBN-13 978-0-321-85656-2}.
+
+\bibitem[Taut]{taut}
+  Taut, M.
+  (1993, Nov).
+  Two electrons in an external oscillator potential: Particular analytic solutions of a Coulomb correlation problem.
+  \emph{Phys. Rev. A, 48}(5),
+  {3561--3566}.
+  \texttt{doi:10.1103/PhysRevA.48.3561},
+  \texttt{\url{http://link.aps.org/doi/10.1103/PhysRevA.48.3561}}
+
+\bibitem[Pedersen Lohne, et al.]{pede}
+  Pedersen Lohne, M. and Hagen, G. and Hjorth-Jensen, M. and Kvaal, S. and Pederiva, F.
+  (2011, Sep).
+  Ab initio computation of the energies of circular quantum dots.
+  \emph{Phys. Rev. B, 84}(11),
+  {115302}.
+  \texttt{10.1103/PhysRevB.84.115302},
+  \texttt{\url{http://link.aps.org/doi/10.1103/PhysRevB.84.115302}}
+
+\bibitem[Høgberget]{jorgen}
+  Høgberget, Jørgen.
+  (2013).
+  \emph{Quantum Monte-Carlo Studies of Generalized Many-body Systems}.
+  Oslo: University of Oslo.
+  \texttt{\url{http://hdl.handle.net/10852/37167}}.
+  Retrieved from: \texttt{\url{https://duo.uio.no/bitstream/10852/37167/1/jorgenh_thesis.pdf}}
+  
+\bibitem[Griffiths]{griffithsquantum}
+  Griffiths, David Jeffery.
+  (Second Ed.).
+  (2005).
+  \emph{Introduction to Quantum Mechanics}.
+  Pearson Education, Inc.
+  \texttt{ISBN 978-81-7758-230-7}.
+
+\end{thebibliography}
+
+
+
+\end{document}
