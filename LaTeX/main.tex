@@ -142,6 +142,31 @@
 
 \newpage
 
+\section{What are quantum dots?}
+The term ``quantum dots'' refers to finite fermion systems consisting of an artificial 3D confinement of a few electrons. Although this definition is quite precise, I prefer a more immediate one: ``quantum dots are \emph{artificial atoms}''. Despite its simplicity, this definition contains a good amount of relevant information. Like natural atoms, in fact, quantum dots are made up of electrons confined in an attractive potential; and as one may guess, they show a similar shell-like structure with its relative \emph{magic numbers} -- the resemblance is striking. We begin our discussion by briefly illustrating this simple model.
+
+\subsection{The shell-model}
+The so-called \emph{shell-model} is a particularly convenient and simple way to treat a system of interacting particles. This model is based on the \emph{a priori} assumption that the \emph{interacting} particles can be treated as \emph{independent} particles subject to an average \emph{effective potential}. This effective potential is created by the particles themselves, but one can also add an external component to the intrinsic one. Using this simplification it's possible to find a solution for the Schr\"{o}dinger equation; the result is a certain distribution of single-particle energy levels. In many cases, this distribution it's nonuniform (look, for example, at the simple case of the infinite well) and shows a characteristic bunching of levels; these bunches are called \emph{shells}.
+
+It's very important to have a scheme of such energy levels, since it can immediately give information about the stability of a system: if the level bunching at the Fermi surface has a minimum, then the system is more bound. In fact, this situation corresponds to particles occupying states with a lower energy (on average), thus minimizing the total energy. In terms of the shell-model, this means that all the shells below the Fermi level are filled. (INSERT FIGURE 1 REIMANN) A situation in which the level bunching doesn't have a minimum at the Fermi surface corresponds instead in a non-filled shell. In this case the system can rearrange itself in a non-symmetric shape, in order to reach a better stability.
+
+This has been shown e.g. for atomic nuclei by means of nuclear spectroscopy. In that case, a measurement of the \emph{quadrupole moment} can exploit the possibly non symmetric structure. As a simple example, the quadruple moment $Q$ for a single proton is
+\begin{equation}
+	Q = e \int \psi^*(3z^2-r^2)\psi\,d\tau,
+	\label{eq:quadrupole_single_proton}
+\end{equation}
+where $\tau$ indicates the volume. If $|\psi|^2$ is spherically symmetric, then -- on average $x^2=y^2=z^2=r^2/3$, and substituting $z^2=r^2/3$ into \eqref{eq:quadrupole_single_proton} gives zero. So, a non-zero quadrupole moment indicates a non-spherical shape; this shape can be determined by the analysis of the angular distribution of the radiation field.
+
+But how can these deformations give a better stability to the system in the case of non-filled shells? The answer is simple: because they minimize the energy. To show this, we introduce the example of a two-dimensional anisotropic harmonic oscillator confinement of fermions (FROM REIMANN, INSERT REFERENCE), in which the effective potential is 
+\begin{equation}
+	V(x,y) = \frac{1}{2}m^*\omega^2\left(\delta x^2 + \frac{1}{\delta}y^2\right).
+\end{equation}
+Here $\omega$ is the oscillator frequency, $m^*$ is the effective mass of the fermions and the deformation parameter $\delta \doteqdot \omega_x/\omega_y$ is defined such that $\omega_x=\omega\sqrt{\delta}$ and $\omega_y=\omega/\sqrt{\delta}$. This condition guarantees that the area is conserved with the deformation. By analogy with the simple harmonic oscillator, which has energy levels $E_n = \hbar\omega(n+1/2)$, the energy levels of the 2D anisotropic case are just
+\begin{equation}
+	E_{n_x,n_y}(\delta) = \hbar\omega\left[\sqrt{\delta}\left(n_x+\frac{1}{2}\right) + \frac{1}{\sqrt{\delta}}\left(n_y+\frac{1}{2}\right)\right].
+\end{equation}
+
+
 \section{Introduction and theoretical basis}
 
 \subsection{The Variational Principle}
