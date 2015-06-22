@@ -1,5 +1,5 @@
 %---- BSc Thesis version BEGIN ----%
-\documentclass[a4paper,oneside,10pt]{article}
+\documentclass[a4paper,oneside,11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{type1cm}
 \usepackage[english]{babel}
@@ -40,7 +40,7 @@
 \usepackage{siunitx}
 \DeclareSIUnit\atomicunit{a.u.}
 %\usepackage [a4paper, top=2.5cm, bottom=2cm, left=1.5cm, right=1.5cm] {geometry}
-\usepackage[margin=2cm]{geometry}
+\usepackage{geometry}%margin=2cm
 \pagestyle{fancy}
 
 \renewenvironment{proof}{\vskip 1em \noindent\textsc{Proof:}}{\begin{flushright}$\blacksquare$\end{flushright}\vskip 1em}
@@ -165,6 +165,24 @@ Here $\omega$ is the oscillator frequency, $m^*$ is the effective mass of the fe
 \begin{equation}
 	E_{n_x,n_y}(\delta) = \hbar\omega\left[\sqrt{\delta}\left(n_x+\frac{1}{2}\right) + \frac{1}{\sqrt{\delta}}\left(n_y+\frac{1}{2}\right)\right].
 \end{equation}
+These levels are plotted against the deformation in (FIGURE 2 FROM REIMANN). For $\delta=1$ (that is the isotropic case) you see that there is a $(n+1)$-fold degeneracy, where $n=n_x+n_y=0,1,2,\ldots$ is the principal quantum number. Taking into account the spin degeneracy (that gives a factor 2), we obtain closed shells for $N=2,6,12,20,\ldots$ electrons. These numbers are called the \emph{magic numbers}. As we increase the deformation parameter, the degenerate levels split. It is useful, in this case, to look at the total energies (on the right in FIGURE 2 FROM REIMANN); you see that now the energy levels have cups and minima that significantly change the behavior of the system for non-closed shells. In fact the energies have minima at $\delta=1$ for the closed-shell cases ($N=2,6,12$), whereas their minima are shifted to different values of $\delta$ in the open-shell cases ($N=4,8,10$). As a rough graphical estimate, for $N=4$ the minimum energy (i.e., the stablest configuration) is reached about a deformation value $\delta=2$ and for $N=10$ about $\delta=1.5$.
+
+Even this simple example shows in an effective way how a deformation can guarantee a stabler configuration for non-closed shells. Further in our simulations, we will restrict only to closed-shell systems.
+
+\subsection{Evidences of the shell-model}
+We said before that the shell-structure seems to be a common property of finite fermion systems. Indeed, clear evidences of it had been shown for \emph{atoms}, \emph{atomic nuclei}, \emph{clusters of atoms} and \emph{quantum dots}. Let's briefly see which kind of measurements led to this result.
+
+In the case of atoms, the shell-model is applied to the electrons ``orbiting'' around the nucleus, which is considered as an effective attractive Coulomb potential. A very natural think that one may think to measure in order to exploit the shell structure is the \emph{ionization energy}, that is the energy required to remove an electron from a neutral atom. In fact we have shown that electrons in a closed-shell system are more bound, which means that we expect to need more energy to remove one of it (i.e., we expect to see a higher ionization energy). Indeed this happens pretty clearly, as you see in Figure (FIGURE 3 REIMANN), showing the sequence of magic numbers $N=2,10,18,36,54,86,\ldots$.
+
+For atomic nuclei the idea is quite the same, with the only difference that now we have to measure the energy required to remove a nucleon from the nucleon (which is called the \emph{separation energy}). The step-like behavior is also present in this case, giving the sequence of magic numbers $N=2,8,20,28,50,82,\ldots$ (FIGURE 3 REIMANN).
+
+Atomic clusters are also an interesting case, since they show anomalies in the mass abundance spectra: for certain cluster sizes, the clusters are more stable. This behavior has been explained with the ``jellium'' theory for metallic clusters; the valence electrons are treated as trapped in a homogeneous positive-charged background (the jellium), that stems from the atomic ions. Density functional calculations showed the magic number sequence $N=2,8,20,40,58$ (SEE FIGURE 3) some years before it was discovered with experiments in the beginning of the 80's (CITE REIMANN).
+
+The sequence of magic numbers for quantum dots was discovered in 1996 by using an etched pillar of semiconducting material as shown in (FIGURE 3 REIMANN, CITE TARUCHA?). As we will see later, a quantum dot can be schematized as a one-electron transistor; measurements of the energy needed to add a single electron to a $N$-electrons quantum dot show large peaks for $N=2,6,12$ (THE SAME FIGURE 3). Noticeably, these numbers are the same quantum numbers obtained for a two-dimensional harmonic oscillator.
+
+
+
+
 
 
 \section{Introduction and theoretical basis}
