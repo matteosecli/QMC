@@ -1,5 +1,5 @@
 %---- BSc Thesis version BEGIN ----%
-\documentclass[a4paper,oneside,11pt]{article}
+\documentclass[a4paper,twoside,11pt]{book}
 \usepackage[utf8]{inputenc}
 \usepackage{type1cm}
 \usepackage[english]{babel}
@@ -23,6 +23,8 @@
 ]{hyperref}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
 \usepackage{fancyhdr}
 \usepackage{listingsutf8}
 \usepackage{xcolor}
@@ -32,7 +34,7 @@
 \usepackage{amssymb}	
 \usepackage{wrapfig}
 \usepackage{enumitem}
-\usepackage{subfigure}
+%\usepackage{subfigure}
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{cancel}
@@ -59,11 +61,11 @@
 \rhead{\large Variational Monte Carlo methods for quantum dots}
 
 \lhead{\large FYS3150 -- Final project}
-\lfoot{Matteo Seclì -- Candidate number: 31}
-\cfoot{}
-\rfoot{\thepage}
-\renewcommand{\headrulewidth}{0.7pt}
-\renewcommand{\footrulewidth}{0.7pt}
+%\lfoot{Matteo Seclì -- Candidate number: 31}
+%\cfoot{}
+%\rfoot{\thepage}
+%\renewcommand{\headrulewidth}{0.7pt}
+%\renewcommand{\footrulewidth}{0.7pt}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{dred}{rgb}{0.545,0,0}
@@ -142,10 +144,37 @@
 
 \newpage
 
-\section{What are quantum dots?}
-The term ``quantum dots'' refers to finite fermion systems consisting of an artificial 3D confinement of a few electrons. Although this definition is quite precise, I prefer a more immediate one: ``quantum dots are \emph{artificial atoms}''. Despite its simplicity, this definition contains a good amount of relevant information. Like natural atoms, in fact, quantum dots are made up of electrons confined in an attractive potential; and as one may guess, they show a similar shell-like structure with its relative \emph{magic numbers} -- the resemblance is striking. We begin our discussion by briefly illustrating this simple model.
+\chapter{What are quantum dots?}
 
-\subsection{The shell-model}
+\section{Definition and fabrication processes}
+The term ``quantum dots'' refers to finite fermion systems consisting of an artificial 3D confinement of a few electrons, that have a size of only a few hundred angstroms (REIMANN, APPENDIX).
+
+Such confinement is usually achieved by restricting the two-dimensional electron gas that forms at the interface between two different semiconductor materials (or heterostructure), ether laterally or vertically. Let's briefly examine these two methods.
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{Figure_5_Reimann}
+		\caption{Lateral device structure. From (REIMANN).}
+		\label{fig:Figure_5_Reimann}
+    \end{subfigure}
+	\begin{subfigure}[b]{0.4\textwidth}
+		\includegraphics[width=\textwidth]{Figure_4_Reimann}
+		\caption{Etched quantum dots. The white bars have a length of $\SI{0.5}{\micro\meter}$. From (REIMANN)}
+		\label{fig:Figure_4_Reimann}
+    \end{subfigure}
+	\label{fig:Figures_4-5_Reimann}
+\end{figure}
+
+The lateral confinement is obtained with a device like the one in Figure \ref{fig:Figure_5_Reimann}. The electron gas forms at the interface between GaAs and AlGaAs, and the confinement is obtained by applying a voltage to the top metal electrodes -- called gates. The entire structure is only a few $\SI{}{\micro\meter}$ thick, so the gates are created by lithographic patterning.
+
+Another common method to fabricate quantum dots is to build heterostructure pillar by etching techniques. Some of these structures are shown in Figure \ref{fig:Figure_4_Reimann} the electrodes are at the top and at the bottom of the pillars.
+
+Other fabricating processes include self-growth mechanisms (CITE REIMANN), in which the growth conditions determine the form of the structure (that can be pyramidal, disk shaped or lens shaped), and cleaved-edge overgrowth (CITE REIMANN), that consists in two separate MBE\footnote{Molecular Beam Epitaxy} growths on a specific substrate.
+
+Although the definition of quantum dots given above is quite precise, I prefer a more immediate one: ``quantum dots are \emph{artificial atoms}''. Despite its simplicity, this definition contains a good amount of relevant information. Like natural atoms, in fact, quantum dots are made up of electrons confined in an attractive potential; and as one may guess, they show a similar shell-like structure with its relative \emph{magic numbers} -- the resemblance is striking. We begin our discussion by briefly illustrating this simple model.
+
+\section{The shell-model}
 The so-called \emph{shell-model} is a particularly convenient and simple way to treat a system of interacting particles. This model is based on the \emph{a priori} assumption that the \emph{interacting} particles can be treated as \emph{independent} particles subject to an average \emph{effective potential}. This effective potential is created by the particles themselves, but one can also add an external component to the intrinsic one. Using this simplification it's possible to find a solution for the Schr\"{o}dinger equation; the result is a certain distribution of single-particle energy levels. In many cases, this distribution it's nonuniform (look, for example, at the simple case of the infinite well) and shows a characteristic bunching of levels; these bunches are called \emph{shells}.
 
 It's very important to have a scheme of such energy levels, since it can immediately give information about the stability of a system: if the level bunching at the Fermi surface has a minimum, then the system is more bound. In fact, this situation corresponds to particles occupying states with a lower energy (on average), thus minimizing the total energy. In terms of the shell-model, this means that all the shells below the Fermi level are filled. (INSERT FIGURE 1 REIMANN) A situation in which the level bunching doesn't have a minimum at the Fermi surface corresponds instead in a non-filled shell. In this case the system can rearrange itself in a non-symmetric shape, in order to reach a better stability.
@@ -169,7 +198,7 @@ These levels are plotted against the deformation in (FIGURE 2 FROM REIMANN). For
 
 Even this simple example shows in an effective way how a deformation can guarantee a stabler configuration for non-closed shells. Further in our simulations, we will restrict only to closed-shell systems.
 
-\subsection{Evidences of the shell-model}
+\section{Evidences of the shell-model}
 We said before that the shell-structure seems to be a common property of finite fermion systems. Indeed, clear evidences of it had been shown for \emph{atoms}, \emph{atomic nuclei}, \emph{clusters of atoms} and \emph{quantum dots}. Let's briefly see which kind of measurements led to this result.
 
 In the case of atoms, the shell-model is applied to the electrons ``orbiting'' around the nucleus, which is considered as an effective attractive Coulomb potential. A very natural think that one may think to measure in order to exploit the shell structure is the \emph{ionization energy}, that is the energy required to remove an electron from a neutral atom. In fact we have shown that electrons in a closed-shell system are more bound, which means that we expect to need more energy to remove one of it (i.e., we expect to see a higher ionization energy). Indeed this happens pretty clearly, as you see in Figure (FIGURE 3 REIMANN), showing the sequence of magic numbers $N=2,10,18,36,54,86,\ldots$.
@@ -180,14 +209,83 @@ Atomic clusters are also an interesting case, since they show anomalies in the m
 
 The sequence of magic numbers for quantum dots was discovered in 1996 by using an etched pillar of semiconducting material as shown in (FIGURE 3 REIMANN, CITE TARUCHA?). As we will see later, a quantum dot can be schematized as a one-electron transistor; measurements of the energy needed to add a single electron to a $N$-electrons quantum dot show large peaks for $N=2,6,12$ (THE SAME FIGURE 3). Noticeably, these numbers are the same quantum numbers obtained for a two-dimensional harmonic oscillator.
 
+\section{The Coulomb blockade model}
+The behavior of a quantum dot can be analyzed by studying its electron transport mechanism. In order to do that, the dot is connected to a circuit that provides a certain gate voltage, and its conductance is measured. A plot like the one in Figure (FIGURE 6 REIMANN) is obtained; you see that there are conductance peaks at specific gate voltages, all of them evenly spaced. This behavior can be explained my the \emph{Coulomb blockade model}.
+
+Let's consider a \emph{single-electron transistor} device, like the one in Figure (MAKE A FIGURE FOLLOWING FIG 1 CH 7 AND QUOTE). This name is due to the fact that the charge on the electron island is a multiple of the elementary charge. The electron island is weakly coupled with the source and drain contacts thanks to tunnel barriers, which are thick enough to guarantee that quantum resonances dominates the electron transport mechanism.; in other words, the conductance of the tunnel must be smaller than the quantum conductance $e^2/h$ (REIMANN). By analogy with a capacitor, in which the energy stored is $U=Q^2/2C$, one can make a first estimate of the energy stored in a dot containing $N$ particles as
+\begin{equation}
+	U(N) \simeq \frac{N(N-1)}{2C_{\Sigma}}.
+\end{equation}
+Here, the factor $(N-1)$ takes into account that each electron interacts with $N-1$ neighbors. Using this rough estimate, one can say that the energy required to add a single electron to a system already confining $N$ electrons, called the \emph{addition energy}, is
+\begin{equation}
+	\Delta U (N) = U(N+1)-U(N) = \frac{N(N+1)e^2}{2C_{\Sigma}} - \frac{N(N-1)e^2}{2C_{\Sigma}} = \frac{Ne^2}{C_{\Sigma}}.
+\end{equation}
+You see that, for successive $N$'s, the energy values are separated by the so-called \emph{charging energy}, $e^2/C_{\Sigma}$, which is constant. At low enough temperatures and bias voltages, the charging energy might be larger than the thermal energy ($e^2/C_{\Sigma} \gg k_BT$), thus preventing the electrons from tunneling the barriers. In this case transport is blocked, and this effect is called the \emph{Coulomb blockade}.
+
+Let's now analyze the same situation in a more precise way. If we label the dot with the index $i=0$, the source with 1, the drain with 2 and the gate with 3, the induced charge $\tilde{Q}_i$ on each of the electrodes can be written as
+\begin{equation}
+	\tilde{Q}_i = \sum_{j=0}^{n}C_{ij}V_j,
+\end{equation}
+where $C_{ij}$ is the capacitance matrix, $V_j$ is the potential on the $j$'th element, and $n$ will be in general larger than 3 because of additional gate electrodes. If we refer to the dot ($i=0$), we can then write
+\begin{equation}
+	\tilde{Q}_0 = \sum_{j=0}^{n}C_{0j}V_j = C_{00}V_0 + \sum_{j=1}^{n}C_{0j}V_j,
+\end{equation}
+from which
+\begin{equation}
+	V_0 = \frac{1}{C_{00}}\left(\tilde{Q}_0 - \sum_{j=1}^{n}C_{0j}V_j\right).
+	\label{eq:V0_vs_Q0tilde}
+\end{equation}
+In general, the induced charge $\tilde{Q}_0$ will be not equal to the measured one, $Q_0$, because of the presence of a background charge $Q_{\text{bg}}$ (that can be measured if all the potentials are set to zero). This means that $\tilde{Q}_0 = Q_0 - Q_{\text{bg}}$. Moreover, $C_{\Sigma} \equiv C_{00}$ by definition, and we can find an expression for it using the charge neutrality condition $\sum_{j=0}^{n}C_0j=0$, which implies $C_{\Sigma} \equiv C_{00} = -\sum_{j=1}^{n}C_{0j}$. Using these two facts, we can rewrite equation \eqref{eq:V0_vs_Q0tilde} as
+\begin{equation}
+	V_0(Q_0) = \frac{1}{C_{\Sigma}}\left(Q_0 - Q_{\text{bg}} - \sum_{j=1}^{n}C_{0j}V_j\right).
+	\label{eq:V0_vs_Q0}
+\end{equation}
+
+At this point, we can calculate the energy $U(N)$ stored in a dot with $N$ electrons by performing an integration:
+\begin{equation}
+	U(N) = \int_{0}^{-eN}V_0(Q_0)\,dQ_0 = \frac{e^2N^2}{2C_{\Sigma}} + eN\left( \frac{Q_{\text{bg}}}{C_{\Sigma}} + \sum_{j=1}^{n}\frac{C_{0j}}{C_{\Sigma}}V_j \right).
+\end{equation}
+
+Using this expression, we can finally calculate the addition energy as
+\begin{equation}
+	\Delta U (N) = U(N+1)-U(N) = \frac{e^2}{C_{\Sigma}}\left(N+\frac{1}{2}\right) + e\left( \frac{Q_{\text{bg}}}{C_{\Sigma}} + \sum_{j=1}^{n}\frac{C_{0j}}{C_{\Sigma}}V_j \right).
+\end{equation}
+You see that, for small temperatures and bias voltages, we can approximate $\Delta U (N) \simeq e^2N/C$ as we found previously by a rough estimate.
+
+This calculation still lacks the fact that, in such a small device, quantization effects are also important and should be considered. A simple model that combines the Coulomb blockade effect and the quantum effects is the \emph{constant interaction model}.
+
+\section{The constant interaction model}
+The basis assumption of the constant interaction model is that the total energy $E(N)$ of the electron island is the sum of the single-particle energies and the electrostatic energy $U(N)$:
+\begin{equation}
+	E(N) = \sum_{i=1}^{N}\epsilon_i + U(N) = \sum_{i=1}^{N}\epsilon_i + \frac{e^2N^2}{2C_{\Sigma}} + eN\left( \frac{Q_{\text{bg}}}{C_{\Sigma}} + \sum_{j=1}^{n}\frac{C_{0j}}{C_{\Sigma}}V_j \right).
+\end{equation}
+From this expression we can calculate the \emph{electrochemical potential} $\mu_N$, that is defined as the energy necessary to add the $N$-th electron to a conductor, as
+\begin{equation}
+	\mu_N 
+	= E(N) - E(N-1) 
+	=  \epsilon_N + \frac{e^2}{C_{\Sigma}}\left(N-\frac{1}{2}\right) + e\left( \frac{Q_{\text{bg}}}{C_{\Sigma}} - \sum_{j=1}^{n}\alpha_jV_j \right),
+	\label{eq:electrochemical_potential}
+\end{equation}
+where $\alpha_j$, defined as
+\begin{equation}
+	\alpha_j \doteqdot - \frac{C_{0j}}{C_{\Sigma}},
+\end{equation}
+is called the \emph{lever arm} of the gate $j$ and is always positive. Experiments show that the lever arm changes in a significant way only for very large gate voltage variations; so, in most cases the lever arm can be considered constant (QUOTE CHAPTER 7). This implies that the relation between the electrochemical potential and the gate voltage in equation \eqref{eq:electrochemical_potential} is linear; an increase in the gate voltage reflects in a decrease of the electrochemical potential, and vice-versa.
+
+(PUT HERE THE LEVEL SCHEME)
+
+Using this information, we can now analyze the transport mechanism in a quantum dot. Let's consider -- as explained before -- the low-temperature, low-bias voltage case.
 
 
 
 
 
-\section{Introduction and theoretical basis}
 
-\subsection{The Variational Principle}
+
+
+\chapter{Introduction and theoretical basis}
+
+\section{The Variational Principle}
 The Variational Principle is a method of general validity that can be used to gather information about a system with a Hamiltonian that we are unable to diagonalize (i.e., we can't solve the Schr\"{o}dinger equation for that system). Specifically, this principle gives us an \emph{upper bound} for the energy of the ground state, that we will call here $E_{\text{gs}}$. The formulation is astonishingly simple: if you pick \emph{any state $\Ket{\psi}$ whatsoever}, then
 \begin{equation}
 	E_{\text{gs}} \leq \frac{\Braket{\psi|\hat{H}|\psi}}{\Braket{\psi|\psi}}.
@@ -264,7 +362,7 @@ and
 \end{equation}
 The dependence of $\psi_T$ on the position in space and on the variational parameters has been omitted just for better readability. The quantity $E_L$ is called the \emph{local energy}, and it's what we are going to calculate in this project. Obviously, for bigger $n$ we obtain better results.
 
-\subsection{Considerations about the physical system}
+\section{Considerations about the physical system}
 \label{sec:considerations}
 Our system is represented by a number $N$ of electrons that have total energy
 \footnote{
@@ -346,7 +444,7 @@ The generalization to $N$ particles is straightforward, and will be given later.
 	\label{fig:CGt}
 \end{figure}
 
-\subsection{The Metropolis algorithm}
+\section{The Metropolis algorithm}
 
 Let's first briefly introduce what a \emph{Markov chain} is. We call a Markov chain a stochastic process where the transition probability that characterizes the transition between states only depends on the previous step and not from the path to get to such step. We can then write (see \cite{morten})
 \begin{equation}
@@ -387,7 +485,7 @@ where $A(i \rightarrow j)$ is the probability of accepting the move and $T(i \ri
 	W(j \rightarrow i)=A(j \rightarrow i) \, T(j \rightarrow i).
 \end{equation}
 
-\subsubsection{Brute force sampling}
+\subsection{Brute force sampling}
 The \emph{brute force} Metropolis algorithm simply consists in the assumption that the transition probability is symmetric, that is
 \begin{equation}
 	T(i \rightarrow j)= T (j \rightarrow i),
@@ -417,7 +515,7 @@ To summarize, one sets
 \end{equation}
 and then compares with a random number $r \in (0,1)$. If $A(i\rightarrow j) \geq r$ the step is accepted, otherwise it's rejected.
 
-\subsubsection{Importance sampling and Schödinger equation as a diffusion problem}
+\subsection{Importance sampling and Schödinger equation as a diffusion problem}
 \label{sec:importance}
 
 \emph{Importance sampling} consists in doing more clever assumptions on the shape of $T(i \rightarrow j)$. The discussion is the same as the brute force case, but this time we have to set
@@ -489,7 +587,7 @@ With this expression, the acceptance ratio in equation (\ref{eq:acceptance_imp})
 \end{equation}
 
 
-\subsubsection{Implementation}
+\subsection{Implementation}
 
 \begin{figure}[H]
 	\centering
@@ -545,9 +643,9 @@ A flow chart of this process is sketched in Figure \ref{fig:chart_flow}.
 
 
 
-\section{The 2-electrons system}
+\chapter{The 2-electrons system}
 
-\subsection{The unperturbed system}
+\section{The unperturbed system}
 \label{sec:2e_unp}
 
 \begin{figure}[H]
@@ -625,7 +723,7 @@ Comparing with equation (\ref{eq:identical_particles}) one sees that $\Ket{\psi}
 \end{equation}
 with $s=1/2$, so we have to say that -- for example -- particle 1 has spin-up ($m_s=1/2$) and particle 2 has spin-down ($m_s=-1/2$). This fact is also known as the \emph{Pauli exclusion principle}, and applies for a generic system of fermions.
 
-\subsection{The complete system}
+\section{The complete system}
 We want now to analyse the system with the full Hamiltonian, namely the Hamiltonian in equation (\ref{eq:full_hamiltonian}):
 \begin{equation}
 	\hat{H}=-\frac{1}{2} \nabla^2_1 - \frac{1}{2} \nabla^2_2+\frac{1}{2}\omega r_1^2+\frac{1}{2}\omega r_2^2+ \frac{1}{|\vec{r_1}-\vec{r_2}|},
@@ -715,7 +813,7 @@ Refining around the minimum value to have better results, we finally obtain the 
 
 You see that we are very near to the exact result $E_{\text{gs}} = \SI{3}{\atomicunit}$ calculated from \cite{taut} and reported in \cite{pede}. However, the energy error is still quite big; a way to improve the precision of our program is to \emph{parallelize} it.
 
-\subsubsection{Parallelization}
+\subsection{Parallelization}
 
 In this project, parallelization is done by using OpenMP\footnote{\url{http://openmp.org/}.}. The main idea is to run multiple computations of $E_T$ for the same pair of variational parameters $(\alpha,\beta)$ and then take the mean. Since the ``measurements'' of $E_T$ are not correlated, the error on its mean value falls like $1/\sqrt{n}$, where $n$ is the number of measurements. To be sure that the measurements are not correlated we have to make \emph{private} local copies of the variables used in the computation, one for each thread used. Then, we have to sync al the threads to be sure that all the measurements are complete, and finally we can take the mean. An example of how this is implemented in our program is given below:
 
@@ -771,7 +869,7 @@ Re-doing the calculations using parallelization gives the result in Figure \ref{
 \end{figure}
 Note that this time, even using a lower number of Monte Carlo steps, we have an amazingly precise estimate for our energy, comparable with the one obtained in \cite{pede} using Diffusion Monte Carlo.
 
-\subsubsection{Importance sampling}
+\subsection{Importance sampling}
 Let's now try to implement importance sampling, as explained in Section \ref{sec:importance}. In order to show the differences with the brute force algorithm, we will repeat the calculations with exactly the same settings used in Figure \ref{fig:2e_rep_parallel}, this time with importance sampling active. We will also try to do the calculations for different time-steps $\Delta t = 0.001,\,0.01,\,0.1$.
 
 The results are shown in Figures \ref{fig:2e-rep_imp_small}, \ref{fig:2e-rep_imp_med} and \ref{fig:2e-rep_imp_high}.
@@ -798,7 +896,7 @@ The results are shown in Figures \ref{fig:2e-rep_imp_small}, \ref{fig:2e-rep_imp
 As you see, there is a huge difference between the result obtained with $\Delta t = 0.001$ and the one obtained with $\Delta t = 0.1$. This is because, if the time step is too small and we don't have enough Monte Carlo steps, our walker cannot span completely the integration space. It will remain near its starting point and all the points reached will be inside the integration space, close to each other. In fact, the acceptance ratio for the case $\Delta t = 0.001$ and $\Delta t = 0.01$ is \emph{practically} $\SI{100}{\percent}$. The third case, for $\Delta t = 0.1$, has a little lower acceptance ratio, that is about $\SI{99.79}{\percent}$. This fact guarantees that our walker is reaching all the borders of our integration space, and in fact it also reaches some points outside it. In other words, for the given number of Monte Carlo iterations, we have a large enough time-step to cover all the space. If one wants to use a lower time-step to have better precision, he has to increase the number of Monte Carlo cycles; as an example, for $\Delta t = 0.001$, one has to use at least $\SI{1e9}{}$ Monte Carlo loops.
 
 
-\section{The 6-electrons system}
+\chapter{The 6-electrons system}
 
 \begin{figure}[H]
 	\centering
@@ -914,7 +1012,7 @@ The C++ implementation of $\psi_S$ is therefore straightforward and it is shown 
 \end{lstlisting}
 
 
-\subsection{$\omega = 0.28$}
+\section{$\omega = 0.28$}
 
 We start by studying our system for $\omega = 0.28$. A preliminary and very rough result is shown in Figure \ref{fig:6e-028-rep}.
 \begin{figure}[H]
@@ -942,7 +1040,7 @@ A nice way to test the Slater determinant code is to turn off the electron-elect
 
 Turning off the repulsion results in a minimum $E_{\text{gs}} = \SI{2.7999999999999 \pm 0.0000000000002}{\atomicunit}$ for $\alpha=1$, that confirms the prediction.
 
-\subsection{$\omega = 0.5$}
+\section{$\omega = 0.5$}
 We repeat the same calculations with $\omega=0.5$, obtaining the results in Figure \ref{fig:6e-050-rep}.
 \begin{figure}[H]
 	\centering
@@ -953,7 +1051,7 @@ We repeat the same calculations with $\omega=0.5$, obtaining the results in Figu
 
 Again, our result is pretty consistent with the one calculated by DMC in \cite{pede}, that is $\SI{11.7888 \pm 0.0002}{\atomicunit}$.
 
-\subsection{$\omega = 1$}
+\section{$\omega = 1$}
 
 Just with the same parameters used in Figure \ref{fig:6e-050-rep} but changing the frequency to $\omega=1.00$, we have the results in Figure \ref{fig:6e-100-rep}.
 \begin{figure}[H]
@@ -968,7 +1066,7 @@ Once again, our result is in very good accordance with the one calculated by DMC
 
 
 
-\section{The virial theorem}
+\chapter{The virial theorem}
 \label{sec:virial}
 
 The virial theorem states that the expectation value of the total kinetic energy $\Braket{T}$ is proportional to the expectation value of the total potential energy $\Braket{V}$. For a pure harmonic oscillator, this theorem is simply the theorem of the \emph{equipartition theorem}:
@@ -1015,7 +1113,7 @@ that is the total energy of the harmonic oscillator, as expected.
 
 Let's now graph the ratio $\Braket{T} / \Braket{V}$ for different values of $\omega$.
 
-\subsection{The 2-electrons system}
+\section{The 2-electrons system}
 
 We firstly computed $\Braket{T}$ and $\Braket{V}$ \emph{without} the electron-electron repulsion, to check our code. We chose $\omega=0.01,\,0.28,\,0.50,\,0.70,\,1.00$. The result -- completely expected -- is shown in Figure \ref{fig:virial_2e-norep}.
 \begin{figure}[H]
@@ -1045,7 +1143,7 @@ In a very intuitive way, we can at least say that what we obtain is coherent wit
 If one really wants to find an analytical relation for the ratio $\Braket{T} / \Braket{V}$ of this system, he should compute the two terms separately in a way similar to the one shown in Section \ref{sec:virial} and then take the ratio of them. Note that this is not always possible, since the necessary integrals could not be solved analytically.
 
 
-\subsection{The 6-electrons system}
+\section{The 6-electrons system}
 
 \begin{figure}[H]
 	\centering
@@ -1071,7 +1169,7 @@ The discussion of what we obtain adding the electron-electron repulsion, shown i
 which gives $b = \SI{0.06 \pm 0.01}{}$, $c = \SI{0.416 \pm 0.001}{}$ and $d = \SI{1.00 \pm 0.01}{}$.
 
 
-\section{Analytical derivatives}
+\chapter{Analytical derivatives}
 The most time-consuming part of the Metropolis-Hastings algorithm is the computation of the acceptance ratio, the kinetic energy and the quantum force, that involve the calculation of several first and second derivatives. A way to -- possibly -- improve our program is to use analytical derivatives. Note that this is possible in very few cases -- like this one, so we will take advantage of it.
 
 Let's remember that the wave-function is
@@ -1116,7 +1214,7 @@ According to \cite{jorgen}, the four terms that appear in (\ref{eq:psi_second_de
 \end{align}
 with $k$ that spans the Slater matrix relative to the $i$th particle. The quantities $\nabla_i \phi_k$ and $\nabla^2_i \phi_k$ are also tabulated in \cite{jorgen}. It's also possible to optimize the determinant of the inverse of the Slater matrix, but we opted here for a numerical computation of the inverse matrix using Armadillo. If one does that, it's also possible to optimize the acceptance ratio to have a even faster code.
 
-\subsection{Execution times}
+\section{Execution times}
 
 Let's see if we have a real gain in speed for the 2-electrons and the 6-electrons cases. Note that we have to run the program with a single thread to avoid extra waiting time on the CPU due to the line
 \begin{lstlisting}[language=cpp]
@@ -1143,7 +1241,7 @@ As you see, we don't have great improvements; on the contrary, we obtain a code 
 Another thing that has to be noted is that -- with the analytical derivatives -- we obtain slightly lower values for the energy. Deactivating the electron-electron repulsion the discrepancy still persists, meaning that the reason of this fact has to be found in the Slater determinant derivatives implementation. A possible explanation is that we are (numerically) performing the inverse of a matrix that has very small elements, and this could cause a loss of precision.
 
 
-\section{Conclusions and perspectives}
+\chapter{Conclusions and perspectives}
 In this project we really showed the power of the VMC method, that even if it doesn't give automatically the ground state energy of a system can be used to approximate it -- to excess -- with a considerable degree of precision. If we have no clues about the properties of the system we can use a brute force sampling, trying to manually set a length-step that gives about $50\%$. But if we are smarter, we can use the information we have about the expected result to implement a more efficient sampling.
 
 This program has been implemented in a highly object-oriented way, following the suggestions contained in \cite{jorgen}, and can also fully handle the 12-electrons case (look at the implementation of the orbitals in the code). However, it is still \emph{extremely slow} -- practically unusable. So, I'm planning to improve this program using MPI and GPU parallelization, that would give me some extra speed.
