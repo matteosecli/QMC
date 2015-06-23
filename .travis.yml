@@ -5,6 +5,10 @@ install:
     #- sudo apt-get install chktex
  
 script:
+    # Fix for caption
+    - mkdir temp_caption && cd temp_caption && wget http://mirrors.ctan.org/install/macros/latex/contrib/caption.tds.zip
+    - unzip -q -u -o -d /usr/local/share/texmf caption.tds.zip
+    - texhash /usr/local/share/texmf
     - cd LaTeX
     #- chktex -W # Print version information.
     #- chktex -q -n 6 *.tex 2>/dev/null | tee lint.out
