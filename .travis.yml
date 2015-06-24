@@ -3,16 +3,18 @@ install:
     - sudo apt-get update
     - sudo apt-get install texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-science
     #- sudo apt-get install chktex
- 
-script:
     # Fix for caption
     - mkdir temp_caption && cd temp_caption && wget http://mirrors.ctan.org/install/macros/latex/contrib/caption.tds.zip
     - unzip -q -u -o -d ~/texmf caption.tds.zip
     - texhash ~/texmf
     - cd ../LaTeX
+ 
+script:
     #- chktex -W # Print version information.
     #- chktex -q -n 6 *.tex 2>/dev/null | tee lint.out
     # If lint output is non-empty report an error.
     #- test ! -s lint.out
-    - pdflatex *.tex
-    - pdflatex *.tex
+    - pdflatex -interaction=nonstopmode *.tex
+    - bibtex %.aux
+    - pdflatex -interaction=nonstopmode *.tex
+    - pdflatex -interaction=nonstopmode *.tex

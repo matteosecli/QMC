@@ -3,6 +3,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage{type1cm}
 \usepackage[english]{babel}
+%\usepackage[nottoc]{tocbibind}
+\usepackage[sort, round]{natbib}
 \usepackage[%hypertex,
                  unicode=true,
                  plainpages = false, 
@@ -57,6 +59,7 @@
 \tikzstyle{arrow} = [thick,->,>=stealth]
 
 \makeatletter
+\renewcommand{\bibsection}{\chapter{\bibname}}
 \@addtoreset{section}{part}
 \makeatother
 \rhead{\large Variational Monte Carlo methods for quantum dots}
@@ -110,6 +113,8 @@
 
 \begin{document}
 
+\frontmatter
+
 \maketitle
 
 \hrule
@@ -143,12 +148,12 @@
 
 \tableofcontents
 
-\newpage
+\mainmatter
 
 \chapter{What are quantum dots?}
 
 \section{Definition and fabrication processes}
-The term ``quantum dots'' refers to finite fermion systems consisting of an artificial 3D confinement of a few electrons, that have a size of only a few hundred angstroms (REIMANN, APPENDIX).
+The term ``quantum dots'' refers to finite fermion systems consisting of an artificial 3D confinement of a few electrons, that have a size of only a few hundred angstroms \citep{Reimann2002, Kastner1993}.
 
 Such confinement is usually achieved by restricting the two-dimensional electron gas that forms at the interface between two different semiconductor materials (or heterostructure), ether laterally or vertically. Let's briefly examine these two methods.
 
@@ -156,12 +161,12 @@ Such confinement is usually achieved by restricting the two-dimensional electron
 	\centering
 	\begin{subfigure}[b]{0.5\textwidth}
 		\includegraphics[width=\textwidth]{Figure_5_Reimann}
-		\caption{Lateral device structure. From (REIMANN).}
+		\caption{Lateral device structure. From \cite{Reimann2002}.}
 		\label{fig:Figure_5_Reimann}
     \end{subfigure}
 	\begin{subfigure}[b]{0.4\textwidth}
 		\includegraphics[width=\textwidth]{Figure_4_Reimann}
-		\caption{Etched quantum dots. The white bars have a length of $\SI{0.5}{\micro\meter}$. From (REIMANN)}
+		\caption{Etched quantum dots. The white bars have a length of $\SI{0.5}{\micro\meter}$. \cite{Reimann2002}.}
 		\label{fig:Figure_4_Reimann}
     \end{subfigure}
     \caption{Lateral and vertical quantum dots structures.}
@@ -172,7 +177,7 @@ The lateral confinement is obtained with a device like the one in Figure \ref{fi
 
 Another common method to fabricate quantum dots is to build heterostructure pillar by etching techniques. Some of these structures are shown in Figure \ref{fig:Figure_4_Reimann} the electrodes are at the top and at the bottom of the pillars.
 
-Other fabricating processes include self-growth mechanisms (CITE REIMANN), in which the growth conditions determine the form of the structure (that can be pyramidal, disk shaped or lens shaped), and cleaved-edge overgrowth (CITE REIMANN), that consists in two separate MBE\footnote{Molecular Beam Epitaxy} growths on a specific substrate.
+Other fabricating processes include self-growth mechanisms, in which the growth conditions determine the form of the structure (that can be pyramidal, disk shaped or lens shaped), and cleaved-edge overgrowth, that consists in two separate MBE\footnote{Molecular Beam Epitaxy} growths on a specific substrate \citep[see][]{Reimann2002}.
 
 Although the definition of quantum dots given above is quite precise, I prefer a more immediate one: ``quantum dots are \emph{artificial atoms}''. Despite its simplicity, this definition contains a good amount of relevant information. Like natural atoms, in fact, quantum dots are made up of electrons confined in an attractive potential; and as one may guess, they show a similar shell-like structure with its relative \emph{magic numbers} -- the resemblance is striking. We begin our discussion by briefly illustrating this simple model.
 
@@ -189,7 +194,7 @@ This has been shown e.g. for atomic nuclei by means of nuclear spectroscopy. In 
 \end{equation}
 where $\tau$ indicates the volume. If $|\psi|^2$ is spherically symmetric, then -- on average $x^2=y^2=z^2=r^2/3$, and substituting $z^2=r^2/3$ into \eqref{eq:quadrupole_single_proton} gives zero. So, a non-zero quadrupole moment indicates a non-spherical shape; this shape can be determined by the analysis of the angular distribution of the radiation field.
 
-But how can these deformations give a better stability to the system in the case of non-filled shells? The answer is simple: because they minimize the energy. To show this, we introduce the example of a two-dimensional anisotropic harmonic oscillator confinement of fermions (FROM REIMANN, INSERT REFERENCE), in which the effective potential is 
+But how can these deformations give a better stability to the system in the case of non-filled shells? The answer is simple: because they minimize the energy. To show this, we introduce the example of a two-dimensional anisotropic harmonic oscillator confinement of fermions \citep[as in][]{Reimann2002}, in which the effective potential is 
 \begin{equation}
 	V(x,y) = \frac{1}{2}m^*\omega^2\left(\delta x^2 + \frac{1}{\delta}y^2\right).
 \end{equation}
@@ -209,7 +214,7 @@ In the case of atoms, the shell-model is applied to the electrons ``orbiting'' a
 
 For atomic nuclei the idea is quite the same, with the only difference that now we have to measure the energy required to remove a nucleon from the nucleon (which is called the \emph{separation energy}). The step-like behavior is also present in this case, giving the sequence of magic numbers $N=2,8,20,28,50,82,\ldots$ (FIGURE 3 REIMANN).
 
-Atomic clusters are also an interesting case, since they show anomalies in the mass abundance spectra: for certain cluster sizes, the clusters are more stable. This behavior has been explained with the ``jellium'' theory for metallic clusters; the valence electrons are treated as trapped in a homogeneous positive-charged background (the jellium), that stems from the atomic ions. Density functional calculations showed the magic number sequence $N=2,8,20,40,58$ (SEE FIGURE 3) some years before it was discovered with experiments in the beginning of the 80's (CITE REIMANN).
+Atomic clusters are also an interesting case, since they show anomalies in the mass abundance spectra: for certain cluster sizes, the clusters are more stable. This behavior has been explained with the ``jellium'' theory for metallic clusters; the valence electrons are treated as trapped in a homogeneous positive-charged background (the jellium), that stems from the atomic ions. Density functional calculations showed the magic number sequence $N=2,8,20,40,58$ (SEE FIGURE 3) some years before it was discovered with experiments in the beginning of the 80's \citep[see][]{Reimann2002}.
 
 The sequence of magic numbers for quantum dots was discovered in 1996 by using an etched pillar of semiconducting material as shown in (FIGURE 3 REIMANN, CITE TARUCHA?). As we will see later, a quantum dot can be schematized as a one-electron transistor; measurements of the energy needed to add a single electron to a $N$-electrons quantum dot show large peaks for $N=2,6,12$ (THE SAME FIGURE 3). Noticeably, these numbers are the same quantum numbers obtained for a two-dimensional harmonic oscillator.
 
@@ -217,7 +222,7 @@ The sequence of magic numbers for quantum dots was discovered in 1996 by using a
 % Refer to it as model or effect? Found both of them.
 The behavior of a quantum dot can be analyzed by studying its electron transport mechanism. In order to do that, the dot is connected to a circuit that provides a certain gate voltage, and its conductance is measured. A plot like the one in Figure (FIGURE 6 REIMANN) is obtained; you see that there are conductance peaks at specific gate voltages, all of them evenly spaced. This behavior can be explained my the \emph{Coulomb blockade model}.
 
-Let's consider a \emph{single-electron transistor} device, like the one in Figure (MAKE A FIGURE FOLLOWING FIG 1 CH 7 AND QUOTE). This name is due to the fact that the charge on the electron island is a multiple of the elementary charge. The electron island is weakly coupled with the source and drain contacts thanks to tunnel barriers, which are thick enough to guarantee that quantum resonances dominates the electron transport mechanism.; in other words, the conductance of the tunnel must be smaller than the quantum conductance $e^2/h$ (REIMANN). By analogy with a capacitor, in which the energy stored is $U=Q^2/2C$, one can make a first estimate of the energy stored in a dot containing $N$ particles as
+Let's consider a \emph{single-electron transistor} device, like the one in Figure (MAKE A FIGURE FOLLOWING FIG 1 CH 7 AND QUOTE \cite{Fasth2007}). This name is due to the fact that the charge on the electron island is a multiple of the elementary charge. The electron island is weakly coupled with the source and drain contacts thanks to tunnel barriers, which are thick enough to guarantee that quantum resonances dominates the electron transport mechanism.; in other words, the conductance of the tunnel must be smaller than the quantum conductance $e^2/h$ \citep[see][]{Reimann2002}. By analogy with a capacitor, in which the energy stored is $U=Q^2/2C$, one can make a first estimate of the energy stored in a dot containing $N$ particles as
 \begin{equation}
 	U(N) \simeq \frac{N(N-1)}{2C_{\Sigma}}.
 \end{equation}
@@ -227,7 +232,7 @@ Here, the factor $(N-1)$ takes into account that each electron interacts with $N
 \end{equation}
 You see that, for successive $N$'s, the energy values are separated by the so-called \emph{charging energy}, $e^2/C_{\Sigma}$, which is constant. At low enough temperatures and bias voltages, the charging energy might be larger than the thermal energy ($e^2/C_{\Sigma} \gg k_BT$), thus preventing the electrons from tunneling the barriers. In this case transport is blocked, and this effect is called the \emph{Coulomb blockade}.
 
-Let's now analyze the same situation in a more precise way. If we label the dot with the index $i=0$, the source with 1, the drain with 2 and the gate with 3, the induced charge $\tilde{Q}_i$ on each of the electrodes can be written as
+Let's now analyze the same situation in a more precise way \citep[adapted from][]{Fasth2007}. If we label the dot with the index $i=0$, the source with 1, the drain with 2 and the gate with 3, the induced charge $\tilde{Q}_i$ on each of the electrodes can be written as
 \begin{equation}
 	\tilde{Q}_i = \sum_{j=0}^{n}C_{ij}V_j,
 \end{equation}
@@ -275,7 +280,7 @@ where $\alpha_j$, defined as
 \begin{equation}
 	\alpha_j \doteqdot - \frac{C_{0j}}{C_{\Sigma}},
 \end{equation}
-is called the \emph{lever arm} of the gate $j$ and is always positive. Experiments show that the lever arm changes in a significant way only for very large gate voltage variations; so, in most cases the lever arm can be considered constant (QUOTE CHAPTER 7). This implies that the relation between the electrochemical potential and the gate voltage in equation \eqref{eq:electrochemical_potential} is linear; an increase in the gate voltage reflects in a decrease of the electrochemical potential, and vice-versa.
+is called the \emph{lever arm} of the gate $j$ and is always positive. Experiments show that the lever arm changes in a significant way only for very large gate voltage variations; so, in most cases the lever arm can be considered constant \citep{Fasth2007}. This implies that the relation between the electrochemical potential and the gate voltage in equation \eqref{eq:electrochemical_potential} is linear; an increase in the gate voltage reflects in a decrease of the electrochemical potential, and vice-versa.
 
 One can also calculate the spacing between different $\mu_N$'s, that is
 \begin{equation}
@@ -285,7 +290,7 @@ One can also calculate the spacing between different $\mu_N$'s, that is
 \end{equation}
 where $\Delta_{N+1}\doteqdot \epsilon_{N+1} - \epsilon_{N}$ is the spacing between two successive single-particles energy levels. You immediately note that, when $\Delta_{N+1} \ll k_BT e^2/C_{\Sigma}$, the quantum effects can be neglected and the Coulomb blockade oscillations are periodic in $e^2/C_{\Sigma}$.
 
-(PUT HERE THE LEVEL SCHEME)
+(PUT HERE THE LEVEL SCHEME and quote \citep[adapted from][]{Fasth2007})
 
 Using this information, we can now analyze the transport mechanism in a quantum dot. Let's consider -- as explained before -- the low-temperature, low-bias voltage case ($eV_{\text{bias}},k_BT \ll e^2/C_{\Sigma}$). Let's also suppose that, initially, the electrochemical potential inside the dot -- $\mu_N$ -- is lower than the electrochemical potential of the drain -- $\mu_D$: the transport is blocked due to the Coulomb blockade effect (FIG A). Now, we can decrease the gate voltage: the overall effect, as you can see from equation \eqref{eq:electrochemical_potential} and from our previous considerations, is that we have a linear increase in $\mu_N$ wrt the gate voltage. Eventually, $\mu_N$ will align to $\mu_D$ ($\mu_N = \mu_D$), which means that an electron can leave the dot. At the same time, if $\mu_S \gtrsim \mu_D$, an electron from $\mu_S$ can enter the dot; the overall effect is that the number of the electrons inside the dot oscillates between $N$ and $N-1$, and an electric current flows though the dot from the drain to the source. In terms of the conductance, this corresponds in a peak. If we keep lowering the gate voltage -- i.e., increasing $\mu_N$ -- until $\mu_N > \mu_S$, then the dot is left with only $N-1$ electrons. Now, the level to consider is $\mu_{N-1}$: you see that it's far below $\mu_D$, so the current is blocked again.
 
@@ -369,11 +374,11 @@ The diamond-shaped structure shown in Figure (FIGURE 4A CH7) have been shown in 
 \section{The parabolic confinement}
 In our simulation, we will model the confining (single-particle) potential as a \emph{two-dimensional harmonic trap}. This form for the confining potential is widely accepted as a standard for both exact and effective-field calculations, and is the result of experimental observations and numerical calculations.
 
-The basis for this assumption can be found in the work of Kumar, Laux and Stern (1990) (INSERT QUOTE). They performed numerical calculations on the Poisson and Schr\"{o}dinger equations to obtain the electron states in a GaAs/AlGaAs quantum dot -- like the one sketched in Figure \ref{fig:Figure_5_Reimann}. The calculations were done in the Hartree approximation. The results were quite interesting, as you can see in Figure (INSERT FIG 2 KUMAR): despite the square shape of the GaAs cap, the contours of the effective confinement potential were circular.
+The basis for this assumption can be found in the work of \cite{Kumar1990}. They performed numerical calculations on the Poisson and Schr\"{o}dinger equations to obtain the electron states in a GaAs/AlGaAs quantum dot -- like the one sketched in Figure \ref{fig:Figure_5_Reimann}. The calculations were done in the Hartree approximation. The results were quite interesting, as you can see in Figure (INSERT FIG 2 KUMAR): despite the square shape of the GaAs cap, the contours of the effective confinement potential were circular.
 
-An experimental support for this model comes from the observation of far-infrared absorbption spectra, in combination with the Kohn theorem. This theorem (CITE KOHN 1961) states that, for an electron gas with short-range interactions, the latter don't change the cyclotron frequency. For far-infrared absorbption measurements in a quantum dot, this has the consequence that the effects of the electron-electron interaction show up only for a strong enough anharmonicity of the confining potential (CITE REIMANN). Since in many measurements the effects of the electron-electron interaction were not seen, the model of a harmonic confinement gained ground.
+An experimental support for this model comes from the observation of far-infrared absorbption spectra, in combination with the Kohn theorem. This theorem \citep[see][]{Kohn1961} states that, for an electron gas with short-range interactions, the latter don't change the cyclotron frequency. For far-infrared absorbption measurements in a quantum dot, this has the consequence that the effects of the electron-electron interaction show up only for a strong enough anharmonicity of the confining potential \citep[see][]{Reimann2002}. Since in many measurements the effects of the electron-electron interaction were not seen, the model of a harmonic confinement gained ground.
 
-We also showed, in sections \ref{sec:shell_model}-\ref{sec:shell_model_evidences}, that a 2D harmonic oscillator gives the same magic numbers observed experimentally. An improved model, that takes into account the non-zero thickness of a lateral dot (neglected for a pure 2D potential), would be to add a $z$-contribution to the potential, i.e. $V=V(x,y,z) = V(x,y) + V(z)$. Then, it is assumed that the only state occupying the $z$-direction is the ground state, so that the solution can be restricted to the $(x,y)$-plane (CITE REIMANN). $V(x,y)$ is modeled as the usual two-dimensional parabolic confinement:
+We also showed, in sections \ref{sec:shell_model}-\ref{sec:shell_model_evidences}, that a 2D harmonic oscillator gives the same magic numbers observed experimentally. An improved model, that takes into account the non-zero thickness of a lateral dot (neglected for a pure 2D potential), would be to add a $z$-contribution to the potential, i.e. $V=V(x,y,z) = V(x,y) + V(z)$. Then, it is assumed that the only state occupying the $z$-direction is the ground state, so that the solution can be restricted to the $(x,y)$-plane \citep[see][]{Reimann2002}. $V(x,y)$ is modeled as the usual two-dimensional parabolic confinement:
 \begin{equation}
 	V(x,y)=\frac{1}{2}m\omega^2(x^2+y^2)
 \end{equation}
@@ -569,7 +574,7 @@ The generalization to $N$ particles is straightforward, and will be given later.
 
 \section{The Metropolis algorithm}
 
-Let's first briefly introduce what a \emph{Markov chain} is. We call a Markov chain a stochastic process where the transition probability that characterizes the transition between states only depends on the previous step and not from the path to get to such step. We can then write (see \cite{morten})
+Let's first briefly introduce what a \emph{Markov chain} is. We call a Markov chain a stochastic process where the transition probability that characterizes the transition between states only depends on the previous step and not from the path to get to such step. We can then write \citep[see][]{Hjorth-Jensen2014}
 \begin{equation}
 	w_i(t+\delta t)=\sum_i W(j \rightarrow i) w_j (t),
 	\label{eq:markov_definition}
@@ -655,7 +660,7 @@ The main idea is to model $T(i \rightarrow j)$ in order to reflect the shape of 
 	\frac{\partial P}{\partial t} = D \dfrac{\partial}{\partial x} \left( \dfrac{\partial}{\partial x} - F \right)P(x,t),
 \end{equation}
 where
-$P(x,t)$ is the time-dependent probability density, $D$ is the \emph{diffusion coefficient} (it's $0.5$ for the Schr\"{o}dinger equation, see \cite{jorgen}) and $F$ is the \emph{drift term}.
+$P(x,t)$ is the time-dependent probability density, $D$ is the \emph{diffusion coefficient} (it's $0.5$ for the Schr\"{o}dinger equation, see \cite{Hoegberget2013}) and $F$ is the \emph{drift term}.
 
 The Langevin equation, on the other hand, reads as
 \begin{equation}
@@ -934,7 +939,7 @@ Refining around the minimum value to have better results, we finally obtain the 
 	\label{fig:2e_rep_fine}
 \end{figure}
 
-You see that we are very near to the exact result $E_{\text{gs}} = \SI{3}{\atomicunit}$ calculated from \cite{taut} and reported in \cite{pede}. However, the energy error is still quite big; a way to improve the precision of our program is to \emph{parallelize} it.
+You see that we are very near to the exact result $E_{\text{gs}} = \SI{3}{\atomicunit}$ calculated from \cite{taut} and reported in \cite{PedersenLohne2011}. However, the energy error is still quite big; a way to improve the precision of our program is to \emph{parallelize} it.
 
 \subsection{Parallelization}
 
@@ -990,7 +995,7 @@ Re-doing the calculations using parallelization gives the result in Figure \ref{
 	\caption{The variational energy versus the variational parameters $\alpha$ and $\beta$. The settings used are: brute force sampling with step length 2, Jastrow factor, parallelization (8 threads), $20$ variations of $\alpha$ and $\beta$ with step $0.01$, $\SI{2e5}{}$ Monte Carlo steps. Acceptance ratio varies from $45$ to $\SI{55}{\percent}$.}
 	\label{fig:2e_rep_parallel}
 \end{figure}
-Note that this time, even using a lower number of Monte Carlo steps, we have an amazingly precise estimate for our energy, comparable with the one obtained in \cite{pede} using Diffusion Monte Carlo.
+Note that this time, even using a lower number of Monte Carlo steps, we have an amazingly precise estimate for our energy, comparable with the one obtained in \cite{PedersenLohne2011} using Diffusion Monte Carlo.
 
 \subsection{Importance sampling}
 Let's now try to implement importance sampling, as explained in Section \ref{sec:importance}. In order to show the differences with the brute force algorithm, we will repeat the calculations with exactly the same settings used in Figure \ref{fig:2e_rep_parallel}, this time with importance sampling active. We will also try to do the calculations for different time-steps $\Delta t = 0.001,\,0.01,\,0.1$.
@@ -1062,7 +1067,7 @@ where $\text{Det}(S)$ is the Slater determinant
 	\right|
 \end{equation}
 
-As we did in Section \ref{sec:considerations}, this determinant can be further simplified if we label our electrons in a smart way, as shown in \cite{morten}.
+As we did in Section \ref{sec:considerations}, this determinant can be further simplified if we label our electrons in a smart way, as shown in \cite{Hjorth-Jensen2014}.
 
 Let's consider a spin-independent quantum mechanical operator $\hat{O}(\vec{r}) $ acting on our trial wave function. The latter depends on $\vec{x} = (\vec{r}, \sigma) $ where $\vec{r}$ includes the space coordinates and $\sigma$ the spin coordinates.
 We have that:
@@ -1154,7 +1159,7 @@ Restricting to the significant region, we get the result in Figure \ref{fig:6e-0
 
 You see that the plot is no more nice like the 2-electrons case, mainly because we didn't used enough Monte Carlo steps. The problem is that now the program has to calculate $3 \times 3$ determinants every time, so it's much slower than the previous case. To refine the result, we just doubled the number of Monte Carlo loops and restricted a little bit the variational parameters grid; taking a finer grid with more Monte Carlo cycles would have required ages, literally.
 
-Anyway, still with this configuration, we get a result that is really near the one calculated by DMC in \cite{pede}, that turns out to be $\SI{7.6001 \pm 0.0001}{\atomicunit}$.
+Anyway, still with this configuration, we get a result that is really near the one calculated by DMC in \cite{PedersenLohne2011}, that turns out to be $\SI{7.6001 \pm 0.0001}{\atomicunit}$.
 
 A nice way to test the Slater determinant code is to turn off the electron-electron repulsion. In that case, $\psi_S$ is the \emph{exact} solution (for $\alpha = 1$). We already showed in Section \ref{sec:2e_unp} that the ground-state energy for the single electron is $E_s = \hbar\omega(n_x + n_y + 1)$. Since -- in the 6 electrons case -- we have 2 electrons with $n_x + n_y = 0$ and 4 electrons with $n_x + n_y = 1$ (See Figure \ref{eq:sketch_6e}), the total energy for the ground state is
 \begin{equation}
@@ -1172,7 +1177,7 @@ We repeat the same calculations with $\omega=0.5$, obtaining the results in Figu
 	\label{fig:6e-050-rep}
 \end{figure}
 
-Again, our result is pretty consistent with the one calculated by DMC in \cite{pede}, that is $\SI{11.7888 \pm 0.0002}{\atomicunit}$.
+Again, our result is pretty consistent with the one calculated by DMC in \cite{PedersenLohne2011}, that is $\SI{11.7888 \pm 0.0002}{\atomicunit}$.
 
 \section{$\omega = 1$}
 
@@ -1184,7 +1189,7 @@ Just with the same parameters used in Figure \ref{fig:6e-050-rep} but changing t
 	\label{fig:6e-100-rep}
 \end{figure}
 
-Once again, our result is in very good accordance with the one calculated by DMC in \cite{pede}, that is $\SI{20.1597 \pm 0.0002}{\atomicunit}$.
+Once again, our result is in very good accordance with the one calculated by DMC in \cite{PedersenLohne2011}, that is $\SI{20.1597 \pm 0.0002}{\atomicunit}$.
 
 
 
@@ -1324,7 +1329,7 @@ Then,
 \end{equation}
 where the components relative to the spin opposite to the one of the particle taken into account vanish for the reason explained before.
 
-According to \cite{jorgen}, the four terms that appear in (\ref{eq:psi_second_derivative}) are
+According to \cite{Hoegberget2013}, the four terms that appear in (\ref{eq:psi_second_derivative}) are
 \begin{align}
 	\frac{\nabla_i J}{J} 
 	&= \sum_{k \neq i=1}^N \frac{a_{ik}}{r_{ik}} \frac{\vec{r}_i-\vec{r}_k}{(1+\beta \, r_{ik})^2} \\
@@ -1335,7 +1340,7 @@ According to \cite{jorgen}, the four terms that appear in (\ref{eq:psi_second_de
 	\frac{\nabla_i^2 |\vec{S}|}{|\vec{S}|} 
 	&= \sum_k \nabla_i^2 \phi_k (\vec{r}_i^{\text{new}})(\vec{S}_{ki}^{\text{new}})^{-1}
 \end{align}
-with $k$ that spans the Slater matrix relative to the $i$th particle. The quantities $\nabla_i \phi_k$ and $\nabla^2_i \phi_k$ are also tabulated in \cite{jorgen}. It's also possible to optimize the determinant of the inverse of the Slater matrix, but we opted here for a numerical computation of the inverse matrix using Armadillo. If one does that, it's also possible to optimize the acceptance ratio to have a even faster code.
+with $k$ that spans the Slater matrix relative to the $i$th particle. The quantities $\nabla_i \phi_k$ and $\nabla^2_i \phi_k$ are also tabulated in \cite{Hoegberget2013}. It's also possible to optimize the determinant of the inverse of the Slater matrix, but we opted here for a numerical computation of the inverse matrix using Armadillo. If one does that, it's also possible to optimize the acceptance ratio to have a even faster code.
 
 \section{Execution times}
 
@@ -1359,7 +1364,7 @@ in the parallel cycles. Our benchmarks are shown in Figures \ref{fig:times_2e} a
 	\label{fig:times_6e}
 \end{figure}
 
-As you see, we don't have great improvements; on the contrary, we obtain a code that is even a little bit slower than the numerical one for the 6-electrons case! However, there are some things that have to be pointed out. First of all we decided to perform a numerical inversion of a matrix, that is really time-consuming (it's a $\mathcal{O}(n^3)$ operation). Secondly there is no optimization of the acceptance ratio, that can be further simplified -- as shown again in \cite{jorgen}. Lastly, the benefits of numerical derivatives could not appear until one reaches $12$ or even $20$ particles; this is because the computational complexity of a determinant of a matrix is $\mathcal{O}(n^3)$, that for $3 \times 3$ matrices (as the 6-electrons case) is still acceptable. The struggle in calculating big determinants all the time is more evident for higher numbers of particles; for the 12-particles case the Slater determinant is 8 times slower than the 6-particles case, while for the 20-particles case is approximately 37 times slower.
+As you see, we don't have great improvements; on the contrary, we obtain a code that is even a little bit slower than the numerical one for the 6-electrons case! However, there are some things that have to be pointed out. First of all we decided to perform a numerical inversion of a matrix, that is really time-consuming (it's a $\mathcal{O}(n^3)$ operation). Secondly there is no optimization of the acceptance ratio, that can be further simplified -- as shown again in \cite{Hoegberget2013}. Lastly, the benefits of numerical derivatives could not appear until one reaches $12$ or even $20$ particles; this is because the computational complexity of a determinant of a matrix is $\mathcal{O}(n^3)$, that for $3 \times 3$ matrices (as the 6-electrons case) is still acceptable. The struggle in calculating big determinants all the time is more evident for higher numbers of particles; for the 12-particles case the Slater determinant is 8 times slower than the 6-particles case, while for the 20-particles case is approximately 37 times slower.
 
 Another thing that has to be noted is that -- with the analytical derivatives -- we obtain slightly lower values for the energy. Deactivating the electron-electron repulsion the discrepancy still persists, meaning that the reason of this fact has to be found in the Slater determinant derivatives implementation. A possible explanation is that we are (numerically) performing the inverse of a matrix that has very small elements, and this could cause a loss of precision.
 
@@ -1367,7 +1372,7 @@ Another thing that has to be noted is that -- with the analytical derivatives --
 \chapter{Conclusions and perspectives}
 In this project we really showed the power of the VMC method, that even if it doesn't give automatically the ground state energy of a system can be used to approximate it -- to excess -- with a considerable degree of precision. If we have no clues about the properties of the system we can use a brute force sampling, trying to manually set a length-step that gives about $50\%$. But if we are smarter, we can use the information we have about the expected result to implement a more efficient sampling.
 
-This program has been implemented in a highly object-oriented way, following the suggestions contained in \cite{jorgen}, and can also fully handle the 12-electrons case (look at the implementation of the orbitals in the code). However, it is still \emph{extremely slow} -- practically unusable. So, I'm planning to improve this program using MPI and GPU parallelization, that would give me some extra speed.
+This program has been implemented in a highly object-oriented way, following the suggestions contained in \cite{Hoegberget2013}, and can also fully handle the 12-electrons case (look at the implementation of the orbitals in the code). However, it is still \emph{extremely slow} -- practically unusable. So, I'm planning to improve this program using MPI and GPU parallelization, that would give me some extra speed.
 
 I'm also planning to extend this program to handle a custom number of variational parameters, and to improve the trial wave-function with some extra terms as suggested by professor Francesco Pederiva\footnote{University of Trento, Department of Physics.} and/or using the Hartree-Fock method. This would require to abandon the analytical derivatives route and concentrate the efforts in the algorithm improvements in terms of efficiency.
 
@@ -1384,54 +1389,80 @@ Finally, for me this project has been a springboard into the quantum computation
 
 
 
-\newpage
+%\newpage
 
-\begin{thebibliography}{9}
-\addcontentsline{toc}{section}{References}
+\backmatter
+\bibliographystyle{plainnat}
+\bibliography{References/ref_database}
 
-\bibitem[Hjorth-Jensen]{morten}
-  Hjorth-Jensen, Morten.
-  (2014, Aug).
-  \emph{Computational Physics - Lecture Notes Fall 2014}.
-  Oslo: University of Oslo.
-  Retrieved from: \texttt{\url{http://www.uio.no/studier/emner/matnat/fys/FYS3150/h14/undervisningsmateriale/Lecture\%20Notes/lecture2014.pdf}}
-%  \texttt{ISBN-13 978-0-321-85656-2}.
 
-\bibitem[Taut]{taut}
-  Taut, M.
-  (1993, Nov).
-  Two electrons in an external oscillator potential: Particular analytic solutions of a Coulomb correlation problem.
-  \emph{Phys. Rev. A, 48}(5),
-  {3561--3566}.
-  \texttt{doi:10.1103/PhysRevA.48.3561},
-  \texttt{\url{http://link.aps.org/doi/10.1103/PhysRevA.48.3561}}
 
-\bibitem[Pedersen Lohne, et al.]{pede}
-  Pedersen Lohne, M. and Hagen, G. and Hjorth-Jensen, M. and Kvaal, S. and Pederiva, F.
-  (2011, Sep).
-  Ab initio computation of the energies of circular quantum dots.
-  \emph{Phys. Rev. B, 84}(11),
-  {115302}.
-  \texttt{10.1103/PhysRevB.84.115302},
-  \texttt{\url{http://link.aps.org/doi/10.1103/PhysRevB.84.115302}}
 
-\bibitem[Høgberget]{jorgen}
-  Høgberget, Jørgen.
-  (2013).
-  \emph{Quantum Monte-Carlo Studies of Generalized Many-body Systems}.
-  Oslo: University of Oslo.
-  \texttt{\url{http://hdl.handle.net/10852/37167}}.
-  Retrieved from: \texttt{\url{https://duo.uio.no/bitstream/10852/37167/1/jorgenh_thesis.pdf}}
-  
-\bibitem[Griffiths]{griffithsquantum}
-  Griffiths, David Jeffery.
-  (Second Ed.).
-  (2005).
-  \emph{Introduction to Quantum Mechanics}.
-  Pearson Education, Inc.
-  \texttt{ISBN 978-81-7758-230-7}.
+%\begin{thebibliography}{9}
+%\addcontentsline{toc}{section}{References}
 
-\end{thebibliography}
+%%% ARTICLE REFERENCE FORMAT:
+%%\bibitem[Autors]{short name}
+%%  Surname1, Name1. and Surname2, Name2.
+%%  (Year, Month).
+%%  Title.
+%%  \emph{Journal, Volume}(Issue),
+%%  {Pages}.
+%%  \texttt{DOI name},
+%%  \texttt{\url{URL}}
+%
+%\bibitem[Hjorth-Jensen]{morten}
+%  Hjorth-Jensen, Morten.
+%  (2014, Aug).
+%  \emph{Computational Physics - Lecture Notes Fall 2014}.
+%  Oslo: University of Oslo.
+%  Retrieved from: \texttt{\url{http://www.uio.no/studier/emner/matnat/fys/FYS3150/h14/undervisningsmateriale/Lecture\%20Notes/lecture2014.pdf}}
+%%  \texttt{ISBN-13 978-0-321-85656-2}.
+%
+%\bibitem[Taut]{taut}
+%  Taut, M.
+%  (1993, Nov).
+%  Two electrons in an external oscillator potential: Particular analytic solutions of a Coulomb correlation problem.
+%  \emph{Phys. Rev. A, 48}(5),
+%  {3561--3566}.
+%  \texttt{doi:10.1103/PhysRevA.48.3561},
+%  \texttt{\url{http://link.aps.org/doi/10.1103/PhysRevA.48.3561}}
+%
+%\bibitem[Pedersen Lohne, et al.]{pede}
+%  Pedersen Lohne, M. and Hagen, G. and Hjorth-Jensen, M. and Kvaal, S. and Pederiva, F.
+%  (2011, Sep).
+%  Ab initio computation of the energies of circular quantum dots.
+%  \emph{Phys. Rev. B, 84}(11),
+%  {115302}.
+%  \texttt{10.1103/PhysRevB.84.115302},
+%  \texttt{\url{http://link.aps.org/doi/10.1103/PhysRevB.84.115302}}
+%
+%\bibitem[Høgberget]{jorgen}
+%  Høgberget, Jørgen.
+%  (2013).
+%  \emph{Quantum Monte-Carlo Studies of Generalized Many-body Systems}.
+%  Oslo: University of Oslo.
+%  \texttt{\url{http://hdl.handle.net/10852/37167}}.
+%  Retrieved from: \texttt{\url{https://duo.uio.no/bitstream/10852/37167/1/jorgenh_thesis.pdf}}
+%  
+%\bibitem[Griffiths]{griffithsquantum}
+%  Griffiths, David Jeffery.
+%  (Second Ed.).
+%  (2005).
+%  \emph{Introduction to Quantum Mechanics}.
+%  Pearson Education, Inc.
+%  \texttt{ISBN 978-81-7758-230-7}.
+%  
+%\bibitem[Reimann, et al.]{reimann}
+%  Reimann, Stephanie M. and Manninen, Matti
+%  (2002, Nov).
+%  Electronic structure of quantum dots.
+%  \emph{Rev. Mod. Phys., 74}(4),
+%  {1283--1342}.
+%  \texttt{10.1103/RevModPhys.74.1283},
+%  \texttt{\url{http://link.aps.org/doi/10.1103/RevModPhys.74.1283}}
+
+%\end{thebibliography}
 
 
 
