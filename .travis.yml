@@ -15,6 +15,6 @@ script:
     # If lint output is non-empty report an error.
     #- test ! -s lint.out
     - pdflatex -interaction=nonstopmode *.tex
-    - bibtex %.aux
+    - bibtex *.aux
     - pdflatex -interaction=nonstopmode *.tex
     - pdflatex -interaction=nonstopmode *.tex
