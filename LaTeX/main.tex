@@ -212,6 +212,7 @@ Atomic clusters are also an interesting case, since they show anomalies in the m
 The sequence of magic numbers for quantum dots was discovered in 1996 by using an etched pillar of semiconducting material as shown in (FIGURE 3 REIMANN, CITE TARUCHA?). As we will see later, a quantum dot can be schematized as a one-electron transistor; measurements of the energy needed to add a single electron to a $N$-electrons quantum dot show large peaks for $N=2,6,12$ (THE SAME FIGURE 3). Noticeably, these numbers are the same quantum numbers obtained for a two-dimensional harmonic oscillator.
 
 \section{The Coulomb blockade model}
+% Refer to it as model or effect? Found both of them.
 The behavior of a quantum dot can be analyzed by studying its electron transport mechanism. In order to do that, the dot is connected to a circuit that provides a certain gate voltage, and its conductance is measured. A plot like the one in Figure (FIGURE 6 REIMANN) is obtained; you see that there are conductance peaks at specific gate voltages, all of them evenly spaced. This behavior can be explained my the \emph{Coulomb blockade model}.
 
 Let's consider a \emph{single-electron transistor} device, like the one in Figure (MAKE A FIGURE FOLLOWING FIG 1 CH 7 AND QUOTE). This name is due to the fact that the charge on the electron island is a multiple of the elementary charge. The electron island is weakly coupled with the source and drain contacts thanks to tunnel barriers, which are thick enough to guarantee that quantum resonances dominates the electron transport mechanism.; in other words, the conductance of the tunnel must be smaller than the quantum conductance $e^2/h$ (REIMANN). By analogy with a capacitor, in which the energy stored is $U=Q^2/2C$, one can make a first estimate of the energy stored in a dot containing $N$ particles as
@@ -364,7 +365,9 @@ By equating \eqref{eq:VG_N} and \eqref{eq:VG_N+1} we find that these two lines c
 The diamond-shaped structure shown in Figure (FIGURE 4A CH7) have been shown in differential conductance measurements like the one shown in Figure (FIG 8 REIMANN, PUT ON THE LEFT). A 3D version of this kind of experiment -- that clarifies the ideas a little bit -- is shown in Figure (INSERT IMAGE OF DISSERTATION OF THE GERMAN GUY, ON THE RIGHT).
 
 \section{The parabolic confinement}
-In our simulation, we will model 
+In our simulation, we will model the confining (single-particle) potential as a \emph{two-dimensional harmonic trap}. This form for the confining potential is widely accepted as a standard for both exact and effective-field calculations, and is the result of experimental observations and numerical calculations.
+
+The basis for this assumption can be found in the work of Kumar, Laux and Stern (1990) (INSERT QUOTE). They performed numerical calculations on the Poisson and Schr\"{o}dinger equations to obtain the electron states in a GaAs/AlGaAs quantum dot -- like the one showed in Figure \ref{fig:Figure_5_Reimann}. The calculations were done in the Hartree approximation. The results were quite interesting, as you can see in Figure (INSERT FIG 2 KUMAR): despite the square shape of the GaAs cap,the contours of the effective confinement potential were circular.
 
 \section{Many body effects (???)}
 Do I have to write something here? Like that electrons are considered as an EFG, write the total hamiltonian using the effective mass, say that we can solve the system with diagonalization, monte carlo (VMC, DMC) or DFT/SDFT. Brief explanation of what they are, pros/cons....
