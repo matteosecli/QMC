@@ -177,6 +177,7 @@ Other fabricating processes include self-growth mechanisms (CITE REIMANN), in wh
 Although the definition of quantum dots given above is quite precise, I prefer a more immediate one: ``quantum dots are \emph{artificial atoms}''. Despite its simplicity, this definition contains a good amount of relevant information. Like natural atoms, in fact, quantum dots are made up of electrons confined in an attractive potential; and as one may guess, they show a similar shell-like structure with its relative \emph{magic numbers} -- the resemblance is striking. We begin our discussion by briefly illustrating this simple model.
 
 \section{The shell-model}
+\label{sec:shell_model}
 The so-called \emph{shell-model} is a particularly convenient and simple way to treat a system of interacting particles. This model is based on the \emph{a priori} assumption that the \emph{interacting} particles can be treated as \emph{independent} particles subject to an average \emph{effective potential}. This effective potential is created by the particles themselves, but one can also add an external component to the intrinsic one. Using this simplification it's possible to find a solution for the Schr\"{o}dinger equation; the result is a certain distribution of single-particle energy levels. In many cases, this distribution it's nonuniform (look, for example, at the simple case of the infinite well) and shows a characteristic bunching of levels; these bunches are called \emph{shells}.
 
 It's very important to have a scheme of such energy levels, since it can immediately give information about the stability of a system: if the level bunching at the Fermi surface has a minimum, then the system is more bound. In fact, this situation corresponds to particles occupying states with a lower energy (on average), thus minimizing the total energy. In terms of the shell-model, this means that all the shells below the Fermi level are filled. (INSERT FIGURE 1 REIMANN) A situation in which the level bunching doesn't have a minimum at the Fermi surface corresponds instead in a non-filled shell. In this case the system can rearrange itself in a non-symmetric shape, in order to reach a better stability.
@@ -201,6 +202,7 @@ These levels are plotted against the deformation in (FIGURE 2 FROM REIMANN). For
 Even this simple example shows in an effective way how a deformation can guarantee a stabler configuration for non-closed shells. Further in our simulations, we will restrict only to closed-shell systems.
 
 \section{Evidences of the shell-model}
+\label{sec:shell_model_evidences}
 We said before that the shell-structure seems to be a common property of finite fermion systems. Indeed, clear evidences of it had been shown for \emph{atoms}, \emph{atomic nuclei}, \emph{clusters of atoms} and \emph{quantum dots}. Let's briefly see which kind of measurements led to this result.
 
 In the case of atoms, the shell-model is applied to the electrons ``orbiting'' around the nucleus, which is considered as an effective attractive Coulomb potential. A very natural think that one may think to measure in order to exploit the shell structure is the \emph{ionization energy}, that is the energy required to remove an electron from a neutral atom. In fact we have shown that electrons in a closed-shell system are more bound, which means that we expect to need more energy to remove one of it (i.e., we expect to see a higher ionization energy). Indeed this happens pretty clearly, as you see in Figure (FIGURE 3 REIMANN), showing the sequence of magic numbers $N=2,10,18,36,54,86,\ldots$.
@@ -367,7 +369,36 @@ The diamond-shaped structure shown in Figure (FIGURE 4A CH7) have been shown in 
 \section{The parabolic confinement}
 In our simulation, we will model the confining (single-particle) potential as a \emph{two-dimensional harmonic trap}. This form for the confining potential is widely accepted as a standard for both exact and effective-field calculations, and is the result of experimental observations and numerical calculations.
 
-The basis for this assumption can be found in the work of Kumar, Laux and Stern (1990) (INSERT QUOTE). They performed numerical calculations on the Poisson and Schr\"{o}dinger equations to obtain the electron states in a GaAs/AlGaAs quantum dot -- like the one showed in Figure \ref{fig:Figure_5_Reimann}. The calculations were done in the Hartree approximation. The results were quite interesting, as you can see in Figure (INSERT FIG 2 KUMAR): despite the square shape of the GaAs cap,the contours of the effective confinement potential were circular.
+The basis for this assumption can be found in the work of Kumar, Laux and Stern (1990) (INSERT QUOTE). They performed numerical calculations on the Poisson and Schr\"{o}dinger equations to obtain the electron states in a GaAs/AlGaAs quantum dot -- like the one sketched in Figure \ref{fig:Figure_5_Reimann}. The calculations were done in the Hartree approximation. The results were quite interesting, as you can see in Figure (INSERT FIG 2 KUMAR): despite the square shape of the GaAs cap, the contours of the effective confinement potential were circular.
+
+An experimental support for this model comes from the observation of far-infrared absorbption spectra, in combination with the Kohn theorem. This theorem (CITE KOHN 1961) states that, for an electron gas with short-range interactions, the latter don't change the cyclotron frequency. For far-infrared absorbption measurements in a quantum dot, this has the consequence that the effects of the electron-electron interaction show up only for a strong enough anharmonicity of the confining potential (CITE REIMANN). Since in many measurements the effects of the electron-electron interaction were not seen, the model of a harmonic confinement gained ground.
+
+We also showed, in sections \ref{sec:shell_model}-\ref{sec:shell_model_evidences}, that a 2D harmonic oscillator gives the same magic numbers observed experimentally. An improved model, that takes into account the non-zero thickness of a lateral dot (neglected for a pure 2D potential), would be to add a $z$-contribution to the potential, i.e. $V=V(x,y,z) = V(x,y) + V(z)$. Then, it is assumed that the only state occupying the $z$-direction is the ground state, so that the solution can be restricted to the $(x,y)$-plane (CITE REIMANN). $V(x,y)$ is modeled as the usual two-dimensional parabolic confinement:
+\begin{equation}
+	V(x,y)=\frac{1}{2}m\omega^2(x^2+y^2)
+\end{equation}
+
+It's worth noting that, in experimental observations, the effective confinement strength $\omega$ is not constant; it tends to lower as the number $N$ of confined electrons increase. The lowering of the effective strength translates into an increase of the ``confinement volume'', so that the electron density remains constant. A model for $\omega$ that takes into account these effects was given by (CITE KOSHINEN ET AL 1997, REIMANN), who modeled $\omega^2$ as
+\begin{equation}
+	\omega^2 = \frac{e^2}{4\pi\varepsilon m^*r_s^3\sqrt{N}},
+\end{equation}
+where $\varepsilon$ is the dielectric constant of the mean, $m^*$ is the effective mass of the electron and $r_s$ is the average electron-density parameter
+\footnote{
+	This parameter is also called the \emph{Wigner-Seitz} parameter. It's defined such that
+	\begin{equation*}
+		\Omega_d(r_s) = n,
+	\end{equation*}
+	where $\Omega_d(r_s)$ is the spherical volume of radius $r_s$ in $d$ dimensions (e.g., for $d=2$ is a circle with radius $r_s$) and $n$ is the mean volume per unit electron (i.e., the mean electron density). So, $r_s$ can be expressed as
+	\begin{equation*}
+		r_s = \frac{1}{\sqrt{\pi n}}
+	\end{equation*}
+	for the two-dimensional case, or as
+	\begin{equation*}
+		r_s = \left(\frac{3}{4\pi n}\right)^{1/3}
+	\end{equation*}
+	for the three-dimensional case.
+},
+quite close to the equilibrium value  for a two-dimensional electron gas.
 
 \section{Many body effects (???)}
 Do I have to write something here? Like that electrons are considered as an EFG, write the total hamiltonian using the effective mass, say that we can solve the system with diagonalization, monte carlo (VMC, DMC) or DFT/SDFT. Brief explanation of what they are, pros/cons....
@@ -466,7 +497,7 @@ Calling the Hamiltonian the total energy is improper. Rather it should be called
 	+ \sum_{i<j}\frac{1}{r_{ij}},
 	\label{eq:full_hamiltonian}
 \end{equation}
-where $r_{ij} = |\vec{r}_i - \vec{r_j}|$ and natural units $( \hbar = c = e = m_e = 1)$ are used in order to have the energy in atomic units. You see that the Hamiltonian includes a standard part (an harmonic oscillator) plus a repulsion potential, that is the one that gives troubles in analytical calculations.
+where $r_{ij} = |\vec{r}_i - \vec{r_j}|$ and natural units $( \hbar = c = e = m_e = 1)$ are used in order to have the energy in atomic units. You see that the Hamiltonian includes a standard part (a harmonic oscillator) plus a repulsion potential, that is the one that gives troubles in analytical calculations.
 
 An important feature of our system is that it is made up of \emph{identical particles}. Let's try to exploit this feature to simplify our trial wave-function.
 
