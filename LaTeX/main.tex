@@ -185,7 +185,14 @@ Although the definition of quantum dots given above is quite precise, I prefer a
 \label{sec:shell_model}
 The so-called \emph{shell-model} is a particularly convenient and simple way to treat a system of interacting particles. This model is based on the \emph{a priori} assumption that the \emph{interacting} particles can be treated as \emph{independent} particles subject to an average \emph{effective potential}. This effective potential is created by the particles themselves, but one can also add an external component to the intrinsic one. Using this simplification it's possible to find a solution for the Schr\"{o}dinger equation; the result is a certain distribution of single-particle energy levels. In many cases, this distribution it's nonuniform (look, for example, at the simple case of the infinite well) and shows a characteristic bunching of levels; these bunches are called \emph{shells}.
 
-It's very important to have a scheme of such energy levels, since it can immediately give information about the stability of a system: if the level bunching at the Fermi surface has a minimum, then the system is more bound. In fact, this situation corresponds to particles occupying states with a lower energy (on average), thus minimizing the total energy. In terms of the shell-model, this means that all the shells below the Fermi level are filled. (INSERT FIGURE 1 REIMANN) A situation in which the level bunching doesn't have a minimum at the Fermi surface corresponds instead in a non-filled shell. In this case the system can rearrange itself in a non-symmetric shape, in order to reach a better stability.
+\begin{figure}[H]
+	\centering
+    \includegraphics[width=0.5\textwidth]{Figure_1_Reimann}
+    \caption{Bunching of the single-particles levels and level density at the Fermi level. From \cite{Reimann2002}.}
+	\label{fig:Figure_1_Reimann}
+\end{figure}
+
+It's very important to have a scheme of such energy levels, since it can immediately give information about the stability of a system: if the level bunching at the Fermi surface has a minimum, then the system is more bound. In fact, this situation corresponds to particles occupying states with a lower energy (on average), thus minimizing the total energy. In terms of the shell-model, this means that all the shells below the Fermi level are filled (see Figure \ref{fig:Figure_1_Reimann}). A situation in which the level bunching doesn't have a minimum at the Fermi surface corresponds instead in a non-filled shell. In this case the system can rearrange itself in a non-symmetric shape, in order to reach a better stability.
 
 This has been shown e.g. for atomic nuclei by means of nuclear spectroscopy. In that case, a measurement of the \emph{quadrupole moment} can exploit the possibly non symmetric structure. As a simple example, the quadruple moment $Q$ for a single proton is
 \begin{equation}
@@ -202,7 +209,14 @@ Here $\omega$ is the oscillator frequency, $m^*$ is the effective mass of the fe
 \begin{equation}
 	E_{n_x,n_y}(\delta) = \hbar\omega\left[\sqrt{\delta}\left(n_x+\frac{1}{2}\right) + \frac{1}{\sqrt{\delta}}\left(n_y+\frac{1}{2}\right)\right].
 \end{equation}
-These levels are plotted against the deformation in (FIGURE 2 FROM REIMANN). For $\delta=1$ (that is the isotropic case) you see that there is a $(n+1)$-fold degeneracy, where $n=n_x+n_y=0,1,2,\ldots$ is the principal quantum number. Taking into account the spin degeneracy (that gives a factor 2), we obtain closed shells for $N=2,6,12,20,\ldots$ electrons. These numbers are called the \emph{magic numbers}. As we increase the deformation parameter, the degenerate levels split. It is useful, in this case, to look at the total energies (on the right in FIGURE 2 FROM REIMANN); you see that now the energy levels have cups and minima that significantly change the behavior of the system for non-closed shells. In fact the energies have minima at $\delta=1$ for the closed-shell cases ($N=2,6,12$), whereas their minima are shifted to different values of $\delta$ in the open-shell cases ($N=4,8,10$). As a rough graphical estimate, for $N=4$ the minimum energy (i.e., the stablest configuration) is reached about a deformation value $\delta=2$ and for $N=10$ about $\delta=1.5$.
+These levels are plotted against the deformation in Figure \ref{fig:Figure_2_Reimann}. For $\delta=1$ (that is the isotropic case) you see that there is a $(n+1)$-fold degeneracy, where $n=n_x+n_y=0,1,2,\ldots$ is the principal quantum number. Taking into account the spin degeneracy (that gives a factor 2), we obtain closed shells for $N=2,6,12,20,\ldots$ electrons. These numbers are called the \emph{magic numbers}. As we increase the deformation parameter, the degenerate levels split. It is useful, in this case, to look at the total energies (on the right in Figure \ref{fig:Figure_2_Reimann}); you see that now the energy levels have cups and minima that significantly change the behavior of the system for non-closed shells. In fact the energies have minima at $\delta=1$ for the closed-shell cases ($N=2,6,12$), whereas their minima are shifted to different values of $\delta$ in the open-shell cases ($N=4,8,10$). As a rough graphical estimate, for $N=4$ the minimum energy (i.e., the stablest configuration) is reached about a deformation value $\delta=2$ and for $N=10$ about $\delta=1.5$.
+
+\begin{figure}[H]
+	\centering
+    \includegraphics[width=0.65\textwidth]{Figure_2_Reimann}
+    \caption{Single particle energy levels (left) and total energies (right) as a function of the deformation in a two-dimensional harmonic oscillator. From \cite{Reimann2002}.}
+	\label{fig:Figure_2_Reimann}
+\end{figure}
 
 Even this simple example shows in an effective way how a deformation can guarantee a stabler configuration for non-closed shells. Further in our simulations, we will restrict only to closed-shell systems.
 
@@ -210,13 +224,21 @@ Even this simple example shows in an effective way how a deformation can guarant
 \label{sec:shell_model_evidences}
 We said before that the shell-structure seems to be a common property of finite fermion systems. Indeed, clear evidences of it had been shown for \emph{atoms}, \emph{atomic nuclei}, \emph{clusters of atoms} and \emph{quantum dots}. Let's briefly see which kind of measurements led to this result.
 
-In the case of atoms, the shell-model is applied to the electrons ``orbiting'' around the nucleus, which is considered as an effective attractive Coulomb potential. A very natural think that one may think to measure in order to exploit the shell structure is the \emph{ionization energy}, that is the energy required to remove an electron from a neutral atom. In fact we have shown that electrons in a closed-shell system are more bound, which means that we expect to need more energy to remove one of it (i.e., we expect to see a higher ionization energy). Indeed this happens pretty clearly, as you see in Figure (FIGURE 3 REIMANN), showing the sequence of magic numbers $N=2,10,18,36,54,86,\ldots$.
+\begin{figure}[h]%[H]
+	\centering
+    \includegraphics[width=\textwidth]{Figure_3_Reimann}
+    \caption{Upper left, atomic ionization energies; lower left, separation energies of atomic nuclei; upper right, abundance spectra of metallic clusters; lower right, addition energies in a
+disk-shaped quantum dot (schematized in the inset). From \cite{Reimann2002}.}
+	\label{fig:Figure_3_Reimann}
+\end{figure}
 
-For atomic nuclei the idea is quite the same, with the only difference that now we have to measure the energy required to remove a nucleon from the nucleon (which is called the \emph{separation energy}). The step-like behavior is also present in this case, giving the sequence of magic numbers $N=2,8,20,28,50,82,\ldots$ (FIGURE 3 REIMANN).
+In the case of atoms, the shell-model is applied to the electrons ``orbiting'' around the nucleus, which is considered as an effective attractive Coulomb potential. A very natural think that one may think to measure in order to exploit the shell structure is the \emph{ionization energy}, that is the energy required to remove an electron from a neutral atom. In fact we have shown that electrons in a closed-shell system are more bound, which means that we expect to need more energy to remove one of it (i.e., we expect to see a higher ionization energy). Indeed this happens pretty clearly, as you see in Figure \ref{fig:Figure_3_Reimann}, upper left, showing the sequence of magic numbers $N=2,10,18,36,54,86,\ldots$.
 
-Atomic clusters are also an interesting case, since they show anomalies in the mass abundance spectra: for certain cluster sizes, the clusters are more stable. This behavior has been explained with the ``jellium'' theory for metallic clusters; the valence electrons are treated as trapped in a homogeneous positive-charged background (the jellium), that stems from the atomic ions. Density functional calculations showed the magic number sequence $N=2,8,20,40,58$ (SEE FIGURE 3) some years before it was discovered with experiments in the beginning of the 80's \citep[see][]{Reimann2002}.
+For atomic nuclei the idea is quite the same, with the only difference that now we have to measure the energy required to remove a nucleon from the nucleon (which is called the \emph{separation energy}). The step-like behavior is also present in this case, giving the sequence of magic numbers $N=2,8,20,28,50,82,\ldots$ (Figure \ref{fig:Figure_3_Reimann}, lower left).
 
-The sequence of magic numbers for quantum dots was discovered in 1996 by using an etched pillar of semiconducting material as shown in (FIGURE 3 REIMANN, CITE TARUCHA?). As we will see later, a quantum dot can be schematized as a one-electron transistor; measurements of the energy needed to add a single electron to a $N$-electrons quantum dot show large peaks for $N=2,6,12$ (THE SAME FIGURE 3). Noticeably, these numbers are the same quantum numbers obtained for a two-dimensional harmonic oscillator.
+Atomic clusters are also an interesting case, since they show anomalies in the mass abundance spectra: for certain cluster sizes, the clusters are more stable. This behavior has been explained with the ``jellium'' theory for metallic clusters; the valence electrons are treated as trapped in a homogeneous positive-charged background (the jellium), that stems from the atomic ions. Density functional calculations showed the magic number sequence $N=2,8,20,40,58$ (see Figure \ref{fig:Figure_3_Reimann}, upper right) some years before it was discovered with experiments in the beginning of the 80's \citep[see][]{Reimann2002}.
+
+The sequence of magic numbers for quantum dots was discovered in 1996 by using an etched pillar of semiconducting material as shown in Figure \ref{fig:Figure_3_Reimann}, lower right (CITE TARUCHA?). As we will see later, a quantum dot can be schematized as a one-electron transistor; measurements of the energy needed to add a single electron to a $N$-electrons quantum dot show large peaks for $N=2,6,12$ (Figure \ref{fig:Figure_3_Reimann}). Noticeably, these numbers are the same quantum numbers obtained for a two-dimensional harmonic oscillator.
 
 \section{The Coulomb blockade model}
 % Refer to it as model or effect? Found both of them.
