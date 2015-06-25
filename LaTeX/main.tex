@@ -51,7 +51,7 @@
 \renewenvironment{proof}{\vskip 1em \noindent\textsc{Proof:}}{\begin{flushright}$\blacksquare$\end{flushright}\vskip 1em}
 
 \usepackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows}
+\usetikzlibrary{shapes.geometric, arrows, patterns}
 \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
 \tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
 \tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, text width=3cm, draw=black, fill=orange!30]
@@ -370,9 +370,131 @@ One can also calculate the spacing between different $\mu_N$'s, that is
 \end{equation}
 where $\Delta_{N+1}\doteqdot \epsilon_{N+1} - \epsilon_{N}$ is the spacing between two successive single-particles energy levels. You immediately note that, when $\Delta_{N+1} \ll k_BT e^2/C_{\Sigma}$, the quantum effects can be neglected and the Coulomb blockade oscillations are periodic in $e^2/C_{\Sigma}$.
 
-(PUT HERE THE LEVEL SCHEME and quote \citep[adapted from][]{Fasth2007})
+\begin{figure}
+	\centering
+	\begin{subfigure}[t]{0.45\textwidth}
+		\newcommand{\ThickBorder}{(0,3) -- (2.8,3) -- (2.8,9) -- (3.2,9) -- (3.2,1) -- (5.8,1) -- (5.8,8.6) -- (6.2,8.6) -- (6.2,2.5) -- (9,2.5)}
+		\begin{tikzpicture}[scale=0.8, every node/.style={transform shape}]
+			\tikzset{>=latex}
+			
+			% Fill dark region
+			\fill[draw=none,fill=black!40!white]
+				(0,0) -- \ThickBorder -- (9,0) -- cycle;
+				
+			%Fill light regions
+			\fill[draw=none,fill=black!10!white]
+				(0,3) -- (2.8,3) -- (2.8,6) -- (0,6) -- cycle;
+			\fill[draw=none,fill=black!10!white]
+				(3.2,1) -- (5.8,1) -- (5.8,5) -- (3.2,5) -- cycle;
+			\fill[draw=none,fill=black!10!white]
+				(6.2,2.5) -- (9,2.5) -- (9,5.6) -- (6.2,5.6) -- cycle;
+				
+			% Draw thick border
+			\draw[thick] \ThickBorder;
+			
+			% Draw source potential
+			\draw[very thick] (0,6) -- (2.8,6) node[midway,above] {$\mu_S$};
+			
+			% Draw dot potential
+			\draw[very thick] (3.2,5) -- (5.8,5) node[midway,above] {$\mu_N$};
+			\draw[very thick, dashed] (3.2,7.2) -- (5.8,7.2) node[midway,above] {$\mu_{N+1}$};
+			 
+			% Draw drain potential
+			\draw[very thick] (6.2,5.6) -- (9,5.6) node[midway,above] {$\mu_D$};
+			
+			% Draw units
+			\draw[<->, thick] (5,5) -- (5,7.2)
+				node[midway,fill=white,text=black,xshift=-0.2cm]
+				{\scriptsize $\dfrac{e^2}{C_{\Sigma}} + \Delta_{N+1}$};
+			\draw[<->, thick] (6.4,1) -- (6.4,2.5)
+				node[midway,fill=black!40!white,text=black,xshift=+0.3cm]
+				{\scriptsize $U_{N+1}(V_G)$};
+			 
+		\end{tikzpicture}	
+		\caption{$\mu_N<\mu_D$: the transport is blocked due to the Coulomb blockade. The number of electrons inside the dot is $N$.}
+		\label{fig:SET_mu_potential_stage1}
+	\end{subfigure}
+	$\qquad$
+	\begin{subfigure}[t]{0.45\textwidth}
+		\newcommand{\ThickBorderUp}{(0,3) -- (2.8,3) -- (2.8,9) -- (3.2,9) -- (3.2,1.8) -- (5.8,1.8) -- (5.8,8.5) -- (6.2,8.5) -- (6.2,2.5) -- (9,2.5)}
+		\begin{tikzpicture}[scale=0.8, every node/.style={transform shape}]
+			\tikzset{>=latex}
+			
+			% Fill dark region
+			\fill[draw=none,fill=black!40!white]
+				(0,0) -- \ThickBorderUp -- (9,0) -- cycle;
+				
+			%Fill light regions
+			\fill[draw=none,fill=black!10!white]
+				(0,3) -- (2.8,3) -- (2.8,6) -- (0,6) -- cycle;
+			\fill[draw=none,fill=black!10!white]
+				(3.2,1.8) -- (5.8,1.8) -- (5.8,3.6) -- (3.2,3.6) -- cycle;
+			\fill[draw=none,pattern=north east lines,pattern color=black!10!white]
+				(3.2,3.6) -- (5.8,3.6) -- (5.8,5.8) -- (3.2,5.8) -- cycle;
+			\fill[draw=none,fill=black!10!white]
+				(6.2,2.5) -- (9,2.5) -- (9,5.6) -- (6.2,5.6) -- cycle;
+				
+			% Draw thick border
+			\draw[thick] \ThickBorderUp;
+			
+			% Draw source potential
+			\draw[very thick] (0,6) -- (2.8,6) node[midway,above] {$\mu_S$};
+			
+			% Draw dot potential
+			\draw[very thick] (3.2,5.8) -- (5.8,5.8) node[midway,above] {$\mu_N$};
+			\draw[very thick] (3.2,3.6) -- (5.8,3.6) node[midway,above] {$\mu_{N-1}$};
+			 
+			% Draw drain potential
+			\draw[very thick] (6.2,5.6) -- (9,5.6) node[midway,above] {$\mu_D$};
+			
+			% Draw units
+			\draw[<->, thick] (6.4,1.8) -- (6.4,2.5)
+				node[midway,fill=black!40!white,text=black,xshift=+0.92cm]
+				{\scriptsize $U_{N+1}(V_G)$};
+			 
+		\end{tikzpicture}	
+		\caption{$\mu_S \gtrsim \mu_N \gtrsim \mu_D$: one electron can tunnel the barrier. The number of electrons inside the dot varies from $N-1$ to $N$. This configuration is obtain by lowering $V_G$, in order to increase $\mu_N$.}
+		\label{fig:SET_mu_potential_stage2}	
+	\end{subfigure}
+	\begin{subfigure}[t]{0.45\textwidth}
+		\newcommand{\ThickBorderUp}{(0,3) -- (2.8,3) -- (2.8,9) -- (3.2,9) -- (3.2,2.4) -- (5.8,2.4) -- (5.8,8.5) -- (6.2,8.5) -- (6.2,2.5) -- (9,2.5)}
+		\begin{tikzpicture}[scale=0.8, every node/.style={transform shape}]
+			\tikzset{>=latex}
+			
+			% Fill dark region
+			\fill[draw=none,fill=black!40!white]
+				(0,0) -- \ThickBorderUp -- (9,0) -- cycle;
+				
+			%Fill light regions
+			\fill[draw=none,fill=black!10!white]
+				(0,3) -- (2.8,3) -- (2.8,6) -- (0,6) -- cycle;
+			\fill[draw=none,fill=black!10!white]
+				(3.2,2.4) -- (5.8,2.4) -- (5.8,4.2) -- (3.2,4.2) -- cycle;
+			\fill[draw=none,fill=black!10!white]
+				(6.2,2.5) -- (9,2.5) -- (9,5.6) -- (6.2,5.6) -- cycle;
+				
+			% Draw thick border
+			\draw[thick] \ThickBorderUp;
+			
+			% Draw source potential
+			\draw[very thick] (0,6) -- (2.8,6) node[midway,above] {$\mu_S$};
+			
+			% Draw dot potential
+			\draw[very thick, dashed] (3.2,6.4) -- (5.8,6.4) node[midway,above] {$\mu_N$};
+			\draw[very thick] (3.2,4.2) -- (5.8,4.2) node[midway,above] {$\mu_{N-1}$};
+			 
+			% Draw drain potential
+			\draw[very thick] (6.2,5.6) -- (9,5.6) node[midway,above] {$\mu_D$};
+			 
+		\end{tikzpicture}	
+		\caption{$\mu_N>\mu_S$: the transport is blocked again due to the Coulomb blockade. The number of electrons inside the dot is $N-1$. This situation is obtained by further lowering $V_G$.}
+		\label{fig:SET_mu_potential_stage3}
+		\end{subfigure}
+	\caption{Energy diagram of a quantum dot. The sequence of images illustrates the transport process of the electrons \citep[adapted from][]{Fasth2007}.}
+	\label{fig:SET_mu_potential}
+\end{figure}
 
-Using this information, we can now analyze the transport mechanism in a quantum dot. Let's consider -- as explained before -- the low-temperature, low-bias voltage case ($eV_{\text{bias}},k_BT \ll e^2/C_{\Sigma}$). Let's also suppose that, initially, the electrochemical potential inside the dot -- $\mu_N$ -- is lower than the electrochemical potential of the drain -- $\mu_D$: the transport is blocked due to the Coulomb blockade effect (FIG A). Now, we can decrease the gate voltage: the overall effect, as you can see from equation \eqref{eq:electrochemical_potential} and from our previous considerations, is that we have a linear increase in $\mu_N$ wrt the gate voltage. Eventually, $\mu_N$ will align to $\mu_D$ ($\mu_N = \mu_D$), which means that an electron can leave the dot. At the same time, if $\mu_S \gtrsim \mu_D$, an electron from $\mu_S$ can enter the dot; the overall effect is that the number of the electrons inside the dot oscillates between $N$ and $N-1$, and an electric current flows though the dot from the drain to the source. In terms of the conductance, this corresponds in a peak. If we keep lowering the gate voltage -- i.e., increasing $\mu_N$ -- until $\mu_N > \mu_S$, then the dot is left with only $N-1$ electrons. Now, the level to consider is $\mu_{N-1}$: you see that it's far below $\mu_D$, so the current is blocked again.
+Using this information, we can now analyze the transport mechanism in a quantum dot. Let's consider -- as explained before -- the low-temperature, low-bias voltage case ($eV_{\text{bias}},k_BT \ll e^2/C_{\Sigma}$). Let's also suppose that, initially, the electrochemical potential inside the dot -- $\mu_N$ -- is lower than the electrochemical potential of the drain -- $\mu_D$: the transport is blocked due to the Coulomb blockade effect (Figure \ref{fig:SET_mu_potential_stage1}). Now, we can decrease the gate voltage: the overall effect, as you can see from equation \eqref{eq:electrochemical_potential} and from our previous considerations, is that we have a linear increase in $\mu_N$ wrt the gate voltage. Eventually, $\mu_N$ will align to $\mu_D$ ($\mu_N = \mu_D$), which means that an electron can leave the dot. At the same time, if $\mu_S \gtrsim \mu_D$, an electron from $\mu_S$ can enter the dot; the overall effect is that the number of the electrons inside the dot oscillates between $N$ and $N-1$, and an electric current flows though the dot from the drain to the source (Figure \ref{fig:SET_mu_potential_stage2}). In terms of the conductance, this corresponds in a peak. If we keep lowering the gate voltage -- i.e., increasing $\mu_N$ -- until $\mu_N > \mu_S$, then the dot is left with only $N-1$ electrons. Now, the level to consider is $\mu_{N-1}$: you see that it's far below $\mu_D$, so the current is blocked again (see Figure \ref{fig:SET_mu_potential_stage3}).
 
 This qualitative analysis also permits to find the gate voltage values for which we have peaks in the conductance. The peak condition, in fact, is $\mu_S\approx\mu_N\approx\mu_D$; inserting this condition in \eqref{eq:electrochemical_potential} and solving for $V_3$ (the index 3 indicates the gate, so we will replace the subscript with ``G'' for simplicity) gives
 \begin{align}
@@ -389,7 +511,7 @@ where the last term has been dropped because we are in the small-bias voltage ca
 	\label{eq:DeltaVG_N_Vb0}
 \end{align}
 
-As we already noticed before, for a lateral structure we can neglect the single-particle levels spacing (because the structure itself is quite large); this is not true for a vertical quantum dots structure, that has far smaller dimensions (as you can see in Figure \ref{fig:Figures_4-5_Reimann}). In that case the space quantization is evident and the conductance peaks are not evenly spaced, as you can see in Figure (INSERT AND LINK FIGURE 10 REIMANN). It's also very nice that, by simply subtracting the quantity $1 / \alpha_G (e^2 / C_{\Sigma})$ from the spacing of two successive peaks, we can reconstruct the spectrum of the dot.
+As we already noticed before, for a lateral structure we can neglect the single-particle levels spacing (because the structure itself is quite large); this is not true for a vertical quantum dots structure, that has far smaller dimensions (as you can see in Figure \ref{fig:Figures_4-5_Reimann}). In that case the space quantization is evident and the conductance peaks are not evenly spaced, as you can see in Figure \ref{fig:Figure_10_Reimann}. It's also very nice that, by simply subtracting the quantity $1 / \alpha_G (e^2 / C_{\Sigma})$ from the spacing of two successive peaks, we can reconstruct the spectrum of the dot.
 
 \begin{figure}[h]%[H]
 	\centering
