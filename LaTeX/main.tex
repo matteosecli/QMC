@@ -576,14 +576,43 @@ and
 \end{dmath}
 for $V_{\text{bias}}>0$. The case $V_{\text{bias}}<0$ is handled similarly.
 
-By equating \eqref{eq:VG_N} and \eqref{eq:VG_N+1} we find that these two lines cross at $eV_{\text{bias}} = \Delta_{N+1} + e^2/C_{\Sigma}$, where $\Delta_{N+1}=\varepsilon_{N+1}-\varepsilon_{N}$ as usual. For $V_{\text{bias}}=0$, instead, we find that the spacing between $V_G^{(N)}$ and $V_G^{(N+1)}$ is $(\Delta_{N+1} + e^2/C_{\Sigma})/\alpha_G$ as we found previously for a negligible $V_{\text{bias}}$, equation \eqref{eq:DeltaVG_N_Vb0}. The situation is schematically pictured in Figure (MAKE FIGURE 4A CH7).
+By equating \eqref{eq:VG_N} and \eqref{eq:VG_N+1} we find that these two lines cross at $eV_{\text{bias}} = \Delta_{N+1} + e^2/C_{\Sigma}$, where $\Delta_{N+1}=\varepsilon_{N+1}-\varepsilon_{N}$ as usual. For $V_{\text{bias}}=0$, instead, we find that the spacing between $V_G^{(N)}$ and $V_G^{(N+1)}$ is $(\Delta_{N+1} + e^2/C_{\Sigma})/\alpha_G$ as we found previously for a negligible $V_{\text{bias}}$, equation \eqref{eq:DeltaVG_N_Vb0}. The situation is schematically pictured in Figure \ref{fig:diamond_regions}.
 
-The diamond-shaped structure shown in Figure (FIGURE 4A CH7) have been shown in differential conductance measurements like the one shown in Figure (FIG 8 REIMANN, PUT ON THE LEFT). A 3D version of this kind of experiment -- that clarifies the ideas a little bit -- is shown in Figure (INSERT IMAGE OF DISSERTATION OF THE GERMAN GUY, ON THE RIGHT).
+\begin{figure}[h]%[H]
+	\centering
+	\includegraphics[width=0.5\textwidth]{diamond_regions}
+	\caption{Coulomb blockade diamonds (gray and dark blue regions). In the dark blue region, the probability of finding $N$ electrons in the dot is $1$ (stable configuration); in the light blue regions, the probability varies from 0 to 1 and the electron number can change by one. In the green region, the bias voltage is so high that eventually $eV_{\text{bias}} > e^2/C_{\Sigma}$; due to this fact, two electrons can tunnel at the same time. From \cite{Fasth2007}.}
+	\label{fig:diamond_regions}
+\end{figure}
+
+The diamond-shaped structure shown in Figure \ref{fig:diamond_regions} have been shown in differential conductance measurements like the one shown in Figure \ref{fig:Figure_8_Reimann}. A 3D version of this kind of experiment -- that clarifies the ideas a little bit -- is shown in Figure \ref{fig:diff_conductance_3D}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.6\textwidth]{Figure_8_Reimann}
+	\caption{Peaks in the differential conductance $\partial I/\partial V_{\text{sd}}$ (showed as solid lines) of a lateral quantum dot, as a function of $V_{\text{sd}}$ and $V_{\text{g}}$. The white regions are the Coulomb blockade regions; between successive regions, the number of electrons in the dot is increased by one. From \cite{Reimann2002}.}
+	\label{fig:Figure_8_Reimann}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\def\svgwidth{0.8\textwidth}
+	\input{figures/diff_conductance_3D.pdf_tex}
+	\caption{Differential conductance $\partial I/\partial V_{\text{sd}}$ in a nanowire, plotted against $V_{\text{sd}}$ and $V_{\text{g}}$. Green and red indicate positive values; blue means close to zero, whereas pink stands for negative. From \cite{Weinmann1994}.}
+	\label{fig:diff_conductance_3D}
+\end{figure}
 
 \section{The parabolic confinement}
 In our simulation, we will model the confining (single-particle) potential as a \emph{two-dimensional harmonic trap}. This form for the confining potential is widely accepted as a standard for both exact and effective-field calculations, and is the result of experimental observations and numerical calculations.
 
-The basis for this assumption can be found in the work of \cite{Kumar1990}. They performed numerical calculations on the Poisson and Schr\"{o}dinger equations to obtain the electron states in a GaAs/AlGaAs quantum dot -- like the one sketched in Figure \ref{fig:Figure_5_Reimann}. The calculations were done in the Hartree approximation. The results were quite interesting, as you can see in Figure (INSERT FIG 2 KUMAR): despite the square shape of the GaAs cap, the contours of the effective confinement potential were circular.
+The basis for this assumption can be found in the work of \cite{Kumar1990}. They performed numerical calculations on the Poisson and Schr\"{o}dinger equations to obtain the electron states in a GaAs/AlGaAs quantum dot -- like the one sketched in Figure \ref{fig:Figure_5_Reimann}. The calculations were done in the Hartree approximation. The results were quite interesting, as you can see in Figure \ref{fig:Figure_2_Kumar} despite the square shape of the GaAs cap, the contours of the effective confinement potential were circular.
+
+\begin{figure}[h]%[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{Figure_2_Kumar}
+	\caption{Contours of the lateral potential in a GaAs/AlGaAs quantum dot. The measurements were taken $\SI{8}{\milli\meter}$ below the contact surface of the two materials, and the contours are evenly separated by $\SI{10}{\milli e\volt}$ intervals. The Fermi level (thick line) is indicated by $E_F$. From \cite{Kumar1990}.}
+	\label{fig:Figure_2_Kumar}
+\end{figure}
 
 An experimental support for this model comes from the observation of far-infrared absorbption spectra, in combination with the Kohn theorem. This theorem \citep[see][]{Kohn1961} states that, for an electron gas with short-range interactions, the latter don't change the cyclotron frequency. For far-infrared absorbption measurements in a quantum dot, this has the consequence that the effects of the electron-electron interaction show up only for a strong enough anharmonicity of the confining potential \citep[see][]{Reimann2002}. Since in many measurements the effects of the electron-electron interaction were not seen, the model of a harmonic confinement gained ground.
 
@@ -592,7 +621,7 @@ We also showed, in sections \ref{sec:shell_model}-\ref{sec:shell_model_evidences
 	V(x,y)=\frac{1}{2}m\omega^2(x^2+y^2)
 \end{equation}
 
-It's worth noting that, in experimental observations, the effective confinement strength $\omega$ is not constant; it tends to lower as the number $N$ of confined electrons increase. The lowering of the effective strength translates into an increase of the ``confinement volume'', so that the electron density remains constant. A model for $\omega$ that takes into account these effects was given by (CITE KOSHINEN ET AL 1997, REIMANN), who modeled $\omega^2$ as
+It's worth noting that, in experimental observations, the effective confinement strength $\omega$ is not constant; it tends to lower as the number $N$ of confined electrons increase. The lowering of the effective strength translates into an increase of the ``confinement volume'', so that the electron density remains constant. A model for $\omega$ that takes into account these effects was given by \cite{Koskinen1997}, who modeled $\omega^2$ as
 \begin{equation}
 	\omega^2 = \frac{e^2}{4\pi\varepsilon m^*r_s^3\sqrt{N}},
 \end{equation}
@@ -612,7 +641,7 @@ where $\varepsilon$ is the dielectric constant of the mean, $m^*$ is the effecti
 	\end{equation*}
 	for the three-dimensional case.
 },
-quite close to the equilibrium value  for a two-dimensional electron gas.
+quite close to the equilibrium value  for a two-dimensional electron gas \citep[see][]{Reimann2002}.
 
 \section{Many body effects (???)}
 Do I have to write something here? Like that electrons are considered as an EFG, write the total hamiltonian using the effective mass, say that we can solve the system with diagonalization, monte carlo (VMC, DMC) or DFT/SDFT. Brief explanation of what they are, pros/cons....
