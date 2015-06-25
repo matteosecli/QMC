@@ -58,6 +58,8 @@
 \tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=green!30]
 \tikzstyle{arrow} = [thick,->,>=stealth]
 
+\usepackage[siunitx]{circuitikz}
+
 \makeatletter
 \renewcommand{\bibsection}{\chapter{\bibname}}
 \@addtoreset{section}{part}
@@ -238,13 +240,69 @@ For atomic nuclei the idea is quite the same, with the only difference that now 
 
 Atomic clusters are also an interesting case, since they show anomalies in the mass abundance spectra: for certain cluster sizes, the clusters are more stable. This behavior has been explained with the ``jellium'' theory for metallic clusters; the valence electrons are treated as trapped in a homogeneous positive-charged background (the jellium), that stems from the atomic ions. Density functional calculations showed the magic number sequence $N=2,8,20,40,58$ (see Figure \ref{fig:Figure_3_Reimann}, upper right) some years before it was discovered with experiments in the beginning of the 80's \citep[see][]{Reimann2002}.
 
-The sequence of magic numbers for quantum dots was discovered in 1996 by using an etched pillar of semiconducting material as shown in Figure \ref{fig:Figure_3_Reimann}, lower right (CITE TARUCHA?). As we will see later, a quantum dot can be schematized as a one-electron transistor; measurements of the energy needed to add a single electron to a $N$-electrons quantum dot show large peaks for $N=2,6,12$ (Figure \ref{fig:Figure_3_Reimann}). Noticeably, these numbers are the same quantum numbers obtained for a two-dimensional harmonic oscillator.
+The sequence of magic numbers for quantum dots was discovered in 1996 by using an etched pillar of semiconducting material as shown in Figure \ref{fig:Figure_3_Reimann}, lower right (CITE \cite{Tarucha1996} ???). As we will see later, a quantum dot can be schematized as a one-electron transistor; measurements of the energy needed to add a single electron to a $N$-electrons quantum dot show large peaks for $N=2,6,12$ (Figure \ref{fig:Figure_3_Reimann}). Noticeably, these numbers are the same quantum numbers obtained for a two-dimensional harmonic oscillator.
 
 \section{The Coulomb blockade model}
 % Refer to it as model or effect? Found both of them.
-The behavior of a quantum dot can be analyzed by studying its electron transport mechanism. In order to do that, the dot is connected to a circuit that provides a certain gate voltage, and its conductance is measured. A plot like the one in Figure (FIGURE 6 REIMANN) is obtained; you see that there are conductance peaks at specific gate voltages, all of them evenly spaced. This behavior can be explained my the \emph{Coulomb blockade model}.
 
-Let's consider a \emph{single-electron transistor} device, like the one in Figure (MAKE A FIGURE FOLLOWING FIG 1 CH 7 AND QUOTE \cite{Fasth2007}). This name is due to the fact that the charge on the electron island is a multiple of the elementary charge. The electron island is weakly coupled with the source and drain contacts thanks to tunnel barriers, which are thick enough to guarantee that quantum resonances dominates the electron transport mechanism.; in other words, the conductance of the tunnel must be smaller than the quantum conductance $e^2/h$ \citep[see][]{Reimann2002}. By analogy with a capacitor, in which the energy stored is $U=Q^2/2C$, one can make a first estimate of the energy stored in a dot containing $N$ particles as
+\begin{figure}[h]%[H]
+	\centering
+    \includegraphics[width=0.60\textwidth]{Figure_6_Reimann}
+    \caption{Coulomb oscillations in a lateral quantum dot. The regions (a) and (c) have a fixed number of electrons since there is a Coulomb blockade; (b) is the conductance region, where the number of electrons oscillates. From \cite{Reimann2002}.}
+	\label{fig:Figure_6_Reimann}
+\end{figure}
+
+The behavior of a quantum dot can be analyzed by studying its electron transport mechanism. In order to do that, the dot is connected to a circuit that provides a certain gate voltage, and its conductance is measured. A plot like the one in Figure \ref{fig:Figure_6_Reimann} is obtained; you see that there are conductance peaks at specific gate voltages, all of them evenly spaced. This behavior can be explained by the \emph{Coulomb blockade model}.
+
+% Usage: 
+\newcommand{\trcomponent}[2]
+{
+	\draw (#1) node[align=center] {\textnormal #2};
+}
+
+% Usage: \circlecomp{position}{text}
+\newcommand{\circlecomp}[2]
+{
+	\draw[thick] (#1) node[draw,shape=circle,scale=0.85,align=center] {#2};
+}
+
+\newcommand{\vertcomp}[2]
+{
+\draw[thick] (#1) node[draw,shape=rectangle,scale=1,align=center] {\textnormal #2};
+}
+
+\begin{figure}[h]%[H]
+	\centering
+	\begin{circuitikz}[scale=1.1,transform shape]
+		\draw (0,0) to (4,0) to (4,0.3) to[lamp,color=white,n=Vsd] ++(0,0.85);
+		\draw (3.575,0.725) to (0.5,0.725) to (0.5,2.5)
+			to[generic,bipoles/length=2cm,n=source] (2.5,2.5)
+			to[C,l_=$C_1$,bipoles/length=1cm] (3,2.5)
+			to[lamp,bipoles/length=2cm,color=white,n=dot] ++(2,0);
+		\draw (4.425,0.725) to (7.5,0.725) to (7.5,2.5)
+			to[generic,bipoles/length=2cm,n=drain] (5.5,2.5)
+			to[C,l^=$C_2$,bipoles/length=1cm] (5,2.5);
+		\draw (4,3.1) to[C,l=$C_3$,bipoles/length=1cm] (4,4.5)
+			to[lamp,bipoles/length=0.9cm,color=white,n=gate] (4,5)
+			to (4,5.3) to[lamp,bipoles/length=1.3cm,color=white,n=Vg] (0,5.3)
+			to (0,0) node[ground] {};
+		% Draw the components
+		\circlecomp{Vsd}{$V_{\text{sd}}$}
+		\trcomponent{source}{Source}
+		\circlecomp{dot}{Dot\\$C_{\Sigma}$}
+		\trcomponent{drain}{Drain}
+		\vertcomp{gate}{Gate}
+		\circlecomp{Vg}{$V_{\text{g}}$}
+		% Draw the intrinstic indicators
+		\draw[dashed] (0.4,1.5) rectangle (3.2,3.1);
+		\draw[dashed] (7.6,1.5) rectangle (4.8,3.1);
+		\draw[dashed] (3,3.5) rectangle (5,5.4);
+	\end{circuitikz}
+	\caption{Scheme of a single electron transistor. The island has index 0, the source has index 1, the drain index 2 and the gate index 3. The capacitances are meant to be intrinsic capacitances of the respective electrode (source, drain or gate). Adapted from \cite{Fasth2007}.}
+	\label{fig:SET_scheme}
+\end{figure}
+
+Let's consider a \emph{single-electron transistor} device, like the one in Figure \ref{fig:SET_scheme}. This name is due to the fact that the charge on the electron island is a multiple of the elementary charge. The electron island is weakly coupled with the source and drain contacts thanks to tunnel barriers, which are thick enough to guarantee that quantum resonances dominates the electron transport mechanism.; in other words, the conductance of the tunnel must be smaller than the quantum conductance $e^2/h$ \citep[see][]{Reimann2002}. By analogy with a capacitor, in which the energy stored is $U=Q^2/2C$, one can make a first estimate of the energy stored in a dot containing $N$ particles as
 \begin{equation}
 	U(N) \simeq \frac{N(N-1)}{2C_{\Sigma}}.
 \end{equation}
@@ -332,6 +390,13 @@ where the last term has been dropped because we are in the small-bias voltage ca
 \end{align}
 
 As we already noticed before, for a lateral structure we can neglect the single-particle levels spacing (because the structure itself is quite large); this is not true for a vertical quantum dots structure, that has far smaller dimensions (as you can see in Figure \ref{fig:Figures_4-5_Reimann}). In that case the space quantization is evident and the conductance peaks are not evenly spaced, as you can see in Figure (INSERT AND LINK FIGURE 10 REIMANN). It's also very nice that, by simply subtracting the quantity $1 / \alpha_G (e^2 / C_{\Sigma})$ from the spacing of two successive peaks, we can reconstruct the spectrum of the dot.
+
+\begin{figure}[h]%[H]
+	\centering
+    \includegraphics[width=0.55\textwidth]{Figure_10_Reimann}
+    \caption{Coulomb oscillations in a vertical quantum dot. Here, $D$ is an estimate for the dot diameter. From \cite{Reimann2002} (OR \cite{Tarucha1996} ???).}
+	\label{fig:Figure_10_Reimann}
+\end{figure}
 
 Finally, we briefly discuss the case in which the bias voltage cannot be neglected. Let's put us in the simple case of a symmetric bias voltage between the drain and the source, i.e.
 \begin{equation}
