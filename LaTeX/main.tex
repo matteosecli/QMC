@@ -1,56 +1,101 @@
-%---- BSc Thesis version BEGIN ----%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+% Variational Monte Carlo Methods for quantum dots, by Matteo Seclì           %
+%                                                                             %
+% This eBook is meant to be used as the BSc Thesis of the author.             %
+% The predicted date of the discussion is 22/07/2015 at the University of     %
+% Trento.                                                                     %
+%                                                                             %
+% For licensing information, look at the LICENSE file shipped with this       %
+% document.                                                                   %
+%                                                                             %
+% The original location of this project is at                                 %
+% https://github.com/matteosecli/QMC.                                         %
+%                                                                             %
+% Title: Variational Monte Carlo Methods for quantum dots                     %
+%                                                                             %
+% Author: Matteo Seclì <secli.matteo@gmail.com>                               %
+%                                                                             %
+% Language: English                                                           %
+%                                                                             %
+% Character set encoding: UTF-8                                               %
+%                                                                             %
+% *** START OF THIS BACHELOR THESIS PROJECT ***                               %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Basic class definitions, typesetting, bibliography      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \documentclass[a4paper,twoside,11pt]{book}
 \usepackage[utf8]{inputenc}
 \usepackage{type1cm}
 \usepackage[english]{babel}
-%\usepackage[nottoc]{tocbibind}
 \usepackage[sort, round]{natbib}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Hyperref configuration                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage[%hypertex,
-                 unicode=true,
-                 plainpages = false, 
-                 pdfpagelabels, 
-                 bookmarks=true,
-                 bookmarksnumbered=true,
-                 bookmarksopen=true,
-                 breaklinks=true,
-                 backref=false,
-                 colorlinks=true,
-                 linkcolor = blue,		% Use "blue" if you want to highlight them
-                 urlcolor  = blue,
-                 citecolor = red,
-                 anchorcolor = green,
-                 hyperindex = true,
-                 linktocpage = true,
-                 hyperfigures
+	unicode=true,
+	plainpages = false, 
+	pdfpagelabels, 
+	bookmarks=true,
+	bookmarksnumbered=true,
+    bookmarksopen=true,
+	breaklinks=true,
+	backref=false,
+	colorlinks=true,
+	linkcolor = blue,		% Use "blue" if you want to highlight them
+	urlcolor  = blue,
+	citecolor = red,
+	anchorcolor = green,
+	hyperindex = true,
+	linktocpage = true,
+	hyperfigures
 ]{hyperref}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Grahpics                                                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{graphicx}
+\usepackage{xcolor}
+\graphicspath{{figures/PNG/}{figures/PDF/}{figures/}}
+\usepackage{tikz}
+\usepackage[siunitx]{circuitikz}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Standard environments                                   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{float}
 \usepackage{caption}[2013/01/06] % Minimum version required for incompatibility with breqn
 \usepackage{subcaption}
-\usepackage{fancyhdr}
 \usepackage{listingsutf8}
-\usepackage{xcolor}
-\graphicspath{{figures/PNG/}{figures/PDF/}{figures/}}
-\usepackage{amsfonts}
-\usepackage{amsthm}
-\usepackage{amssymb}	
-\usepackage{wrapfig}
 \usepackage{enumitem}
-%\usepackage{subfigure}
-\usepackage{amssymb}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Math                                                    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{amsmath}
+\usepackage{amssymb}	
+\usepackage{amsthm}
 \usepackage{cancel}
 \usepackage{braket}
 \usepackage{siunitx}
 \DeclareSIUnit\atomicunit{a.u.}
 \usepackage{breqn}
-%\usepackage [a4paper, top=2.5cm, bottom=2cm, left=1.5cm, right=1.5cm] {geometry}
-\usepackage{geometry}%margin=2cm
-\pagestyle{fancy}
-
+\usepackage{geometry}
 \renewenvironment{proof}{\vskip 1em \noindent\textsc{Proof:}}{\begin{flushright}$\blacksquare$\end{flushright}\vskip 1em}
 
-\usepackage{tikz}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TikZ specific configuration                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usetikzlibrary{shapes.geometric, arrows, patterns}
 \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
 \tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
@@ -58,60 +103,71 @@
 \tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=green!30]
 \tikzstyle{arrow} = [thick,->,>=stealth]
 
-\usepackage[siunitx]{circuitikz}
 
-\makeatletter
-\renewcommand{\bibsection}{\chapter{\bibname}}
-\@addtoreset{section}{part}
-\makeatother
-\rhead{\large Variational Monte Carlo methods for quantum dots}
-
-\lhead{\large FYS3150 -- Final project}
-%\lfoot{Matteo Seclì -- Candidate number: 31}
-%\cfoot{}
-%\rfoot{\thepage}
-%\renewcommand{\headrulewidth}{0.7pt}
-%\renewcommand{\footrulewidth}{0.7pt}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% xcolor specific configuration                           %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{dred}{rgb}{0.545,0,0}
 \definecolor{dblue}{rgb}{0,0,0.545}
 \definecolor{lgrey}{rgb}{0.9,0.9,0.9}
 \definecolor{gray}{rgb}{0.4,0.4,0.4}
 \definecolor{darkblue}{rgb}{0.0,0.0,0.6}
-\lstdefinelanguage{cpp}{
-      backgroundcolor=\color{lgrey},  
-      basicstyle=\footnotesize \ttfamily \color{black} \bfseries,   
-      breakatwhitespace=false,       
-      breaklines=true,               
-      captionpos=b,                   
-      commentstyle=\color{dkgreen},   
-      deletekeywords={...},          
-      escapeinside={\%*}{*)},                  
-      frame=single,                  
-      language=C++,                
-      keywordstyle=\color{purple},  
-      morekeywords={BRIEFDescriptorConfig,string,TiXmlNode,DetectorDescriptorConfigContainer,istringstream,cerr,exit}, 
-      identifierstyle=\color{black},
-      stringstyle=\color{blue},      
-      numbers=right,                 
-      numbersep=5pt,                  
-      numberstyle=\tiny\color{black}, 
-      rulecolor=\color{black},        
-      showspaces=false,               
-      showstringspaces=false,        
-      showtabs=false,                
-      stepnumber=1,                   
-      tabsize=5,                     
-      title=\lstname,                 
-    }
 
-\author{
-\normalsize Matteo Seclì \texttt{$<$\href{mailto:mattes@mail.uio.no}
-{mattes@mail.uio.no}$>$}\\
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ListingsUTF8 specific configuration                     %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstdefinelanguage{cpp}{
+	backgroundcolor=\color{lgrey},  
+	basicstyle=\footnotesize \ttfamily \color{black} \bfseries,   
+	breakatwhitespace=false,       
+	breaklines=true,               
+	captionpos=b,                   
+	commentstyle=\color{dkgreen},   
+	deletekeywords={...},          
+	escapeinside={\%*}{*)},                  
+	frame=single,                  
+	language=C++,                
+	keywordstyle=\color{purple},  
+	morekeywords={BRIEFDescriptorConfig,string,TiXmlNode,DetectorDescriptorConfigContainer,
+		istringstream,cerr,exit}, 
+	identifierstyle=\color{black},
+	stringstyle=\color{blue},      
+	numbers=right,                 
+	numbersep=5pt,                  
+	numberstyle=\tiny\color{black}, 
+	rulecolor=\color{black},        
+	showspaces=false,               
+	showstringspaces=false,        
+	showtabs=false,                
+	stepnumber=1,                   
+	tabsize=5,                     
+	title=\lstname,                 
 }
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Some black magic                                        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+	\renewcommand{\bibsection}{\chapter{\bibname}}
+\makeatother
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Metadata                                                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\author{
+	\normalsize Matteo Seclì \texttt{$<$\href{mailto:mattes@mail.uio.no}
+	{mattes@mail.uio.no}$>$}\\
+}
 \title{\textbf{Variational Monte Carlo methods for quantum dots}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Actual text                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
@@ -119,34 +175,29 @@
 
 \maketitle
 
-\hrule
-%\medskip
-\begin{center}
-	\large\textbf{Abstract}
-	\medskip\\
-	\begin{minipage}[c][][c]{0.8\textwidth}
-		\small{
-			The aim of this project is to use the Variational Monte Carlo (VMC) 
-			method to evaluate the ground state energy, one-body densities, 
-			expectation values of the kinetic and potential energies and 
-			single-particle energies of quantum dots with $N = 2$ and $N = 6$ 
-			electrons, so-called \emph{closed shell systems}. We will begin with 
-			two electrons confined in a pure two-dimensional isotropic harmonic 
-			oscillator potential, with and without the repulsive interaction, developing
-			a simple trial wave-function and a basic program that runs our calculations.
-			Then we are going to improve the trial wave-function adding the so-called 
-			\emph{Jastrow factor}, and finally we are going to extend the entire class of
-			wave-functions and the program itself to a given number of electrons 
-			(obviously, for a closed-shell system). After that we are going to improve
-			our sampling, switching from a brute-force approach to the clever
-			\emph{importance sampling}. In addition, we will present a method that 
-			implements analytical derivatives for calculating both the energy and the
-			diffusive force of the importance sampling.			
-		}
-	\end{minipage}
-\end{center}
-\medskip
-\hrule
+\chapter{Preface}
+Write something in the preface. Who inspired this project, why, 
+when....just think about something to write here.
+
+\chapter{Introduction}
+COMPLETE THIS INTRODUCTION WITH A MORE DETAILED EXPLANATION AND INDICATING WHAT THERE'S IN THE FIRST CHAPTER!!!
+
+The aim of this project is to use the Variational Monte Carlo (VMC) 
+method to evaluate the ground state energy, one-body densities, 
+expectation values of the kinetic and potential energies and 
+single-particle energies of quantum dots with $N = 2$ and $N = 6$ 
+electrons, so-called \emph{closed shell systems}. We will begin with 
+two electrons confined in a pure two-dimensional isotropic harmonic 
+oscillator potential, with and without the repulsive interaction, developing
+a simple trial wave-function and a basic program that runs our calculations.
+Then we are going to improve the trial wave-function adding the so-called 
+\emph{Jastrow factor}, and finally we are going to extend the entire class of
+wave-functions and the program itself to a given number of electrons 
+(obviously, for a closed-shell system). After that we are going to improve
+our sampling, switching from a brute-force approach to the clever
+\emph{importance sampling}. In addition, we will present a method that 
+implements analytical derivatives for calculating both the energy and the
+diffusive force of the importance sampling.			
 
 \tableofcontents
 
@@ -649,7 +700,7 @@ Do I have to write something here? Like that electrons are considered as an EFG,
 Would be interesting or would be too much stuff?
 
 
-\chapter{Introduction and theoretical basis}
+\chapter{Theoretical basis of the simulation}
 
 \section{The Variational Principle}
 The Variational Principle is a method of general validity that can be used to gather information about a system with a Hamiltonian that we are unable to diagonalize (i.e., we can't solve the Schr\"{o}dinger equation for that system). Specifically, this principle gives us an \emph{upper bound} for the energy of the ground state, that we will call here $E_{\text{gs}}$. The formulation is astonishingly simple: if you pick \emph{any state $\Ket{\psi}$ whatsoever}, then
