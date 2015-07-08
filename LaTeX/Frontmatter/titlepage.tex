@@ -1,1 +1,48 @@
-\maketitle
+%\maketitle
+
+\graphicspath{{Frontmatter/figures/PNG/}{Frontmatter/figures/PDF/}{Frontmatter/figures/}}
+
+\begin{titlepage}
+	\newgeometry{margin=3.5cm}
+	
+	\begin{center}
+	
+		\includegraphics[width=10cm]{logo-unitn-dphys}\\[0.4cm]
+		
+		\vskip 5.5cm
+		
+		{\Large Degree in Physics}\\[0.5cm]
+		
+		{\Large Thesis}\\[0.5cm]
+		
+		% Title
+		\rule{\linewidth}{0.2mm} \\[0.5cm]
+		
+		{ \huge \bfseries \THtitle \\[0.5cm] }
+		
+		\rule{\linewidth}{0.2mm} \\[2cm]
+		
+		% Author and supervisor
+		\begin{minipage}[t]{0.45\textwidth}
+			\begin{flushleft} \large
+				\emph{Supervisors:} \\[0.25cm]
+				Prof. \THsupervisor \\[0.10cm]
+				Prof. \THextrasupervisor
+			\end{flushleft}
+		\end{minipage}
+		\begin{minipage}[t]{0.45\textwidth}
+			\begin{flushright} \large
+				\emph{Student:}\\[0.25cm]
+				{ \THauthor }
+			\end{flushright}
+		\end{minipage}
+		
+		\vfill
+		
+		% Bottom of the page
+		{\large A.Y. 2014/2015}
+		
+	\end{center}
+	
+	\restoregeometry
+\end{titlepage}
