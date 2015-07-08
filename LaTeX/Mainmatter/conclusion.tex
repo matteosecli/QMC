@@ -1,0 +1,21 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                         %
+% CONCLUSION                                              %
+%                                                         %
+% This file is part of a BSc Thesis Project. See the      %
+% LICENSE file for more information about licensing.      %
+%                                                         %
+% Author:     Matteo Seclì <secli.matteo@gmail.com>       %
+% A.Y.:       2015                                        %
+% URL:        https://github.com/matteosecli/QMC          %
+%                                                         %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Conclusions and perspectives}
+In this project we really showed the power of the VMC method, that even if it doesn't give automatically the ground state energy of a system can be used to approximate it -- to excess -- with a considerable degree of precision. If we have no clues about the properties of the system we can use a brute force sampling, trying to manually set a length-step that gives about $50\%$. But if we are smarter, we can use the information we have about the expected result to implement a more efficient sampling.
+
+This program has been implemented in a highly object-oriented way, following the suggestions contained in \cite{Hoegberget2013}, and can also fully handle the 12-electrons case (look at the implementation of the orbitals in the code). However, it is still \emph{extremely slow} -- practically unusable. So, I'm planning to improve this program using MPI and GPU parallelization, that would give me some extra speed.
+
+I'm also planning to extend this program to handle a custom number of variational parameters, and to improve the trial wave-function with some extra terms as suggested by professor Francesco Pederiva\footnote{University of Trento, Department of Physics.} and/or using the Hartree-Fock method. This would require to abandon the analytical derivatives route and concentrate the efforts in the algorithm improvements in terms of efficiency.
+
+Finally, for me this project has been a springboard into the quantum computational physics world; I enjoyed so much in doing this simulation that I've decided to goo deeper into this subject and start to explore of its full potential in advanced courses at UiO and NMBU.
