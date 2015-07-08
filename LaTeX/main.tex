@@ -31,6 +31,7 @@
 \documentclass[a4paper,twoside,11pt]{book}
 \usepackage[utf8]{inputenc}
 \usepackage{type1cm}
+\usepackage{setspace}
 \usepackage[english]{babel}
 \usepackage[sort, round]{natbib}
 
@@ -72,7 +73,7 @@
 % Standard environments                                   %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{float}
-\usepackage{caption}[2013/01/06] % Minimum version required for incompatibility with breqn
+\usepackage[font={small,it}]{caption}[2013/01/06] % Minimum version required for incompatibility with breqn
 \usepackage{subcaption}
 \usepackage{listingsutf8}
 \usepackage{enumitem}
@@ -175,6 +176,9 @@
 
 \maketitle
 
+% Set 1.5 lines spacing for better readability
+\onehalfspacing
+
 \chapter{Preface}
 Write something in the preface. Who inspired this project, why, 
 when....just think about something to write here.
@@ -214,12 +218,12 @@ Such confinement is usually achieved by restricting the two-dimensional electron
 	\centering
 	\begin{subfigure}[t]{0.5\textwidth}
 		\includegraphics[width=\textwidth]{Figure_5_Reimann}
-		\caption{Lateral device structure. From \cite{Reimann2002}.}
+		\caption{Lateral device structure. From \cite{Meirav1990}.}
 		\label{fig:Figure_5_Reimann}
     \end{subfigure}
 	\begin{subfigure}[t]{0.4\textwidth}
 		\includegraphics[width=\textwidth]{Figure_4_Reimann}
-		\caption{Etched quantum dots. The white bars have a length of $\SI{0.5}{\micro\meter}$. \cite{Reimann2002}.}
+		\caption{Etched quantum dots. The white bars have a length of $\SI{0.5}{\micro\meter}$. From \cite{Reed1988}.}
 		\label{fig:Figure_4_Reimann}
     \end{subfigure}
     \caption{Lateral and vertical quantum dots structures.}
@@ -241,7 +245,7 @@ The so-called \emph{shell-model} is a particularly convenient and simple way to 
 \begin{figure}[H]
 	\centering
     \includegraphics[width=0.5\textwidth]{Figure_1_Reimann}
-    \caption{Bunching of the single-particles levels and level density at the Fermi level. From \cite{Reimann2002}.}
+    \caption{Bunching of the single-particles levels and level density at the Fermi level. From \cite{Brack1972}.}
 	\label{fig:Figure_1_Reimann}
 \end{figure}
 
@@ -291,7 +295,7 @@ For atomic nuclei the idea is quite the same, with the only difference that now 
 
 Atomic clusters are also an interesting case, since they show anomalies in the mass abundance spectra: for certain cluster sizes, the clusters are more stable. This behavior has been explained with the ``jellium'' theory for metallic clusters; the valence electrons are treated as trapped in a homogeneous positive-charged background (the jellium), that stems from the atomic ions. Density functional calculations showed the magic number sequence $N=2,8,20,40,58$ (see Figure \ref{fig:Figure_3_Reimann}, upper right) some years before it was discovered with experiments in the beginning of the 80's \citep[see][]{Reimann2002}.
 
-The sequence of magic numbers for quantum dots was discovered in 1996 by using an etched pillar of semiconducting material as shown in Figure \ref{fig:Figure_3_Reimann}, lower right (CITE \cite{Tarucha1996} ???). As we will see later, a quantum dot can be schematized as a one-electron transistor; measurements of the energy needed to add a single electron to a $N$-electrons quantum dot show large peaks for $N=2,6,12$ (Figure \ref{fig:Figure_3_Reimann}). Noticeably, these numbers are the same quantum numbers obtained for a two-dimensional harmonic oscillator.
+The sequence of magic numbers for quantum dots was discovered in 1996 by using an etched pillar of semiconducting material as shown in Figure \ref{fig:Figure_3_Reimann}, lower right \citep[see also][]{Tarucha1996}. As we will see later, a quantum dot can be schematized as a one-electron transistor; measurements of the energy needed to add a single electron to a $N$-electrons quantum dot show large peaks for $N=2,6,12$ (Figure \ref{fig:Figure_3_Reimann}). Noticeably, these numbers are the same quantum numbers obtained for a two-dimensional harmonic oscillator.
 
 \section{The Coulomb blockade model}
 % Refer to it as model or effect? Found both of them.
@@ -299,7 +303,7 @@ The sequence of magic numbers for quantum dots was discovered in 1996 by using a
 \begin{figure}[h]%[H]
 	\centering
     \includegraphics[width=0.60\textwidth]{Figure_6_Reimann}
-    \caption{Coulomb oscillations in a lateral quantum dot. The regions (a) and (c) have a fixed number of electrons since there is a Coulomb blockade; (b) is the conductance region, where the number of electrons oscillates. From \cite{Reimann2002}.}
+    \caption{Coulomb oscillations in a lateral quantum dot. The regions (a) and (c) have a fixed number of electrons since there is a Coulomb blockade; (b) is the conductance region, where the number of electrons oscillates. Plot based on the work of \cite{Meirav1990}, by \cite{Meir1991}.}
 	\label{fig:Figure_6_Reimann}
 \end{figure}
 
@@ -567,7 +571,7 @@ As we already noticed before, for a lateral structure we can neglect the single-
 \begin{figure}[h]%[H]
 	\centering
     \includegraphics[width=0.55\textwidth]{Figure_10_Reimann}
-    \caption{Coulomb oscillations in a vertical quantum dot. Here, $D$ is an estimate for the dot diameter. From \cite{Reimann2002} (OR \cite{Tarucha1996} ???).}
+    \caption{Coulomb oscillations in a vertical quantum dot. Here, $D$ is an estimate for the dot diameter. From \cite{Tarucha1996}.}
 	\label{fig:Figure_10_Reimann}
 \end{figure}
 
@@ -692,11 +696,6 @@ where $\varepsilon$ is the dielectric constant of the material, $m^*$ is the eff
 	for the three-dimensional case.
 },
 quite close to the equilibrium value  for a two-dimensional electron gas \citep[see][]{Reimann2002}.
-
-\section{Many body effects (???)}
-Do I have to write something here? Like that electrons are considered as an EFG, write the total hamiltonian using the effective mass, say that we can solve the system with diagonalization, monte carlo (VMC, DMC) or DFT/SDFT. Brief explanation of what they are, pros/cons....
-
-Would be interesting or would be too much stuff?
 
 
 \chapter{Theoretical basis of the simulation}
@@ -1157,7 +1156,7 @@ tends to be a division by zero. Introducing the substitution
 \vec{R}=\frac{1}{2}(\vec{r_1}+\vec{r_2}) 
 \end{cases}
 \end{equation}
-the Hamiltonian can be rewritten in a decoupled way as\footnote{See \cite{taut}.}
+the Hamiltonian can be rewritten in a decoupled way as\footnote{See \cite{Taut1993}.}
 \begin{equation}
     \hat{H} = -\nabla_{\vec{r}}^2 - \frac{1}{4}\nabla_{\vec{R}}^2 - \frac{1}{4}\omega^2\vec{r}^2 + \omega^2\vec{R}^2 + \frac{1}{r}.
 \end{equation}
@@ -1227,7 +1226,7 @@ Refining around the minimum value to have better results, we finally obtain the 
 	\label{fig:2e_rep_fine}
 \end{figure}
 
-You see that we are very near to the exact result $E_{\text{gs}} = \SI{3}{\atomicunit}$ calculated from \cite{taut} and reported in \cite{PedersenLohne2011}. However, the energy error is still quite big; a way to improve the precision of our program is to \emph{parallelize} it.
+You see that we are very near to the exact result $E_{\text{gs}} = \SI{3}{\atomicunit}$ calculated from \cite{Taut1993} and reported in \cite{PedersenLohne2011}. However, the energy error is still quite big; a way to improve the precision of our program is to \emph{parallelize} it.
 
 \subsection{Parallelization}
 
