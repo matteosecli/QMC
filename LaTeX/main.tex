@@ -33,6 +33,7 @@
 \usepackage{type1cm}
 \usepackage{setspace}
 \usepackage[english]{babel}
+\usepackage{datetime}
 \usepackage[sort, round]{natbib}
 
 
@@ -92,6 +93,12 @@
 \usepackage{breqn}
 \usepackage{geometry}
 \renewenvironment{proof}{\vskip 1em \noindent\textsc{Proof:}}{\begin{flushright}$\blacksquare$\end{flushright}\vskip 1em}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% datetime specific configuration                         %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newdateformat{monthyear}{\monthname[\THEMONTH] \THEYEAR}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -163,8 +170,10 @@
 \def\THsupervisor{Morten Hjorth-Jensen, UiO}
 \def\THextrasupervisor{Francesco Pederiva, UniTN}
 \def\THtitle{Variational Monte Carlo methods for quantum dots} % title
-\def\THdate{\date}
+\def\THdate{\monthyear\today}
+\def\THplace{Trento}
 \title{\THtitle}
+\author{\THauthor}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
