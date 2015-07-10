@@ -91,7 +91,7 @@ and
 \begin{equation}
 	E_L(\vec{\tau}) = \frac{1}{\psi_T} \hat{H} \psi_T.
 \end{equation}
-The dependence of $\psi_T$ on the position in space and on the variational parameters has been omitted just for better readability. The quantity $E_L$ is called the \emph{local energy}, and it's what we are going to calculate in this project. Obviously, for bigger $n$ we obtain better results.
+The dependence of $\psi_T$ on the position in space and on the variational parameters has been omitted just for better readability. The quantity $E_L$ is called the \emph{local energy}, and it's what we are going to calculate in this project. Obviously, for bigger $n$'s we obtain better results.
 
 \section{Considerations about the physical system}
 \label{sec:considerations}
@@ -117,12 +117,12 @@ Now we can introduce the \emph{permutation operator} $\hat{P}$, defined as
 \begin{equation}
 	\hat{P} \Ket{1} \otimes \Ket{2} \doteqdot \Ket{2} \otimes \Ket{1}.
 \end{equation}
-One immediately sees that $\hat{P} = \hat{P}^{\dagger}$ and $\hat{P}^2 = \hat{I}$ ($\hat{I}$ is the identity operator), which means that $\hat{P}$ is hermitian and unitary. These two properties allow us to say that the eigenvalues of $\hat{P}$ are $\pm 1$. In general, this operator $\hat{P}$ does not commute with $\hat{H}$; but -- and here is the trick -- it \emph{does} commute with $\hat{H}$ for a system of \emph{identical particles}. Since in that case $[\hat{H},\hat{P}] = 0$, the eigenstates of $\hat{H}$ must also be eigenstates of $\hat{P}$. Recalling that the eigenvalue of $\hat{P}$ are $\pm 1$, one can rewrite the state $\psi$ as
+One immediately sees that $\hat{P} = \hat{P}^{\dagger}$ and $\hat{P}^2 = \hat{I}$ ($\hat{I}$ is the identity operator), which means that $\hat{P}$ is hermitian and unitary. These two properties allow us to say that the eigenvalues of $\hat{P}$ are $\pm 1$. In general, this operator $\hat{P}$ does not commute with $\hat{H}$; but -- and here is the trick -- it \emph{does} commute with $\hat{H}$ for a system of \emph{identical particles}. Since in that case $[\hat{H},\hat{P}] = 0$, the eigenstates of $\hat{H}$ must also be eigenstates of $\hat{P}$. Recalling that the eigenvalues of $\hat{P}$ are $\pm 1$, one can rewrite the state $\Ket{\psi}$ as
 \begin{equation}
 	\Ket{\psi} = \frac{1}{\sqrt{2}} \Big( \Ket{1} \otimes \Ket{2} \pm \Ket{2} \otimes \Ket{1} \Big)
 	\label{eq:identical_particles}
 \end{equation}
-to make it also eigenstate of $\hat{P}$. You see that, in this form, the state is either symmetric or antisymmetric; particles with symmetric wave-function are called \emph{bosons}, and particles with antisymmetric wave-function are called \emph{fermions}. It turns out that electrons are fermions, so we are interested only in the antisymmetric case. Rewriting the fermions wave-function in coordinate representation, we obtain:
+to make it also an eigenstate of $\hat{P}$. You see that, in this form, the state is either symmetric or antisymmetric; particles with symmetric wave-function are called \emph{bosons}, and particles with antisymmetric wave-function are called \emph{fermions}. It turns out that electrons are fermions, so we are interested only in the antisymmetric case. Rewriting the fermions wave-function in coordinate representation, we obtain:
 \begin{align}
 	\psi(\vec{r}_1,\vec{r}_2,\sigma_1,\sigma_2) 
 	&= \Big( \Bra{\vec{r}_1} \otimes \Bra{\vec{r}_2} \Big) \Ket{\psi}
@@ -179,7 +179,7 @@ The generalization to $N$ particles is straightforward, and will be given later.
 
 Let's first briefly introduce what a \emph{Markov chain} is. We call a Markov chain a stochastic process where the transition probability that characterizes the transition between states only depends on the previous step and not from the path to get to such step. We can then write \citep[see][]{Hjorth-Jensen2014}
 \begin{equation}
-	w_i(t+\delta t)=\sum_i W(j \rightarrow i) w_j (t),
+	w_i(t+\delta t)=\sum_j W(j \rightarrow i) w_j (t),
 	\label{eq:markov_definition}
 \end{equation}
 where $w_i(t+\delta t)$ is our PDF -- in our case $|\psi_T(R)|^2$ and $W(j \rightarrow i)$ is the probability of jumping from $j$ to $i$, also called the \emph{transition probability}. We also have
@@ -204,14 +204,14 @@ Now, let's consider an \emph{ergodic} system, where the average over time of a p
 \end{equation}
 from which
 \begin{equation}
-	R \doteqdot \frac{W(i \rightarrow j)}{W(j \rightarrow i)}=\frac{w_j}{w_i}=\frac{|\psi_T (r^{\text{new}})|}{|\psi_T (r^{\text{old}})|}.
+	R \doteqdot \frac{W(i \rightarrow j)}{W(j \rightarrow i)}=\frac{w_j}{w_i}=\frac{|\psi_T (r^{\text{new}})|^2}{|\psi_T (r^{\text{old}})|^2}.
 \end{equation}
 
 Since $W(i \rightarrow j)$ is unknown, we model it as the product of two probabilities:
 \begin{equation}
 	W(i \rightarrow j)=A(i \rightarrow j) \, T(i \rightarrow j),
 \end{equation}
-where $A(i \rightarrow j)$ is the probability of accepting the move and $T(i \rightarrow j)$ is the probability to transition from the state $i$ to the state $j$. In a similar way we can write:
+where $A(i \rightarrow j)$ is the probability of accepting the move and $T(i \rightarrow j)$ is the probability of transition from the state $i$ to the state $j$. In a similar way we can write:
 \begin{equation}
 	W(j \rightarrow i)=A(j \rightarrow i) \, T(j \rightarrow i).
 \end{equation}
