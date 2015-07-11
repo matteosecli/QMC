@@ -64,7 +64,7 @@ Let's now graph the ratio $\Braket{T} / \Braket{V}$ for different values of $\om
 \section{The 2-electrons system}
 
 We firstly computed $\Braket{T}$ and $\Braket{V}$ \emph{without} the electron-electron repulsion, to check our code. We chose $\omega=0.01,\,0.28,\,0.50,\,0.70,\,1.00$. The result -- completely expected -- is shown in Figure \ref{fig:virial_2e-norep}.
-\begin{figure}[H]
+\begin{figure}[h]%[H]
 	\centering
 	\includegraphics[width=\textwidth]{virial_2e-norep}
 	\caption{The ratio $\Braket{T} / \Braket{V}$ for different values of $\omega$ and no electron-electron repulsion. The settings used are: importance sampling with $\Delta t = 0.1$, parallelization (8 threads), $\SI{1e7}{}$ Monte Carlo steps.}
@@ -73,18 +73,18 @@ We firstly computed $\Braket{T}$ and $\Braket{V}$ \emph{without} the electron-el
 
 After that, we added the electron-electron repulsion and we did again the calculations for the same $\omega$ values. The result, shown in Figure \ref{fig:virial_2e-rep}, is quite different.
 
+The dashed line is a fit of the type
+\begin{equation}
+	\frac{\Braket{T}}{\Braket{V}} = b\log(c\omega),
+\end{equation}
+which gives $b = \SI{0.052 \pm 0.007}{}$ and $c = \SI{2340 \pm 2021}{}$. We can't really say if the behaviour of our data is logarithmic without a theoretical basis and with just $5$ points; the purpose of the dashed line in Figure \ref{fig:virial_2e-rep} is just to show that our data is \emph{no way} linear. This is due to the presence of the repulsive force, that can be dominant or not.
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{virial_2e-rep}
 	\caption{The ratio $\Braket{T} / \Braket{V}$ for different values of $\omega$ with electron-electron repulsion. The settings used are: importance sampling with $\Delta t = 0.1$, Jastrow factor, parallelization (8 threads), $\SI{1e7}{}$ Monte Carlo steps. The fit is logarithmic.}
 	\label{fig:virial_2e-rep}
 \end{figure}
-
-The dashed line is a fit of the type
-\begin{equation}
-	\frac{\Braket{T}}{\Braket{V}} = b\log(c\omega),
-\end{equation}
-which gives $b = \SI{0.052 \pm 0.007}{}$ and $c = \SI{2340 \pm 2021}{}$. We can't really say if the behaviour of our data is logarithmic without a theoretical basis and with just $5$ points; the purpose of the dashed line in Figure \ref{fig:virial_2e-rep} is just to show that our data is \emph{no way} linear. This is due to the presence of the repulsive force, that can be dominant or not.
 
 In a very intuitive way, we can at least say that what we obtain is coherent with the physics of the system. For $\omega \gg 1$ the oscillator potential is dominant and the repulsion can be considered as a small perturbation, which means that we have more kinetic energy than potential energy ($T > V$). For $\omega \ll 1$, we almost have only a repulsion potential plus a small harmonic perturbation; in other words, $T < V$.
 
@@ -93,7 +93,7 @@ If one really wants to find an analytical relation for the ratio $\Braket{T} / \
 
 \section{The 6-electrons system}
 
-\begin{figure}[H]
+\begin{figure}[h]%[H]
 	\centering
 	\includegraphics[width=\textwidth]{virial_6e-norep}
 	\caption{The ratio $\Braket{T} / \Braket{V}$ for different values of $\omega$ and no electron-electron repulsion. The settings used are: importance sampling with $\Delta t = 0.1$, parallelization (8 threads), $\SI{1e6}{}$ Monte Carlo steps.
@@ -101,7 +101,7 @@ If one really wants to find an analytical relation for the ratio $\Braket{T} / \
 	\label{fig:virial_6e-norep}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[h]%[H]
 	\centering
 	\includegraphics[width=\textwidth]{virial_6e-rep}
 	\caption{The ratio $\Braket{T} / \Braket{V}$ for different values of $\omega$ with electron-electron repulsion. The settings used are: importance sampling with $\Delta t = 0.1$, Jastrow factor, parallelization (8 threads), $\SI{1e6}{}$ Monte Carlo steps. The fit is a square root.}

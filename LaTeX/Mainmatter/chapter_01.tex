@@ -21,7 +21,7 @@ The term ``quantum dots'' refers to finite fermion systems consisting of an arti
 
 Such confinement is usually achieved by restricting the two-dimensional electron gas that forms at the interface between two different semiconductor materials (or heterostructure), ether laterally or vertically. Let's briefly examine these two methods.
 
-\begin{figure}[H]
+\begin{figure}[h]%[H]
 	\centering
 	\begin{subfigure}[t]{0.5\textwidth}
 		\includegraphics[width=\textwidth]{Figure_5_Reimann}
@@ -49,7 +49,7 @@ Although the definition of quantum dots given above is quite precise, I prefer a
 \label{sec:shell_model}
 The so-called \emph{shell-model} is a particularly convenient and simple way to treat a system of interacting particles. This model is based on the \emph{a priori} assumption that the \emph{interacting} particles can be treated as \emph{independent} particles subject to an average \emph{effective potential}. This effective potential is created by the particles themselves, but one can also add an external component to the intrinsic one. Using this simplification it's possible to find a solution for the Schr\"{o}dinger equation; the result is a certain distribution of single-particle energy levels. In many cases, this distribution it's nonuniform (look, for example, at the simple case of the infinite well) and shows a characteristic bunching of levels; these bunches are called \emph{shells}.
 
-\begin{figure}[H]
+\begin{figure}[h]%[H]
 	\centering
     \includegraphics[width=0.5\textwidth]{Figure_1_Reimann}
     \caption{Bunching of the single-particles levels and level density at the Fermi level. From \cite{Brack1972}.}
@@ -75,7 +75,7 @@ Here $\omega$ is the oscillator frequency, $m^*$ is the effective mass of the fe
 \end{equation}
 These levels are plotted against the deformation in Figure \ref{fig:Figure_2_Reimann}. For $\delta=1$ (that is the isotropic case) you see that there is a $(n+1)$-fold degeneracy, where $n=n_x+n_y=0,1,2,\ldots$ is the principal quantum number. Taking into account the spin degeneracy (that gives a factor 2), we obtain closed shells for $N=2,6,12,20,\ldots$ electrons. These numbers are called the \emph{magic numbers}. As we increase the deformation parameter, the degenerate levels split. It is useful, in this case, to look at the total energies (on the right in Figure \ref{fig:Figure_2_Reimann}); you see that now the energy levels have cups and minima that significantly change the behavior of the system for non-closed shells. In fact the energies have minima at $\delta=1$ for the closed-shell cases ($N=2,6,12$), whereas their minima are shifted to different values of $\delta$ in the open-shell cases ($N=4,8,10$). As a rough graphical estimate, for $N=4$ the minimum energy (i.e., the stablest configuration) is reached about a deformation value $\delta=2$ and for $N=10$ about $\delta=1.5$.
 
-\begin{figure}[H]
+\begin{figure}[h]%[H]
 	\centering
     \includegraphics[width=0.65\textwidth]{Figure_2_Reimann}
     \caption{Single particle energy levels (left) and total energies (right) as a function of the deformation in a two-dimensional harmonic oscillator. From \cite{Reimann2002}.}
@@ -447,8 +447,6 @@ By equating \eqref{eq:VG_N} and \eqref{eq:VG_N+1} we find that these two lines c
 	\label{fig:diamond_regions}
 \end{figure}
 
-The diamond-shaped structure shown in Figure \ref{fig:diamond_regions} have been shown in differential conductance measurements like the one shown in Figure \ref{fig:Figure_8_Reimann}. A 3D elaboration of the data obtained from this kind of experiment -- that clarifies the ideas a little bit -- is shown in Figure \ref{fig:diff_conductance_3D}.
-
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.6\textwidth]{Figure_8_Reimann}
@@ -456,7 +454,9 @@ The diamond-shaped structure shown in Figure \ref{fig:diamond_regions} have been
 	\label{fig:Figure_8_Reimann}
 \end{figure}
 
-\begin{figure}[H]
+The diamond-shaped structure shown in Figure \ref{fig:diamond_regions} have been shown in differential conductance measurements like the one shown in Figure \ref{fig:Figure_8_Reimann}. A 3D elaboration of the data obtained from this kind of experiment -- that clarifies the ideas a little bit -- is shown in Figure \ref{fig:diff_conductance_3D}.
+
+\begin{figure}[h]%[H]
 	\centering
 	\def\svgwidth{0.8\textwidth}
 	\input{Mainmatter/figures/diff_conductance_3D.pdf_tex}

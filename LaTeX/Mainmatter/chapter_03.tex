@@ -73,7 +73,7 @@ The electron-electron repulsion can be simply turned off by commenting out the l
 in the code. Running the program in Qt Creator shows the window in Figure \ref{fig:run_window_2e_no_rep}, where some parameters can be specified before the actual calculation begins.
 
 Just using a finer step for $\alpha$, we obtain the energy graph shown in Figure \ref{fig:2e_no_rep}.
-\begin{figure}[H]
+\begin{figure}[h]%[H]
 	\centering
 	\includegraphics[width=\textwidth]{2e-norep}
 	\caption{The variational energy versus the variational parameter $\alpha$. The settings used are: brute force sampling with step length 2, no Jastrow factor, no parallelization, $1000$ variations of $\alpha$ around $1$ with step $0.001$, $\SI{1e7}{}$ Monte Carlo steps. Acceptance ratio varies from $40$ to $\SI{60}{\percent}$.}
@@ -152,7 +152,7 @@ where $C$ is a constant. For these types of Monte Carlo calculations, a so-calle
 \end{equation}
 where (in 2 dimensions)
 \begin{equation}
-    \beta = 
+    a = 
     \begin{cases}
     1 & \text{anti-parallel spin} \\
     1/3 & \text{parallel spin}
@@ -166,7 +166,7 @@ and $\beta$ is a variational parameter. With this factor, our trial wave-functio
 
 Using the ansatz in equation (\ref{eq:wf_2e}) in our program, we obtain a preliminary result shown in Figure \ref{fig:2e_rep}.
 
-\begin{figure}[H]
+\begin{figure}[h]%[H]
 	\centering
 	\includegraphics[width=\textwidth]{2e-rep}
 	\caption{The variational energy versus the variational parameters $\alpha$ and $\beta$. The settings used are: brute force sampling with step length 2, Jastrow factor, no parallelization, $200$ variations of $\alpha$ and $\beta$ with step $0.01$, $\SI{1e5}{}$ Monte Carlo steps. Acceptance ratio varies from $45$ to $\SI{55}{\percent}$.}
@@ -175,14 +175,14 @@ Using the ansatz in equation (\ref{eq:wf_2e}) in our program, we obtain a prelim
 
 Refining around the minimum value to have better results, we finally obtain the plot in Figure \ref{fig:2e_rep_fine}.
 
+You see that we are very near to the exact result $E_{\text{gs}} = \SI{3}{\atomicunit}$ calculated from \cite{Taut1993} and reported in \cite{PedersenLohne2011}. However, the energy error is still quite big; a way to improve the precision of our program is to \emph{parallelize} it.
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{2e-rep_fine}
 	\caption{The variational energy versus the variational parameters $\alpha$ and $\beta$. The settings used are: brute force sampling with step length 2, Jastrow factor, no parallelization, $20$ variations of $\alpha$ and $\beta$ with step $0.01$, $\SI{1e6}{}$ Monte Carlo steps. Acceptance ratio varies from $45$ to $\SI{55}{\percent}$. The relative distance is about $\SI{1.64}{}$ in natural units.}
 	\label{fig:2e_rep_fine}
 \end{figure}
-
-You see that we are very near to the exact result $E_{\text{gs}} = \SI{3}{\atomicunit}$ calculated from \cite{Taut1993} and reported in \cite{PedersenLohne2011}. However, the energy error is still quite big; a way to improve the precision of our program is to \emph{parallelize} it.
 
 \subsection{Parallelization}
 

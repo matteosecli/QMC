@@ -133,23 +133,24 @@ The C++ implementation of $\psi_S$ is therefore straightforward and it is shown 
 \section{$\omega = 0.28$}
 
 We start by studying our system for $\omega = 0.28$. A preliminary and very rough result is shown in Figure \ref{fig:6e-028-rep}.
-\begin{figure}[H]
+\begin{figure}[h]%[H]
 	\centering
 	\includegraphics[width=\textwidth]{6e-028-rep}
 	\caption{The variational energy versus the variational parameters $\alpha$ and $\beta$. The settings used are: importance sampling with $\Delta t = 0.1$, Jastrow factor, parallelization (8 threads), $8$ variations of $\alpha$ and $\beta$ with step $0.1$, $\SI{1e5}{}$ Monte Carlo steps. $\omega=0.28$.}
 	\label{fig:6e-028-rep}
 \end{figure}
 Restricting to the significant region, we get the result in Figure \ref{fig:6e-028-rep_fine}.
-\begin{figure}%[H]
+
+You see that the plot is no more nice like the 2-electrons case, mainly because we didn't used enough Monte Carlo steps. The problem is that now the program has to calculate $3 \times 3$ determinants every time, so it's much slower than the previous case. To refine the result, we just doubled the number of Monte Carlo loops and restricted a little bit the variational parameters grid; taking a finer grid with more Monte Carlo cycles would have required ages, literally.
+
+Anyway, still with this configuration, we get a result that is really near the one calculated by DMC in \cite{PedersenLohne2011}, that turns out to be $\SI{7.6001 \pm 0.0001}{\atomicunit}$.
+
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{6e-028-rep_fine}
 	\caption{The variational energy versus the variational parameters $\alpha$ and $\beta$. The settings used are: importance sampling with $\Delta t = 0.1$, Jastrow factor, parallelization (8 threads), $5$ variations of $\alpha$ and $\beta$ with step $0.1$, $\SI{2e5}{}$ Monte Carlo steps. $\omega=0.28$.}
 	\label{fig:6e-028-rep_fine}
 \end{figure}
-
-You see that the plot is no more nice like the 2-electrons case, mainly because we didn't used enough Monte Carlo steps. The problem is that now the program has to calculate $3 \times 3$ determinants every time, so it's much slower than the previous case. To refine the result, we just doubled the number of Monte Carlo loops and restricted a little bit the variational parameters grid; taking a finer grid with more Monte Carlo cycles would have required ages, literally.
-
-Anyway, still with this configuration, we get a result that is really near the one calculated by DMC in \cite{PedersenLohne2011}, that turns out to be $\SI{7.6001 \pm 0.0001}{\atomicunit}$.
 
 A nice way to test the Slater determinant code is to turn off the electron-electron repulsion. In that case, $\psi_S$ is the \emph{exact} solution (for $\alpha = 1$). We already showed in Section \ref{sec:2e_unp} that the ground-state energy for the single electron is $E_s = \hbar\omega(n_x + n_y + 1)$. Since -- in the 6 electrons case -- we have 2 electrons with $n_x + n_y = 0$ and 4 electrons with $n_x + n_y = 1$ (See Figure \ref{eq:sketch_6e}), the total energy for the ground state is
 \begin{equation}

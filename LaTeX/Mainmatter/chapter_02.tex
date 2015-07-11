@@ -127,8 +127,8 @@ to make it also an eigenstate of $\hat{P}$. You see that, in this form, the stat
 	\psi(\vec{r}_1,\vec{r}_2,\sigma_1,\sigma_2) 
 	&= \Big( \Bra{\vec{r}_1} \otimes \Bra{\vec{r}_2} \Big) \Ket{\psi}
 	= \frac{1}{\sqrt{2}} \Big( \Braket{\vec{r}_1|1}\Braket{\vec{r}_2|2} - \Braket{\vec{r}_1|2}\Braket{\vec{r}_2|1} \Big) \\
-	&= \frac{1}{\sqrt{2}} \Big( \phi_1(\vec{r}_1,\sigma_1)\phi_2(\vec{r}_2,\sigma_2) - \phi_2(\vec{r}_1,\sigma_2)\phi_1(\vec{r}_2,\sigma_1) \Big)
-	= \frac{1}{\sqrt{2}} \left\lvert
+	&= \frac{1}{\sqrt{2}} \Big( \phi_1(\vec{r}_1,\sigma_1)\phi_2(\vec{r}_2,\sigma_2) - \phi_2(\vec{r}_1,\sigma_2)\phi_1(\vec{r}_2,\sigma_1) \Big) \\
+	&= \frac{1}{\sqrt{2}} \left\lvert
 	\begin{array}{cc}
 		\phi_1(\vec{r}_1,\sigma_1) & \phi_1(\vec{r}_2,\sigma_1) \\
 		\phi_2(\vec{r}_1,\sigma_2) & \phi_2(\vec{r}_2,\sigma_2)
@@ -320,7 +320,7 @@ With this expression, the acceptance ratio in equation (\ref{eq:acceptance_imp})
 
 \subsection{Implementation}
 
-\begin{figure}[H]
+\begin{figure}[h]%[H]
 	\centering
 	\begin{tikzpicture}[node distance=2cm]
 	
@@ -357,7 +357,7 @@ With this expression, the acceptance ratio in equation (\ref{eq:acceptance_imp})
 		\draw [arrow] (pro6) -- (stop);
 	
 	\end{tikzpicture}
-	\caption{Chart flow for the Quantum Variational Monte Carlo algorithm.}
+	\caption{Chart flow for the Quantum Variational Monte Carlo algorithm. Adapted from \cite{Hjorth-Jensen2014}.}
 	\label{fig:chart_flow}
 \end{figure}
 
