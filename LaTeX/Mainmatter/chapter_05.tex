@@ -15,9 +15,9 @@
 \graphicspath{{Mainmatter/figures/PNG/}{Mainmatter/figures/PDF/}{Mainmatter/figures/}}
 
 \chapter{The virial theorem}
-\label{sec:virial}
+\label{chap:virial}
 
-The virial theorem states that the expectation value of the total kinetic energy $\Braket{T}$ is proportional to the expectation value of the total potential energy $\Braket{V}$. For a pure harmonic oscillator, this theorem is simply the theorem of the \emph{equipartition theorem}:
+The virial theorem states that, if the potential energy has the form $V(r) \sim r^n$ -- where $r$ is the interparticle distance, then $\Braket{T} = \frac{2}{n}\Braket{V}$. For a pure harmonic oscillator, this theorem is simply the \emph{equipartition theorem}:
 \begin{equation}
 	\Braket{T} = \Braket{V}.
 \end{equation}
@@ -44,12 +44,12 @@ Using these properties, the calculation of the expected value of the potential e
 	&= \frac{1}{2}m\omega^2\Braket{n|\hat{x}^2|n} \\
 	&= \frac{1}{2}\cancel{m}\omega^{\cancel{2}}\frac{\hbar}{2\cancel{m}\cancel{\omega}}\Braket{n|\left(\hat{a}^{\dagger}+\hat{a}\right)\left(\hat{a}+\hat{a}^{\dagger}\right)|n} \\
 	&= \frac{\hbar\omega}{4} \left(\Braket{n|\hat{a}^{\dagger}\hat{a}^{\dagger}|n}+\Braket{n|\hat{a}\hat{a}^{\dagger}|n}+\Braket{n|\hat{a}^{\dagger}\hat{a}|n}+\Braket{n|\hat{a}\hat{a}|n}\right) \\
-	&= \frac{\hbar\omega}{4} \left(\sqrt{n+2}\sqrt{n+1}\cancelto{0}{\Braket{n|n+2}}\right. \\
+	&= \frac{\hbar\omega}{4} \left(\sqrt{n+2}\sqrt{n+1}\cancelto{0}{\Braket{n|n+2}}\right. \nonumber \\
 	&\left.+\Braket{n|\hat{N}+1|n}+\Braket{n|\hat{N}|n}+\sqrt{n}\sqrt{n-1}\cancelto{0}{\Braket{n|n-2}}\right) \\
 	&= \frac{\hbar\omega}{4}((n+1)+n) = \frac{\hbar\omega}{4}(2n+1) \\
 	&= \frac{\hbar\omega}{2}\left(n+\frac{1}{2}\right)
 \end{align}
-If we perform the same calculation for $\Braket{n|\frac{\hat{p}^2}{2m}|n}$ (the expected value of the kinetic energy) we will obtain the result, yielding
+If we perform the same calculation for $\Braket{n|\frac{\hat{p}^2}{2m}|n}$ (the expected value of the kinetic energy) we will obtain the same result, yielding
 \begin{equation}
 	\Braket{T} = \Braket{V}
 \end{equation}
@@ -86,9 +86,9 @@ which gives $b = \SI{0.052 \pm 0.007}{}$ and $c = \SI{2340 \pm 2021}{}$. We can'
 	\label{fig:virial_2e-rep}
 \end{figure}
 
-In a very intuitive way, we can at least say that what we obtain is coherent with the physics of the system. For $\omega \gg 1$ the oscillator potential is dominant and the repulsion can be considered as a small perturbation, which means that we have more kinetic energy than potential energy ($T > V$). For $\omega \ll 1$, we almost have only a repulsion potential plus a small harmonic perturbation; in other words, $T < V$.
+In a very intuitive way, we can at least say that what we obtain is coherent with the physics of the system. For $\omega \gg 1$ the oscillator potential is dominant and the repulsion can be considered as a small perturbation, which means that we have more kinetic energy than potential energy ($\Braket{T} > \Braket{V}$). For $\omega \ll 1$, we almost have only a repulsion potential plus a small harmonic perturbation; in other words, $\Braket{T} < \Braket{V}$.
 
-If one really wants to find an analytical relation for the ratio $\Braket{T} / \Braket{V}$ of this system, he should compute the two terms separately in a way similar to the one shown in Section \ref{sec:virial} and then take the ratio of them. Note that this is not always possible, since the necessary integrals could not be solved analytically.
+If one really wants to find an analytical relation for the ratio $\Braket{T} / \Braket{V}$ of this system, he should compute the two terms separately in a way similar to the one shown at the beginning of Chapter \ref{chap:virial} and then take the ratio of them. Note that this is not always possible, since the necessary integrals could not be solved analytically.
 
 
 \section{The 6-electrons system}

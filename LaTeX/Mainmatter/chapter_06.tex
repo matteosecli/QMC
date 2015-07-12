@@ -46,7 +46,7 @@ Then,
 \end{equation}
 where the components relative to the spin opposite to the one of the particle taken into account vanish for the reason explained before.
 
-According to \cite{Hoegberget2013}, the four terms that appear in (\ref{eq:psi_second_derivative}) are
+According to \cite{Hoegberget2013}, the four terms that appear in \eqref{eq:psi_second_derivative} are
 \begin{align}
 	\frac{\nabla_i J}{J} 
 	&= \sum_{k \neq i=1}^N \frac{a_{ik}}{r_{ik}} \frac{\vec{r}_i-\vec{r}_k}{(1+\beta \, r_{ik})^2} \\
@@ -57,11 +57,11 @@ According to \cite{Hoegberget2013}, the four terms that appear in (\ref{eq:psi_s
 	\frac{\nabla_i^2 |\vec{S}|}{|\vec{S}|} 
 	&= \sum_k \nabla_i^2 \phi_k (\vec{r}_i^{\text{new}})(\vec{S}_{ki}^{\text{new}})^{-1}
 \end{align}
-with $k$ that spans the Slater matrix relative to the $i$th particle. The quantities $\nabla_i \phi_k$ and $\nabla^2_i \phi_k$ are also tabulated in \cite{Hoegberget2013}. It's also possible to optimize the determinant of the inverse of the Slater matrix, but we opted here for a numerical computation of the inverse matrix using Armadillo. If one does that, it's also possible to optimize the acceptance ratio to have a even faster code.
+with $k$ that spans the Slater matrix relative to the $i$th particle. The quantities $\nabla_i \phi_k$ and $\nabla^2_i \phi_k$ are also tabulated in \cite{Hoegberget2013}. It's possible to optimize the determinant of the inverse of the Slater matrix, but we opted here for a numerical computation of the inverse matrix using Armadillo. If one does that, it's also possible to optimize the acceptance ratio to have an even faster code.
 
 \section{Execution times}
 
-Let's see if we have a real gain in speed for the 2-electrons and the 6-electrons cases. Note that we have to run the program with a single thread to avoid extra waiting time on the CPU due to the line
+Let's see if we have a real gain in speed for the 2-electrons and the 6-electrons cases. Note that we have to run the program with a single thread to avoid extra waiting time on the CPU, due to the line
 \begin{lstlisting}[language=cpp]
 		#pragma omp barrier
 \end{lstlisting}
@@ -83,4 +83,4 @@ in the parallel cycles. Our benchmarks are shown in Figures \ref{fig:times_2e} a
 
 As you see, we don't have great improvements; on the contrary, we obtain a code that is even a little bit slower than the numerical one for the 6-electrons case! However, there are some things that have to be pointed out. First of all we decided to perform a numerical inversion of a matrix, that is really time-consuming (it's a $\mathcal{O}(n^3)$ operation). Secondly there is no optimization of the acceptance ratio, that can be further simplified -- as shown again in \cite{Hoegberget2013}. Lastly, the benefits of numerical derivatives could not appear until one reaches $12$ or even $20$ particles; this is because the computational complexity of a determinant of a matrix is $\mathcal{O}(n^3)$, that for $3 \times 3$ matrices (as the 6-electrons case) is still acceptable. The struggle in calculating big determinants all the time is more evident for higher numbers of particles; for the 12-particles case the Slater determinant is 8 times slower than the 6-particles case, while for the 20-particles case is approximately 37 times slower.
 
-Another thing that has to be noted is that -- with the analytical derivatives -- we obtain slightly lower values for the energy. Deactivating the electron-electron repulsion the discrepancy still persists, meaning that the reason of this fact has to be found in the Slater determinant derivatives implementation. A possible explanation is that we are (numerically) performing the inverse of a matrix that has very small elements, and this could cause a loss of precision.
+Another thing that has to be noted is that -- with the analytical derivatives -- we obtain slightly lower values for the energy. If we deactivate the electron-electron repulsion the discrepancy still persists, meaning that the reason of this fact has to be found in the Slater determinant derivatives implementation. A possible explanation is that we are (numerically) performing the inverse of a matrix that has very small elements, and this could cause a loss of precision.

@@ -29,7 +29,7 @@
 		\draw [very thick, myblue, ->] (0.5,0.5) -- (0.5,-0.5);
 	\end{tikzpicture}
 	\caption{The 2-electrons system configuration.}
-	\label{eq:sketch_2e}
+	\label{fig:sketch_2e}
 \end{figure}
 
 We will first consider the unperturbed system (without the electron-electron repulsion) with $\omega = 1$, that has Hamiltonian
@@ -37,7 +37,7 @@ We will first consider the unperturbed system (without the electron-electron rep
 	\hat{H}_0 = 
 	\sum_{i=1}^{N} \left( -\frac{1}{2}\nabla_i^2 + \frac{1}{2}\omega^2r_i^2 \right),
 \end{equation}
-with $N=2$ and in two dimensions. For a single electron in a two-dimensional (isotropic) harmonic oscillator, the energy is $E_s = \hbar\omega(n_x + n_y + 1)$, where $n_x$ and $n_y$ are the quantum numbers for the $x$ and $y$ dimensions. The ground state (See Figure \ref{eq:sketch_2e}) is obtained for $(n_x,n_y) = (0,0)$ which gives $E_s = \SI{1}{\atomicunit}$. Since we have two particles, the ground state energy of our system is in total
+with $N=2$ and in two dimensions. For a single electron in a two-dimensional (isotropic) harmonic oscillator, the energy is $E_s = \hbar\omega(n_x + n_y + 1)$, where $n_x$ and $n_y$ are the quantum numbers for the $x$ and $y$ dimensions. The ground state (see Figure \ref{fig:sketch_2e}) is obtained for $(n_x,n_y) = (0,0)$ which gives $E_s = \SI{1}{\atomicunit}$. Since we have two particles, the ground state energy of our system is in total
 \begin{equation*}
 	E_{\text{gs}} = \SI{2}{\atomicunit}.
 \end{equation*}
@@ -80,7 +80,7 @@ Just using a finer step for $\alpha$, we obtain the energy graph shown in Figure
 	\label{fig:2e_no_rep}
 \end{figure}
 
-As you can see in Figure \ref{fig:2e_no_rep}, we get $E_{\text{gs}} = 2$ with a high degree of precision for $\alpha=1$\footnote{actually the minimum is for $\alpha=1.002$, but in this case we are not using so many steps to trust the third decimal digit. The smaller $\alpha$-step was just used to have a nicer plot.}.
+As you can see in Figure \ref{fig:2e_no_rep}, we get $E_{\text{gs}} = 2$ with a high degree of precision for $\alpha=1$\footnote{Actually the minimum is for $\alpha=1.002$, but in this case we are not using so many steps that we can trust the third decimal digit. The smaller $\alpha$-step was just used to have a nicer plot.}.
 
 We can also state that the total spin (better: its $z$-component) of the system is 0, as shown in equation (\ref{eq:total_spin}). If you want a more ``physical'' reason than just reading off a table of coefficients, this is a direct consequence of the shape of the wave-function for a fermionic system, as shown in equation (\ref{eq:slater_example}). In fact, in our case the spatial part of the two single-particle wave-functions is equal (they occupy the same energy level), yielding to
 \begin{equation}
@@ -112,11 +112,11 @@ tends to be a division by zero. Introducing the substitution
 \vec{R}=\frac{1}{2}(\vec{r_1}+\vec{r_2}) 
 \end{cases}
 \end{equation}
-the Hamiltonian can be rewritten in a decoupled way as\footnote{See \cite{Taut1993}.}
+the Hamiltonian can be rewritten in a decoupled way as \citep[see][]{Taut1993}
 \begin{equation}
     \hat{H} = -\nabla_{\vec{r}}^2 - \frac{1}{4}\nabla_{\vec{R}}^2 - \frac{1}{4}\omega^2\vec{r}^2 + \omega^2\vec{R}^2 + \frac{1}{r}.
 \end{equation}
-Since the Hamiltonian is independent on spin, we can factorize the wave-function as
+Since the Hamiltonian is spin-independent, we can factorize the wave-function as
 \begin{equation}
     \psi(\vec{r},\vec{R},m_{s_1},m_{s_2}) = \varphi(\vec{r})\xi(\vec{R})\chi(m_{s_1},m_{s_2})
 \end{equation}
@@ -131,11 +131,11 @@ and
 \end{equation}
 where $\omega_r = \frac{1}{2}\omega$ and $\omega_R = 2\omega$.
 
-We are not interested in the $R$-part of the solution, since it gives no troubles; we are more interested in equation (\ref{eq:Seq_relative_distance}), because we can cancel the divergence for $r \to 0$ working on the solution. We can also discard about the oscillator potential because it gives no divergence. Since we are interested only in the radial part of the solution, the relevant contributions from the laplacian in spherical coordinates are
+We are not interested in the $R$-part of the solution, since it gives no troubles; we are more interested in equation \eqref{eq:Seq_relative_distance}, because we can cancel the divergence for $r \to 0$ working on the solution. We can also forget about the harmonic potential because it gives no divergence. Since we are only interested in the radial part of the solution, the relevant contributions from the laplacian in spherical coordinates are
 \begin{equation}
     \nabla^2_r = \frac{d^2}{dr^2} + \frac{1}{r}\frac{d}{dr}.
 \end{equation}
-We also notice that $\frac{d^2}{dr^2}$ gives a finite contribution (is just the momentum part) and so does $\frac{d}{dr}$. The only piece that is not finite is the $\frac{1}{r}$ in front of $\frac{d}{dr}$, that we can use to cancel the divergence in the interaction potential. Using these facts, equation (\ref{eq:Seq_relative_distance}) can be rewritten in a way that is called the \emph{cusp condition} for this system, namely
+We also notice that $\frac{d^2}{dr^2}$ gives a finite contribution (is just the momentum part) and so does $\frac{d}{dr}$. The only piece that is not finite is the $\frac{1}{r}$ in front of $\frac{d}{dr}$, that we can use to cancel the divergence in the interaction potential. Using these facts, equation \eqref{eq:Seq_relative_distance} can be rewritten in a way that is called the \emph{cusp condition} for this system, namely
 \begin{equation}
     \lim_{r \to 0} \frac{1}{\varphi(r)}\left( -\cancel{\frac{1}{2}\frac{1}{r}}\frac{d}{dr} + \cancel{\frac{1}{2}\frac{1}{r}} \right)\varphi(r) = 0.
 \end{equation}
@@ -146,7 +146,7 @@ Solving for $\varphi$ by partial integration gives
     r \to 0
     \label{eq:cusp_solution}
 \end{equation}
-where $C$ is a constant. For these types of Monte Carlo calculations, a so-called \emph{Padé-Jastrow} factor that has the property (\ref{eq:cusp_solution}) is often used. This factor has the form (for two electrons)
+where $C$ is a constant. For these types of Monte Carlo calculations, a so-called \emph{Padé-Jastrow} factor that has the property \eqref{eq:cusp_solution} is often used. This factor has the form (for two electrons)
 \begin{equation}
     \exp\left( \frac{ar}{(1+\beta r)} \right),
 \end{equation}
@@ -164,7 +164,7 @@ and $\beta$ is a variational parameter. With this factor, our trial wave-functio
     \label{eq:wf_2e}
 \end{equation}
 
-Using the ansatz in equation (\ref{eq:wf_2e}) in our program, we obtain a preliminary result shown in Figure \ref{fig:2e_rep}.
+Using the ansatz in equation \eqref{eq:wf_2e} in our program, we obtain a preliminary result shown in Figure \ref{fig:2e_rep}.
 
 \begin{figure}[h]%[H]
 	\centering
@@ -186,7 +186,7 @@ You see that we are very near to the exact result $E_{\text{gs}} = \SI{3}{\atomi
 
 \subsection{Parallelization}
 
-In this project, parallelization is done by using OpenMP\footnote{\url{http://openmp.org/}.}. The main idea is to run multiple computations of $E_T$ for the same pair of variational parameters $(\alpha,\beta)$ and then take the mean. Since the ``measurements'' of $E_T$ are not correlated, the error on its mean value falls like $1/\sqrt{n}$, where $n$ is the number of measurements. To be sure that the measurements are not correlated we have to make \emph{private} local copies of the variables used in the computation, one for each thread used. Then, we have to sync al the threads to be sure that all the measurements are complete, and finally we can take the mean. An example of how this is implemented in our program is given below:
+In this project, parallelization is done by using OpenMP\footnote{\url{http://openmp.org/}.}. The main idea is to run multiple computations of $E_T$ for the same pair of variational parameters $(\alpha,\beta)$ and then take the mean. Since the ``measurements'' of $E_T$ are not correlated, the error on its mean value falls like $1/\sqrt{n}$, where $n$ is the number of measurements. To be sure that the measurements are not correlated we have to make \emph{private} local copies of the variables used in the computation, one for each thread used. Then, we have to sync all the threads in order to be sure that all the measurements are complete, and finally we can take the mean. An example of how this is implemented in our program is given below:
 
 \begin{lstlisting}[language=cpp]
     // Begin parallelization
@@ -245,23 +245,23 @@ Let's now try to implement importance sampling, as explained in Section \ref{sec
 
 The results are shown in Figures \ref{fig:2e-rep_imp_small}, \ref{fig:2e-rep_imp_med} and \ref{fig:2e-rep_imp_high}.
 
-\begin{figure}%[H]
+As you see, there is a huge difference between the result obtained with $\Delta t = 0.001$ and the one obtained with $\Delta t = 0.1$. This is because, if the time step is too small and we don't have enough Monte Carlo steps, our walker cannot span completely the integration space. It will remain near its starting point and all the points reached will be inside the integration space, close to each other. In fact, the acceptance ratio for the case $\Delta t = 0.001$ and $\Delta t = 0.01$ is \emph{practically} $\SI{100}{\percent}$. The third case, for $\Delta t = 0.1$, has a little lower acceptance ratio, that is about $\SI{99.79}{\percent}$. This fact guarantees that our walker is reaching all the borders of our integration space, and in fact it also reaches some points outside it. In other words, for the given number of Monte Carlo iterations, we have a time-step large enough to cover all the space. If one wants to use a lower time-step to have better precision, he has to increase the number of Monte Carlo cycles; as an example, for $\Delta t = 0.001$, one has to use at least $\SI{1e9}{}$ Monte Carlo loops.
+
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{2e-rep_imp_small}
 	\caption{The variational energy versus the variational parameters $\alpha$ and $\beta$. The settings used are: importance sampling with $\Delta t = 0.001$, Jastrow factor, parallelization (8 threads), $20$ variations of $\alpha$ and $\beta$ with step $0.01$, $\SI{2e5}{}$ Monte Carlo steps. Acceptance ratio is about $\SI{99.999}{\percent}$.}
 	\label{fig:2e-rep_imp_small}
 \end{figure}
-\begin{figure}%[H]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{2e-rep_imp_med}
 	\caption{The variational energy versus the variational parameters $\alpha$ and $\beta$. The settings used are: importance sampling with $\Delta t = 0.01$, Jastrow factor, parallelization (8 threads), $20$ variations of $\alpha$ and $\beta$ with step $0.01$, $\SI{2e5}{}$ Monte Carlo steps. Acceptance ratio is about $\SI{99.999}{\percent}$.}
 	\label{fig:2e-rep_imp_med}
 \end{figure}
-\begin{figure}%[H]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{2e-rep_imp_high}
 	\caption{The variational energy versus the variational parameters $\alpha$ and $\beta$. The settings used are: importance sampling with $\Delta t = 0.1$, Jastrow factor, parallelization (8 threads), $20$ variations of $\alpha$ and $\beta$ with step $0.01$, $\SI{2e5}{}$ Monte Carlo steps. Acceptance ratio is about $\SI{99.793}{\percent}$.}
 	\label{fig:2e-rep_imp_high}
 \end{figure}
-
-As you see, there is a huge difference between the result obtained with $\Delta t = 0.001$ and the one obtained with $\Delta t = 0.1$. This is because, if the time step is too small and we don't have enough Monte Carlo steps, our walker cannot span completely the integration space. It will remain near its starting point and all the points reached will be inside the integration space, close to each other. In fact, the acceptance ratio for the case $\Delta t = 0.001$ and $\Delta t = 0.01$ is \emph{practically} $\SI{100}{\percent}$. The third case, for $\Delta t = 0.1$, has a little lower acceptance ratio, that is about $\SI{99.79}{\percent}$. This fact guarantees that our walker is reaching all the borders of our integration space, and in fact it also reaches some points outside it. In other words, for the given number of Monte Carlo iterations, we have a large enough time-step to cover all the space. If one wants to use a lower time-step to have better precision, he has to increase the number of Monte Carlo cycles; as an example, for $\Delta t = 0.001$, one has to use at least $\SI{1e9}{}$ Monte Carlo loops.

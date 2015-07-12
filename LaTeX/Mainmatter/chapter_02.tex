@@ -22,12 +22,12 @@ The Variational Principle is a method of general validity that can be used to ga
 	E_{\text{gs}} \leq \frac{\Braket{\psi|\hat{H}|\psi}}{\Braket{\psi|\psi}}.
 	\label{eq:variational_equation}
 \end{equation}
-In this project we are going to use just this formula, because you see that the normalization of the state is not necessary. But if you have a normalized state, then equation (\ref{eq:variational_equation}) is further simplified in
+In this project we are going to use just this formula, because you see that the normalization of the state is not necessary. But if you have a normalized state, then equation \eqref{eq:variational_equation} is further simplified in
 \begin{equation}
 	E_{\text{gs}} \leq \Braket{\psi|\hat{H}|\psi} \equiv \Braket{\hat{H}}.
 \end{equation}
 
-This equation seems a kind of magic but actually the proof of this fact is really simple, and we are going to sketch here a proof to show the power of this method (roughly, as it appears in \cite{Griffiths2005}).
+This equation seems a kind of magic but actually the proof of this fact is really simple, and we are going to it sketch here to show the power of this method (roughly, as it appears in \cite{Griffiths2005}).
 \begin{proof}
 	Since the (unknown) eigenstates $\Ket{\psi_n}$ of $\hat{H}$ form a complete set, we can expand our random state $\Ket{\psi}$ on this basis:
 	\begin{equation*}
@@ -68,13 +68,13 @@ In the following, we represent $\Ket{\psi}$ in its function-representation as
 \end{equation*}
 where ``$\simeq$'' means ``represented by'' and the subscript $T$ is just to remember that $\psi_T$ is our \emph{trial} wave-function.
 
-In our case the Hamiltonian lies in an infinite-dimension Hilbert space, so we have to replace the sums in (\ref{eq:var_princ_end_proof}) with integrals over all the space. Indicating with $d\vec{\tau}$ a space element, we can write
+In our case the Hamiltonian lies in an infinite-dimension Hilbert space, so we have to replace the sums in \eqref{eq:var_princ_end_proof} with integrals over all the space. Indicating with $d\vec{\tau}$ a space element, we can write
 \begin{equation}
 	E_T = \frac{\int d\vec{\tau} \, \psi_T^* \hat{H} \psi_T}{\int d\vec{\tau} \, |\psi_T|^2}.
 	\label{eq:var_energy_integral}
 \end{equation}
 
-Calculating $E_T$ as it appears in (\ref{eq:var_energy_integral}) is not a piece of cake. However, we can recast that equation in a simpler form if we multiply and divide by $\psi_T$ at the left of $\hat{H}$. In fact,
+Calculating $E_T$ as it appears in \eqref{eq:var_energy_integral} is not a piece of cake. However, we can recast that equation in a simpler form if we multiply and divide by $\psi_T$ at the left of $\hat{H}$. In fact,
 \begin{align}
 	E_T 
 	&= \frac{\int d\vec{\tau} \, \psi_T^* \dfrac{\psi_T}{\psi_T} \hat{H} \psi_T}{\int d\vec{\tau} \, |\psi_T|^2} \\
@@ -97,7 +97,7 @@ The dependence of $\psi_T$ on the position in space and on the variational param
 \label{sec:considerations}
 Our system is represented by a number $N$ of electrons that have total energy
 \footnote{
-Calling the Hamiltonian the total energy is improper. Rather it should be called the \emph{generalized energy}, since in general it is \emph{not} the total energy because it also contains terms of the 1st and 0th order in the generalized velocities. However in this case the system does not contain non-conservative forces (from which the extra terms stem), so we can safely identify the Hamiltonian with the total energy.
+Calling the Hamiltonian the total energy is improper. Rather it should be called the \emph{generalized energy}; in general it is \emph{not} the total energy because it also contains terms of the 1st and 0th order in the generalized velocities. However in this case the system does not contain non-conservative forces (from which the extra terms stem), so we can safely identify the Hamiltonian with the total energy.
 }
 \begin{equation}
 	\hat{H} = 
@@ -136,7 +136,7 @@ to make it also an eigenstate of $\hat{P}$. You see that, in this form, the stat
 	\right\lvert
 	\label{eq:slater_example}
 \end{align}
-where the $\phi_i$'s are the single-particle wave-functions, the $\sigma_i$'s just indicate the explicit dependence on the spin, and the determinant in (\ref{eq:slater_example}) is called the \emph{Slater determinant}. For $N$ particles the determinant has exactly the same shape (is just a $N \times N$ matrix) and the factor $\frac{1}{\sqrt{2}}$ is replaced with $\frac{1}{\sqrt{N!}}$. However, we don't care about the normalization factor because it's not required to apply the variational principle.
+where the $\phi_i$'s are the single-particle wave-functions, the $\sigma_i$'s just indicate the explicit dependence on the spin, and the determinant in \eqref{eq:slater_example} is called the \emph{Slater determinant}. For $N$ particles the determinant has exactly the same shape (is just a $N \times N$ matrix) and the factor $\frac{1}{\sqrt{2}}$ is replaced with $\frac{1}{\sqrt{N!}}$. However, we don't care about the normalization factor because it's not required in order to apply the variational principle.
 
 We can recast this equation in a simpler form. In fact, it's possible to rewrite $\Ket{\phi}$ as
 \begin{equation}
@@ -177,7 +177,7 @@ The generalization to $N$ particles is straightforward, and will be given later.
 
 \section{The Metropolis algorithm}
 
-Let's first briefly introduce what a \emph{Markov chain} is. We call a Markov chain a stochastic process where the transition probability that characterizes the transition between states only depends on the previous step and not from the path to get to such step. We can then write \citep[see][]{Hjorth-Jensen2014}
+Let's first briefly introduce what a \emph{Markov chain} is. We call a Markov chain a stochastic process where the transition probability that characterizes the transition between states only depends on the previous step and not on the path to get to such step. We can then write \citep[see][]{Hjorth-Jensen2014}
 \begin{equation}
 	w_i(t+\delta t)=\sum_j W(j \rightarrow i) w_j (t),
 	\label{eq:markov_definition}
@@ -186,7 +186,7 @@ where $w_i(t+\delta t)$ is our PDF -- in our case $|\psi_T(R)|^2$ and $W(j \righ
 \begin{equation}
 	\sum_{i}w_i(t) = 1.
 \end{equation}
-due to the normalization condition. We can see from equation (\ref{eq:markov_definition}) the probability density function at $t+\delta t$ only depends on its previous state $t$. 
+due to the normalization condition. We can see from equation \eqref{eq:markov_definition} that the probability density function at $t+\delta t$ only depends on its previous state $t$. 
 
 In the case of infinite dimensionality, representing $W$ as a matrix, we have
 \begin{equation}
@@ -270,7 +270,7 @@ The Langevin equation, on the other hand, reads as
 	\frac{\partial x(t)}{\partial t} = DF(x(t)) + \eta,
 	\label{eq:langevin}
 \end{equation}
-being $\eta$ a \emph{random variable}. By solving equation (\ref{eq:langevin}) with Euler's method, it follows that the new position is given by
+being $\eta$ a \emph{random variable}. By solving equation \eqref{eq:langevin} with Euler's method, it follows that the new position is given by
 \begin{equation}
 	y = x + DF(x)\Delta t + \xi,
 \end{equation}
@@ -279,8 +279,9 @@ being $\xi$ a \emph{Gaussian} random variable and $\Delta t$ a chosen time step.
 For two or more dimensions, the Fokker-Planck equation is just
 \begin{equation}
 	\frac{\partial P}{\partial t} = \sum_i D \dfrac{\partial}{\partial \vec{x}_i} \left( \frac{\partial}{\partial \vec{x}_i} - \vec{F}_i \right)P(\vec{x}_i,t)
+	\label{eq:fokker_3D}
 \end{equation}
-We can obtain a convergence to a stationary probability density setting the left hand side to zero, that means all the terms of the sum must be equal to zero. Expanding the product, we obtain
+We can obtain a convergence to a stationary probability density by setting the left hand side to zero, which means that all the terms of the sum must be equal to zero. Expanding the product, we obtain
 \begin{equation}
 	\frac{\partial^2 P}{\partial \vec{x}_i^2} = P \frac{\partial}{\partial \vec{x}_i}\vec{F}_i + \vec{F}_i \frac{\partial}{\partial \vec{x}_i}P.
 \end{equation}
@@ -290,7 +291,7 @@ Since the drift vector has the form $\vec{F} = g(\vec{x}) \dfrac{\partial P}{\pa
 	\label{eq:intermediate_imp}
 \end{equation}
 
-If we want a stationary density the left hand side of equation (\ref{eq:intermediate_imp}) must be zero, and this is possible only if $g = \dfrac{1}{P}$. With this substitution, the drift vector reads as
+If we want a stationary density the left hand side of equation \eqref{eq:fokker_3D} must be zero, and from equation \eqref{eq:intermediate_imp} you see that this is possible only if $g = \dfrac{1}{P}$. With this substitution, the drift vector reads as
 \begin{equation}
 	\vec{F} = \frac{1}{P} \nabla P.
 	\label{eq:drift_vector}
@@ -299,7 +300,7 @@ Since -- as we said many times before --  our probability density is the modulus
 \begin{equation}
 	P = |\psi_T|^2,
 \end{equation}
-the drift vector in equation (\ref{eq:drift_vector}) finally reads as
+the drift vector in equation \eqref{eq:drift_vector} finally reads as
 \begin{equation}
 	\vec{F} = 2 \frac{1}{\Psi_T} \nabla \Psi_T.
 \end{equation}
@@ -310,7 +311,7 @@ Solving the Fokker-Plank equation finally gives an expression for the transition
 G(y,x, \Delta t) = \dfrac{1}{(4 \pi D \Delta t)^{3N/2}} \exp(-(y - x - D \Delta t F(x))^2 / 4 D \Delta t).
 \end{equation}
 
-With this expression, the acceptance ratio in equation (\ref{eq:acceptance_imp}) becomes
+With this expression, the acceptance ratio in equation \eqref{eq:acceptance_imp} becomes
 \begin{equation}
 	R 
 	= \frac{|\psi_T(y)|^2T(y \rightarrow x)}{|\psi_T(x)|^2T(x \rightarrow y)}
@@ -325,7 +326,7 @@ With this expression, the acceptance ratio in equation (\ref{eq:acceptance_imp})
 	\begin{tikzpicture}[node distance=2cm]
 	
 		% Draw the nodes
-		\node (start) [startstop, align=center] {Initialize:\\ Set $\vec{r}^{\text{old}}$, $\alpha$\\ and $\psi_{T-\alpha}(\vec{r}^{\text{old}})$};
+		\node (start) [startstop, align=center] {Initialize:\\ Set $\vec{r}^{\text{old}}$, $\vec{\alpha}$\\ and $\psi_{T,\vec{\alpha}}(\vec{r}^{\text{old}})$};
 		%\node (in1) [io, below of=start] {Input};
 		\node (pro1) [process, below of=start] {Suggest a move};
 		\node (pro2) [process, below of=pro1] {Compute\\ acceptance\\ ratio $R$};
@@ -335,7 +336,7 @@ With this expression, the acceptance ratio in equation (\ref{eq:acceptance_imp})
 		\node (dec2) [decision, below of=pro3a, yshift=-0.5cm, align=center] {Last\\ move?};
 		\node (dec2left) [left of=dec2, xshift=-1cm] {};
 		\node (pro5) [process, below of=dec2, yshift=-0.5cm] {Get local\\ energy $E_L$};
-		\node (dec3) [decision, below of=pro5, yshift=-0.5cm, align=center] {Last\\ MC step?};
+		\node (dec3) [decision, below of=pro5, yshift=-0.5cm, align=center] {Last\\ $\vec{\alpha}$?};
 		\node (dec3left) [left of=dec3, xshift=-2cm] {};
 		\node (pro6) [process, below of=dec3, yshift=-0.5cm, align=center] {Collect\\ samples};
 %		\node (out1) [io, below of=pro2a] {Output};
@@ -353,7 +354,7 @@ With this expression, the acceptance ratio in equation (\ref{eq:acceptance_imp})
 		\draw [arrow] (dec2) -- node[anchor=south] {no} (dec2left.center) |- (pro1);
 		\draw [arrow] (pro5) -- (dec3);
 		\draw [arrow] (dec3) -- node[anchor=west] {yes} (pro6);
-		\draw [arrow] (dec3) -- node[anchor=south] {no} (dec3left.center) |- (pro1);
+		\draw [arrow] (dec3) -- node[anchor=south] {no} (dec3left.center) |- (start);
 		\draw [arrow] (pro6) -- (stop);
 	
 	\end{tikzpicture}
@@ -370,4 +371,4 @@ We can sum up the algorithm as follows. Given a random number generator that ret
 	\item If $R \geq r$, the step is accepted and the new position is stored by letting $x^{\text{old}}=x^{\text{new}}$.
 	\item If $R < r$, the step is rejected and the new position is discarded by letting $x^{\text{new}}=x^{\text{old}}$.
 \end{itemize}
-A flow chart of this process is sketched in Figure \ref{fig:chart_flow}.
+A flow chart of this process is sketched in Figure \ref{fig:chart_flow}, where $\vec{\alpha}$ is the variational parameters vector.

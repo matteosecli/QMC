@@ -38,10 +38,10 @@
 		\draw [very thick, myblue, ->] (2,2.5) -- (2,1.5);
 	\end{tikzpicture}
 	\caption{The 6-electrons system configuration.}
-	\label{eq:sketch_6e}
+	\label{fig:sketch_6e}
 \end{figure}
 
-The formulae discussed in the previous sections can be generalized for a $N$ electrons case. The trial wave function can be written as
+The formulae discussed in the previous sections can be generalized for the $N$-electrons case. The trial wave function can be written as
 \begin{equation}
 	\psi_T(\vec{r}_1 \dots \vec{r}_N)= A \,  \text{Det}(S) \prod_{i<j}^N e^{\frac{r_{ij}}{1+\beta r_{ij}}},
 \end{equation}
@@ -72,12 +72,12 @@ Now we can replace the total antisymmetric wave function with one with permuted 
 	=& \, \psi_T(\{\vec{r_{i1}}, \uparrow\},\ldots,\{\vec{r_{iN/2}}, \uparrow\},\{\vec{r_{i1}}, \downarrow\},\ldots,\{\vec{r_{iN/2}}, \downarrow\}) \\
 	=& \, \psi_T(\{\vec{r_{1}}, \uparrow\},\ldots,\{\vec{r_{N/2}}, \uparrow\},\{\vec{r_{N/2 +1}}, \downarrow\},\ldots,\{\vec{r_{N}}, \downarrow\})
 \end{align}
-The operator $\hat{O}$ is symmetric with the respect to the exchange of labels in a pair of particles, so:
+The operator $\hat{O}$ is symmetric with respect to the exchange of labels in a pair of particles, so:
 \begin{equation}
 	\Braket{\hat{O}} = \frac{\Braket{\psi_T(\vec{r})|\hat{O}(\vec{r})|\psi_T(\vec{r})}}{\Braket{\psi_T(\vec{r})|\psi_T(\vec{r})}}
 \end{equation}
 
-The wave function is now antisymmetric with respect to exchange of spatial coordinates of pairs of spin-up or spin-down electrons. Therefore, for spin-independent Hamiltonians, the Slater determinant can be splitted in a product of two Slater determinants, one for the single particle orbitals with spin up and the other with single particle orbitals with spin down. We have then:
+The wave function is now antisymmetric with respect to the exchange of spatial coordinates of pairs of spin-up or spin-down electrons. Therefore, for spin-independent Hamiltonians, the Slater determinant can be splitted in a product of two Slater determinants, one for the single particle orbitals with spin up and the other with single particle orbitals with spin down. We have then:
 \begin{equation}
 	\psi_S = S^{\uparrow}S^{\downarrow}
 \end{equation}
@@ -92,7 +92,7 @@ where
 	\end{matrix}
 	\right|
 \end{equation}
-and  $S^{\downarrow}$ is obviously defined in a similar way. The $\phi_i$'s functions are just as the one defined in equation (\ref{eq:phi_qnums}).
+and  $S^{\downarrow}$ is obviously defined in a similar way. The $\phi_i$'s functions are just as the one defined in equation \eqref{eq:phi_qnums}.
 
 So, our final trial wave-function is just
 \begin{equation}
@@ -152,7 +152,7 @@ Anyway, still with this configuration, we get a result that is really near the o
 	\label{fig:6e-028-rep_fine}
 \end{figure}
 
-A nice way to test the Slater determinant code is to turn off the electron-electron repulsion. In that case, $\psi_S$ is the \emph{exact} solution (for $\alpha = 1$). We already showed in Section \ref{sec:2e_unp} that the ground-state energy for the single electron is $E_s = \hbar\omega(n_x + n_y + 1)$. Since -- in the 6 electrons case -- we have 2 electrons with $n_x + n_y = 0$ and 4 electrons with $n_x + n_y = 1$ (See Figure \ref{eq:sketch_6e}), the total energy for the ground state is
+A nice way to test the Slater determinant code is to turn off the electron-electron repulsion. In that case, $\psi_S$ is the \emph{exact} solution (for $\alpha = 1$). We already showed in Section \ref{sec:2e_unp} that the ground-state energy for the single electron is $E_s = \hbar\omega(n_x + n_y + 1)$. Since -- in the 6 electrons case -- we have 2 electrons with $n_x + n_y = 0$ and 4 electrons with $n_x + n_y = 1$ (see Figure \ref{fig:sketch_6e}), the total energy for the ground state is
 \begin{equation}
 	E_{\text{gs}} = \hbar\omega\left[2(0+1)+4(1+1)\right] = 10\omega.
 \end{equation}

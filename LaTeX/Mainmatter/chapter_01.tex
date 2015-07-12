@@ -19,7 +19,7 @@
 \section{Definition and fabrication processes}
 The term ``quantum dots'' refers to finite fermion systems consisting of an artificial 3D confinement of a few electrons, that have a size of only a few hundred angstroms \citep{Reimann2002, Kastner1993}.
 
-Such confinement is usually achieved by restricting the two-dimensional electron gas that forms at the interface between two different semiconductor materials (or heterostructure), ether laterally or vertically. Let's briefly examine these two methods.
+Such confinement is usually achieved by restricting the two-dimensional electron gas that forms at the interface between two different semiconductor materials (or heterostructure), either laterally or vertically. Let's briefly examine these two methods.
 
 \begin{figure}[h]%[H]
 	\centering
@@ -37,7 +37,7 @@ Such confinement is usually achieved by restricting the two-dimensional electron
 	\label{fig:Figures_4-5_Reimann}
 \end{figure}
 
-The lateral confinement is obtained with a device like the one in Figure \ref{fig:Figure_5_Reimann}. The electron gas forms at the interface between GaAs and AlGaAs, and the confinement is obtained by applying a voltage to the top metal electrodes -- called gates. The entire structure is only a few $\SI{}{\micro\meter}$ thick, so the gates are created by lithographic patterning.
+The lateral confinement is obtained with a device like the one in Figure \ref{fig:Figure_5_Reimann}. The electron gas forms at the interface between GaAs and AlGaAs, and the confinement is obtained by applying a voltage to the top metal electrodes -- called \emph{gates}. The entire structure is only a few $\SI{}{\micro\meter}$ thick, so the gates are created by lithographic patterning.
 
 Another common method to fabricate quantum dots is to build heterostructure pillars by etching techniques. Some of these structures are shown in Figure \ref{fig:Figure_4_Reimann}; the electrodes are at the top and at the bottom of the pillars.
 
@@ -164,9 +164,9 @@ The behavior of a quantum dot can be analyzed by studying its electron transport
 	\label{fig:SET_scheme}
 \end{figure}
 
-Let's consider a \emph{single-electron transistor} device, like the one in Figure \ref{fig:SET_scheme}. This name is due to the fact that the charge on the electron island is a multiple of the elementary charge. The electron island is weakly coupled with the source and drain contacts thanks to tunnel barriers, which are thick enough to guarantee that quantum resonances dominates the electron transport mechanism.; in other words, the conductance of the tunnel must be smaller than the quantum conductance $e^2/h$ \citep[see][]{Reimann2002}. By analogy with a capacitor, in which the energy stored is $U=Q^2/2C$, one can make a first estimate of the energy stored in a dot containing $N$ particles as
+Let's consider a \emph{single-electron transistor} device, like the one in Figure \ref{fig:SET_scheme}. This name is due to the fact that the charge on the electron island is a multiple of the elementary charge. The electron island is weakly coupled with the source and drain contacts thanks to tunnel barriers, which are thick enough to guarantee that quantum resonances dominate the electron transport mechanism.; in other words, the conductance of the tunnel must be smaller than the quantum conductance $e^2/h$ \citep[see][]{Reimann2002}. By analogy with a capacitor, in which the energy stored is $U=Q^2/2C$, one can make a first estimate of the energy stored in a dot containing $N$ particles as
 \begin{equation}
-	U(N) \simeq \frac{N(N-1)}{2C_{\Sigma}}.
+	U(N) \simeq \frac{N(N-1)e^2}{2C_{\Sigma}}.
 \end{equation}
 Here, the factor $(N-1)$ takes into account that each electron interacts with $N-1$ neighbors. Using this rough estimate, one can say that the energy required to add a single electron to a system already confining $N$ electrons, called the \emph{addition energy}, is
 \begin{equation}
@@ -202,12 +202,12 @@ Using this expression, we can finally calculate the addition energy as
 \begin{equation}
 	\Delta U (N) = U(N+1)-U(N) = \frac{e^2}{C_{\Sigma}}\left(N+\frac{1}{2}\right) + e\left( \frac{Q_{\text{bg}}}{C_{\Sigma}} + \sum_{j=1}^{n}\frac{C_{0j}}{C_{\Sigma}}V_j \right).
 \end{equation}
-You see that, for small temperatures and bias voltages, we can approximate $\Delta U (N) \simeq e^2N/C$ as we found previously by a rough estimate.
+You see that, for small temperatures and bias voltages, we can approximate $\Delta U (N) \simeq e^2N/C_{\Sigma}$ as we found previously by a rough estimate.
 
 This calculation still lacks the fact that, in such a small device, quantization effects are also important and should be considered. A simple model that combines the Coulomb blockade effect and the quantum effects is the \emph{constant interaction model}.
 
 \section{The constant interaction model}
-The basis assumption of the constant interaction model is that the total energy $E(N)$ of the electron island is the sum of the single-particle energies and the electrostatic energy $U(N)$:
+The basic assumption of the constant interaction model is that the total energy $E(N)$ of the electron island is the sum of the single-particle energies and the electrostatic energy $U(N)$:
 \begin{equation}
 	E(N) = \sum_{i=1}^{N}\epsilon_i + U(N) = \sum_{i=1}^{N}\epsilon_i + \frac{e^2N^2}{2C_{\Sigma}} + eN\left( \frac{Q_{\text{bg}}}{C_{\Sigma}} + \sum_{j=1}^{n}\frac{C_{0j}}{C_{\Sigma}}V_j \right).
 \end{equation}
@@ -356,7 +356,7 @@ where $\Delta_{N+1}\doteqdot \epsilon_{N+1} - \epsilon_{N}$ is the spacing betwe
 	\label{fig:SET_mu_potential}
 \end{figure}
 
-Using this information, we can now analyze the transport mechanism in a quantum dot. Let's consider -- as explained before -- the low-temperature, low-bias voltage case ($eV_{\text{bias}},k_BT \ll e^2/C_{\Sigma}$). Let's also suppose that, initially, the electrochemical potential inside the dot -- $\mu_N$ -- is lower than the electrochemical potential of the drain -- $\mu_D$: the transport is blocked due to the Coulomb blockade effect (Figure \ref{fig:SET_mu_potential_stage1}). Now, we can decrease the gate voltage: the overall effect, as you can see from equation \eqref{eq:electrochemical_potential} and from our previous considerations, is that we have a linear increase in $\mu_N$ wrt the gate voltage. Eventually, $\mu_N$ will align to $\mu_D$ ($\mu_N = \mu_D$), which means that an electron can leave the dot. At the same time, if $\mu_S \gtrsim \mu_D$, an electron from $\mu_S$ can enter the dot; the overall effect is that the number of the electrons inside the dot oscillates between $N$ and $N-1$, and an electric current flows though the dot from the drain to the source (Figure \ref{fig:SET_mu_potential_stage2}). In terms of the conductance, this corresponds in a peak. If we keep lowering the gate voltage -- i.e., increasing $\mu_N$ -- until $\mu_N > \mu_S$, then the dot is left with only $N-1$ electrons. Now, the level to consider is $\mu_{N-1}$: you see that it's far below $\mu_D$, so the current is blocked again (see Figure \ref{fig:SET_mu_potential_stage3}).
+Using this information, we can now analyze the transport mechanism in a quantum dot. Let's consider -- as explained before -- the low-temperature, low-bias voltage case ($eV_{\text{bias}},k_BT \ll e^2/C_{\Sigma}$). Let's also suppose that, initially, the electrochemical potential inside the dot -- $\mu_N$ -- is lower than the electrochemical potential of the drain -- $\mu_D$: the transport is blocked due to the Coulomb blockade effect (Figure \ref{fig:SET_mu_potential_stage1}). Now, we can decrease the gate voltage: the overall effect, as you can see from equation \eqref{eq:electrochemical_potential} and from our previous considerations, is that we have a linear increase in $\mu_N$ wrt the gate voltage. Eventually, $\mu_N$ will align to $\mu_D$ ($\mu_N = \mu_D$), which means that an electron can leave the dot. At the same time, if $\mu_S \gtrsim \mu_D$, an electron from $\mu_S$ can enter the dot; the overall effect is that the number of the electrons inside the dot oscillates between $N$ and $N-1$, and an electric current flows through the dot from the drain to the source (Figure \ref{fig:SET_mu_potential_stage2}). In terms of the conductance, this corresponds in a peak. If we keep lowering the gate voltage -- i.e., increasing $\mu_N$ -- until $\mu_N > \mu_S$, then the dot is left with only $N-1$ electrons. Now, the level to consider is $\mu_{N-1}$: you see that it's far below $\mu_D$, so the current is blocked again (see Figure \ref{fig:SET_mu_potential_stage3}).
 
 This qualitative analysis also permits to find the gate voltage values for which we have peaks in the conductance. The peak condition, in fact, is $\mu_S\approx\mu_N\approx\mu_D$; inserting this condition in \eqref{eq:electrochemical_potential} and solving for $V_3$ (the index 3 indicates the gate, so we will replace the subscript with ``G'' for simplicity) gives
 \begin{align}
@@ -364,7 +364,7 @@ This qualitative analysis also permits to find the gate voltage values for which
 	&\approx \frac{1}{e\alpha_G}\left[ \epsilon_N + \frac{e^2}{C_{\Sigma}}\left(N-\frac{1}{2}\right) + \frac{eQ_{\text{bg}}}{C_{\Sigma}} - \mu_S - e\sum_{j=4}^{n}\alpha_jV_j - e\sum_{j=1}^{2}\alpha_jV_j \right] \\
 	&\approx \frac{1}{e\alpha_G}\left[ \epsilon_N + \frac{e^2}{C_{\Sigma}}\left(N-\frac{1}{2}\right) + \frac{eQ_{\text{bg}}}{C_{\Sigma}} - \mu_S - e\sum_{j=4}^{n}\alpha_jV_j \right]
 \end{align}
-where the last term has been dropped because we are in the small-bias voltage case. The gate-voltage spacing between two peaks is finally found as (converted to energy)
+where the last term has been dropped because we are in the small bias voltage case. The gate-voltage spacing between two peaks is finally found as (converted to energy)
 \begin{align}
 	e\Delta V_G(N) 
 	&= e\Big[V_G^{(N)}-V_G^{(N-1)}\Big] \\
@@ -373,7 +373,7 @@ where the last term has been dropped because we are in the small-bias voltage ca
 	\label{eq:DeltaVG_N_Vb0}
 \end{align}
 
-As we already noticed before, for a lateral structure we can neglect the single-particle levels spacing (because the structure itself is quite large); this is not true for a vertical quantum dots structure, that has far smaller dimensions (as you can see in Figure \ref{fig:Figures_4-5_Reimann}). In that case the space quantization is evident and the conductance peaks are not evenly spaced, as you can see in Figure \ref{fig:Figure_10_Reimann}. It's also very nice that, by simply subtracting the quantity $1 / \alpha_G (e^2 / C_{\Sigma})$ from the spacing of two successive peaks, we can reconstruct the spectrum of the dot.
+As we already noticed before, for a lateral structure we can neglect the single-particle level spacing (because the structure itself is quite large); this is not true for a vertical quantum dots structure, that has far smaller dimensions (as you can see in Figure \ref{fig:Figures_4-5_Reimann}). In that case the space quantization is evident and the conductance peaks are not evenly spaced, as you can see in Figure \ref{fig:Figure_10_Reimann}. It's also very nice that, by simply subtracting the quantity $1 / \alpha_G (e^2 / C_{\Sigma})$ from the spacing of two successive peaks, we can reconstruct the spectrum of the dot.
 
 \begin{figure}[h]%[H]
 	\centering
@@ -454,7 +454,7 @@ By equating \eqref{eq:VG_N} and \eqref{eq:VG_N+1} we find that these two lines c
 	\label{fig:Figure_8_Reimann}
 \end{figure}
 
-The diamond-shaped structure shown in Figure \ref{fig:diamond_regions} have been shown in differential conductance measurements like the one shown in Figure \ref{fig:Figure_8_Reimann}. A 3D elaboration of the data obtained from this kind of experiment -- that clarifies the ideas a little bit -- is shown in Figure \ref{fig:diff_conductance_3D}.
+The diamond-shaped structure shown in Figure \ref{fig:diamond_regions} have been spotted in differential conductance measurements like the one shown in Figure \ref{fig:Figure_8_Reimann}. A 3D elaboration of the data obtained from this kind of experiment -- that clarifies the ideas a little bit -- is shown in Figure \ref{fig:diff_conductance_3D}.
 
 \begin{figure}[h]%[H]
 	\centering
@@ -467,7 +467,7 @@ The diamond-shaped structure shown in Figure \ref{fig:diamond_regions} have been
 \section{The parabolic confinement}
 In our simulation, we will model the confining (single-particle) potential as a \emph{two-dimensional harmonic trap}. This form for the confining potential is widely accepted as a standard for both exact and effective-field calculations, and is the result of experimental observations and numerical calculations.
 
-The basis for this assumption can be found in the work of \cite{Kumar1990}. They performed numerical calculations on the Poisson and Schr\"{o}dinger equations to obtain the electron states in a GaAs/AlGaAs quantum dot -- like the one sketched in Figure \ref{fig:Figure_5_Reimann}. The calculations were done in the Hartree approximation. The results were quite interesting, as you can see in Figure \ref{fig:Figure_2_Kumar}; despite the square shape of the GaAs cap, the contours of the effective confinement potential were circular.
+The basis for this assumption can be found in the work of \cite{Kumar1990}. They performed numerical calculations on the Poisson and Schr\"{o}dinger equations to obtain the electron states in a GaAs/AlGaAs quantum dot -- like the one sketched in Figure \ref{fig:Figure_5_Reimann}. The calculations were done in the Hartree approximation. The results were quite interesting, as you can see in Figure \ref{fig:Figure_2_Kumar}; despite the square shape of the GaAs cap, the contours of the effective confining potential were circular.
 
 \begin{figure}[h]%[H]
 	\centering
@@ -490,9 +490,9 @@ It's worth noting that, in experimental observations, the effective confinement 
 where $\varepsilon$ is the dielectric constant of the material, $m^*$ is the effective mass of the electron and $r_s$ is the average electron-density parameter\footnote{
 	This parameter is also called the \emph{Wigner-Seitz} parameter. It's defined such that
 	\begin{equation*}
-		\Omega_d(r_s) = n,
+		\Omega_d(r_s) = 1/n,
 	\end{equation*}
-	where $\Omega_d(r_s)$ is the spherical volume of radius $r_s$ in $d$ dimensions (e.g., for $d=2$ is a circle with radius $r_s$) and $n$ is the mean volume per unit electron (i.e., the mean electron density). So, $r_s$ can be expressed as
+	where $\Omega_d(r_s)$ is the spherical volume of radius $r_s$ in $d$ dimensions (e.g., for $d=2$ is a circle with radius $r_s$) and $1/n$ is the mean volume per unit electron (i.e., $n$ is the mean electron density). So, $r_s$ can be expressed as
 	\begin{equation*}
 		r_s = \frac{1}{\sqrt{\pi n}}
 	\end{equation*}
