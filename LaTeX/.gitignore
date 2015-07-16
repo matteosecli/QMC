@@ -91,3 +91,6 @@ sympy-plots-for-*.tex/
 
 # TeXmaker bak files
 *.bak
+
+# pdfpc files
+*.pdfpc
