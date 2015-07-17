@@ -94,3 +94,6 @@ sympy-plots-for-*.tex/
 
 # pdfpc files
 *.pdfpc
+
+# 'comment' package files
+*.cut
