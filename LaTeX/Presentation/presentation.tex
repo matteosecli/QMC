@@ -733,6 +733,12 @@
 	
 	\uncover<+->{where $\phi$ is the single-particle spatial wave-function for $(n_x,n_y)=(0,0)$, that is equal for both electron $1$ and electron $2$, and $r_{12}$ is the inter-particle distance}.
 	
+	\note{
+		Now, we can extend the previous reasoning to the 6-electrons case, trying to discuss it in the most possible general way.
+		
+		Recall that, for 2-electrons, the wave-function had this form. That is, it was the product among the single-particle wave-functions and a repulsion factor called the Jastrow factor.
+	}
+	
 \end{frame}
 
 \begin{frame}{The trial wave-function}
@@ -759,6 +765,10 @@
 			\end{matrix}
 			\right|
 		\end{equation}
+	}
+	
+	\note{
+		For $N$ particles the generalization is immediate, as you can see.  This matrix $S$ is named the Slater matrix.
 	}
 
 \end{frame}
@@ -789,6 +799,12 @@
 
 
 	\uncover<+->{\alert{Smart thing:}} \uncover<+->{for spin-independent Hamiltonians, the Slater determinant can be split in a product of \alert{two} Slater determinants, one for the single-particle orbitals with spin up and the other for single-particle orbitals with spin down.}
+	
+	\note{
+		Now, let's take a look at the configuration of the system. You see that we are free to label the particles in whatever way we want; for example, we can say that (\alert{INDICATE ALL SPIN UP}) this is particle 1, this is particle 2 and this is particle 3, and the others are numbered accordingly. If we do that, we can split the Slater determinant into two smaller determinants; one for spin-up particles, and one for spin-down particles.
+		
+		\alert{SHOW NEXT SLIDE WITHOUT COMMENTS.}
+	}
 
 \end{frame}
 
@@ -861,6 +877,12 @@
 		\end{equation}
 	}
 	
+	\note{
+		The most time-consuming part of the Metropolis-Hastings algorithm is the computation of the acceptance ratio, the kinetic energy and the quantum force, that involve the calculation of several first and second derivatives. A way to -- possibly -- improve our program is to use analytical derivatives. Note that this is possible in very few cases -- like this one, so we will take advantage of it.
+		
+		Remember that...\alert{READ}
+	}
+	
 \end{frame}
 
 \begin{frame}{Analytical derivatives}
@@ -926,6 +948,8 @@
 	
 	\note{
 		Execution times for 6-electrons and a single pair of variational parameters $(\alpha,\beta)$. The GNU/Linux system tool \texttt{time} was used to take the measurements.		
+		
+		As you see, we don't have great improvements; on the contrary, we obtain a code that is even a little bit slower than the numerical one for the 6-electrons case! However, there are some things that have to be pointed out. First of all we decided to perform a numerical inversion of a matrix, that is really time-consuming (it's a $\mathcal{O}(n^3)$ operation). Secondly there is no optimization of the acceptance ratio, that can be further simplified . Lastly, the benefits of numerical derivatives could not appear until one reaches $12$ or even $20$ particles; this is because the computational complexity of a determinant of a matrix is $\mathcal{O}(n^3)$, that for $3 \times 3$ matrices (as the 6-electrons case) is still acceptable. The struggle in calculating big determinants all the time is more evident for higher numbers of particles; for the 12-particles case the Slater determinant is 8 times slower than the 6-particles case, while for the 20-particles case is approximately 37 times slower.
 	}
 
 \end{frame}
@@ -958,6 +982,10 @@
 		\item In general, such a simplification is not possible; what one does is to optimize the code and to parallelize it as much as possible via OpenMP/MPI and possibly GPU parallelization.
 		\item \alert{Thanks for your attention!}
 	\end{itemize}
+	
+	\note{
+		\alert{JUST READ}
+	}
 
 \end{frame}
 
