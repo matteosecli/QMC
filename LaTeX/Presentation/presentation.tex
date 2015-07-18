@@ -81,7 +81,7 @@
 	\note{
 		The term ``quantum dots'' refers to finite fermion systems consisting of an artificial 3D confinement of a few electrons, that have a size of only a few hundred angstroms.
 		
-		Although the definition of quantum dots given above is quite precise, I prefer a more immediate one: ``quantum dots are \emph{artificial atoms}''. Despite its simplicity, this definition contains a good amount of relevant information. Like natural atoms, in fact, quantum dots are made up of electrons confined in an attractive potential; and as one may guess, they show a similar shell-like structure with its relative \emph{magic numbers}.
+		Although this definition is quite precise, I prefer a more immediate one: ``quantum dots are \emph{artificial atoms}''. Despite its simplicity, this definition contains a good amount of relevant information. Like natural atoms, in fact, quantum dots are made up of electrons confined in an attractive potential; and as one may guess, they show a similar shell-like structure with its relative \emph{magic numbers}.
 		
 		Such confinement is usually achieved by restricting the two-dimensional electron gas that forms at the interface between two different semiconductor materials (or heterostructure), either laterally or vertically.
 		
@@ -490,7 +490,11 @@
 	}
 
 	\note{
-		The factor 2 in the ground-state energy stems from the fact that we have two particles in the ground state (spin degeneracy).
+		This is the configuration of the system.
+		
+		You see that the spatial parts of the wave-functions are equal because of the spin degeneracy, so the ground state energy of the complete system has a factor of 2 to take this thing into account.
+		
+		For the same reason, the exact wave-function (or at least, its spatial part) can be expressed as the product of the single-particle wave-functions.
 		
 		$C$ is a normalization constant.
 	}
@@ -512,6 +516,12 @@
 	\uncover<+->{For $\alpha=1$ we expect to obtain a variational energy \alert{exactly} equal to the ground state energy $E_{\text{gs}}=2\omega$.}
 	
 	\note{
+		Since we know the exact wave-function, the problem is trivial. 
+		
+		We model our trial wave-function by adding a variational parameter $\alpha$.
+		
+		For $\alpha=1$ we expect to obtain a variational energy \alert{exactly} equal to the ground state energy $E_{\text{gs}}=2\omega$.
+		
 		In other words, for $\alpha=1$ the upper bound given by the variational principle coincides with the \emph{true} ground state energy.
 	}
 	
@@ -548,6 +558,12 @@
 	
 	\uncover<+->{\emph{Solution:}} \uncover<+->{add, in the wave-function, a factor that cancels the divergence in the Hamiltonian.}	
 	
+	\note{
+		The Hamiltonian of the full system, that includes the electron-electron repulsion, has an extra term that diverges when the two particles are near to each other.
+		
+		The divergence can be canceled if we are smart in the choice of the wave-function, by adding a term that compensates the singularity.
+	}
+	
 \end{frame}
 
 \begin{frame}{The complete system}
@@ -556,17 +572,19 @@
 	
 	\uncover<+->{
 		\begin{equation}
-			\exp\left( \frac{ar}{(1+\beta r)} \right)
+			\exp\left( \frac{ar}{1+\beta r} \right)
 		\end{equation}
 	}
 	
 	\uncover<+->{that is called the \alert{Padé-Jastrow} factor.}
 	
-	\uncover<+->{$a$ is a parameter that depends on the spin, while $\beta$ is a \emph{variational parameter}.}
+	\uncover<+->{$r$ is the inter-particle distance, $a$ is a parameter that depends on the spin, while $\beta$ is a \emph{variational parameter}.}
 	
 	\uncover<+->{For $\omega=1$ we get the upper bound $E=3$, that is compatible with the \emph{actual} ground state energy.}
 	
 	\note{
+		An extra factor to the non-interacting wave-function is added, that has the form \alert{READ THE SLIDE}.
+		
 		In two dimensions
 		\begin{equation}
 			a = 
@@ -618,6 +636,12 @@
 	}
 	
 	\uncover<+->{We obtain more precise energy values even with less Monte Carlo steps.}
+	
+	\note{
+		Despite the fact that we have very good values, you see that the error is still quite large.
+		
+		We can improve it by taking multiple measurements at each point of the grid, and then take the mean. If we do that, the error falls like the $1/\sqrt{n}$ and we can obtain more precise energy values even with less Monte Carlo steps.
+	}
 
 \end{frame}
 
@@ -646,6 +670,14 @@
 		\item For a given time-step, increase the number of Monte Carlo cycles until the acceptance ratio is slightly below $\SI{100}{\percent}$.
 		\item For a given number of Monte Carlo cycles, increase the time-step until the acceptance ratio is slightly below $\SI{100}{\percent}$.
 	\end{itemize}
+	
+	\note{
+		A further improvement would be to implement the importance sampling, as explained in the previous section.
+		
+		The only thing we have to care about is the amount of the time-step. \alert{READ THE SLIDE.}
+		
+		The solution is to test different values for the time-step and use the one that gives an acceptance ratio that is slightly below $\SI{100}{\percent}$.
+	}
 	
 \end{frame}
 
