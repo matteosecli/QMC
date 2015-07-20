@@ -1,6 +1,6 @@
 % Fucking default pgfsys-dvipdfmx.def screws up normal text, so use another driver
 \def\pgfsysdriver{pgfsys-dvipdfm.def}
-\documentclass[10pt, compress, usetitleprogressbar, protectframetitle, handout]{beamer}
+\documentclass[10pt, compress, usetitleprogressbar, protectframetitle]{beamer}
 
 \usetheme{m}
 
@@ -25,8 +25,8 @@
 \DeclareSIUnit\atomicunit{a.u.}
 \usepackage{braket}
 \usepackage{comment}
-\includecomment{versionLONG}
-%\excludecomment{versionLONG}
+%\includecomment{versionLONG}
+\excludecomment{versionLONG}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % datetime specific configuration                         %
@@ -116,11 +116,11 @@
 	}
 	
 	\note{
-		Quantum dots are built by stacking up different layers of semiconductors. The electron gas forms at the interface of different layers, and the confinement is obtained by applying a voltage to the top metal electrodes -- called \emph{gates}. In the Figure, the white bars have a length of $\SI{0.5}{\micro\meter}$.; so, the gates are created by lithographic patterning.
+		Quantum dots are built by stacking up different layers of semiconductors. The electron gas forms at the interface of different layers, and the confinement is obtained by applying a voltage to the top metal electrodes -- called \emph{gates}.\tiny{	In the Figure, the white bars have a length of $\SI{0.5}{\micro\meter}$.; so, the gates are created by lithographic patterning.
 
 		Another common method to fabricate quantum dots is to build heterostructure pillars by etching techniques. Here, the electrodes are at the top and at the bottom of the pillars.
 
-		Other fabricating processes include self-growth mechanisms, in which the growth conditions determine the form of the structure (that can be pyramidal, disk shaped or lens shaped), and cleaved-edge overgrowth, that consists in two separate Molecular Beam Epitaxy growths on a specific substrate.
+		Other fabricating processes include self-growth mechanisms, in which the growth conditions determine the form of the structure (that can be pyramidal, disk shaped or lens shaped), and cleaved-edge overgrowth, that consists in two separate Molecular Beam Epitaxy growths on a specific substrate.}
 	}
 	
 \end{frame}
@@ -342,6 +342,8 @@
 	
 \end{frame}
 
+\begin{versionLONG}
+
 \begin{frame}{Choose the proper step-length}
 
 	\uncover<+->{\alert{Problem:}} \uncover<+->{we have \emph{no rule} to say what a proper step length should be.}
@@ -358,6 +360,8 @@
 	}
 
 \end{frame}
+
+\end{versionLONG}
 
 \begin{frame}{Importance sampling}
 
@@ -449,7 +453,7 @@
 		
 		The unperturbed Hamiltonian is \alert{SHOW THE HAMILTONIAN}.
 		
-		Unlike the one-dimensional case, for two dimensions we need two quantum numbers: $n_x$ and $n_y$ for the $x$ and $y$ directions, respectively, and this causes a degeneracy in the energy levels. The principal quantum number is $n=n_x+n_y$.
+		\tiny{Unlike the one-dimensional case, for two dimensions we need two quantum numbers: $n_x$ and $n_y$ for the $x$ and $y$ directions, respectively, and this causes a degeneracy in the energy levels. The principal quantum number is $n=n_x+n_y$.}
 		
 		For a single electron in a 2D harmonic potential, the energy can be expressed as \alert{SHOW THE ENERGY}.
 	}
